@@ -1,0 +1,12 @@
+{
+    "name": "netgen/generator-bundle",
+    "description": "This bundle generates code for you",
+    "require": {
+        "symfony/framework-bundle": "~2.2",
+        "symfony/console": "~2.0"
+    },
+    "autoload": {
+        "psr-0": { "Netgen\\Bundle\\GeneratorBundle": "" }
+    },
+    "target-dir": "Netgen/Bundle/GeneratorBundle"
+}
