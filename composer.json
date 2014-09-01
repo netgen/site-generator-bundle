@@ -1,10 +1,17 @@
 {
     "name": "netgen/generator-bundle",
-    "description": "This bundle generates code for you",
+    "description": "This bundle generates a project bundle from provided skeleton",
+    "authors": [
+        {
+            "name": "Netgen",
+            "homepage": "http://www.netgenlabs.com"
+        }
+    ],
     "require": {
         "symfony/framework-bundle": "~2.2",
         "symfony/console": "~2.0"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": { "Netgen\\Bundle\\GeneratorBundle": "" }
     },
