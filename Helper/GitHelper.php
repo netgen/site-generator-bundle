@@ -26,6 +26,7 @@ class GitHelper
             array(
                 'git',
                 'clone',
+                '--progress',
                 $repoUrl,
                 $location
             )
