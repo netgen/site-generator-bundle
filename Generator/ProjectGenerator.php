@@ -177,7 +177,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ez_netgen_ngmore_demo</comment> in files with <comment>' . $extensionName . '</comment>'
+                'Replacing <comment>ez_netgen_ngmore_demo</comment> extension name with <comment>' . $extensionName . '</comment>'
             )
         );
 
@@ -194,7 +194,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ngmore.netgen.biz</comment> in files with <comment>' . $siteDomain . '</comment>'
+                'Replacing <comment>ngmore.netgen.biz</comment> domain with <comment>' . $siteDomain . '</comment>'
             )
         );
 
@@ -209,7 +209,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ngmore_bootstrap3</comment> in files with <comment>' . $designName . '</comment>'
+                'Replacing <comment>ngmore_bootstrap3</comment> design with <comment>' . $designName . '</comment>'
             )
         );
 
