@@ -1,6 +1,6 @@
 {
     "name": "netgen/generator-bundle",
-    "description": "This bundle generates a project bundle from provided skeleton",
+    "description": "This bundle generates a Netgen More project",
     "authors": [
         {
             "name": "Netgen",
