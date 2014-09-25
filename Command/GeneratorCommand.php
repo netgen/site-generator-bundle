@@ -9,16 +9,37 @@ use Netgen\Bundle\GeneratorBundle\Generator\Generator;
 
 abstract class GeneratorCommand extends ContainerAwareCommand
 {
+    /**
+     * @var \Netgen\Bundle\GeneratorBundle\Generator\Generator
+     */
     private $generator;
 
-    // only useful for unit tests
+    /**
+     * Sets the generator
+     *
+     * Only useful for unit tests
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Generator\Generator $generator
+     */
     public function setGenerator( Generator $generator )
     {
         $this->generator = $generator;
     }
 
+    /**
+     * Creates the generator
+     *
+     * @return \Netgen\Bundle\GeneratorBundle\Generator\Generator
+     */
     protected abstract function createGenerator();
 
+    /**
+     * Gets the generator
+     *
+     * @param \Symfony\Component\HttpKernel\Bundle\BundleInterface $bundle
+     *
+     * @return \Netgen\Bundle\GeneratorBundle\Generator\Generator
+     */
     protected function getGenerator( BundleInterface $bundle = null )
     {
         if ( $this->generator === null )
@@ -30,6 +51,13 @@ abstract class GeneratorCommand extends ContainerAwareCommand
         return $this->generator;
     }
 
+    /**
+     * Returns skeleton directories
+     *
+     * @param \Symfony\Component\HttpKernel\Bundle\BundleInterface $bundle
+     *
+     * @return array
+     */
     protected function getSkeletonDirs( BundleInterface $bundle = null )
     {
         $skeletonDirs = array();
@@ -50,6 +78,11 @@ abstract class GeneratorCommand extends ContainerAwareCommand
         return $skeletonDirs;
     }
 
+    /**
+     * Returns the dialog helper
+     *
+     * @return \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper
+     */
     protected function getDialogHelper()
     {
         $dialog = $this->getHelperSet()->get( 'dialog' );

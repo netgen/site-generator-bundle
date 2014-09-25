@@ -6,6 +6,15 @@ use InvalidArgumentException;
 
 class Validators
 {
+    /**
+     * Validates camel case name
+     *
+     * @param string $name
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateCamelCaseName( $name )
     {
         if ( !preg_match( '/^[A-Z][a-zA-Z0-9_]*$/', $name ) )
@@ -23,6 +32,15 @@ class Validators
         return $name;
     }
 
+    /**
+     * Validates lower case name
+     *
+     * @param string $name
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateLowerCaseName( $name )
     {
         if ( !preg_match( '/^[a-z][a-z0-9_]*$/', $name ) )
@@ -40,6 +58,15 @@ class Validators
         return $name;
     }
 
+    /**
+     * Validates siteaccess name
+     *
+     * @param string $siteaccess
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateSiteAccessName( $siteaccess )
     {
         // We allow empty siteaccess name in order to quit asking for more
@@ -63,6 +90,15 @@ class Validators
         return $siteaccess;
     }
 
+    /**
+     * Validates language code
+     *
+     * @param string $languageCode
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateLanguageCode( $languageCode )
     {
         // We allow empty languageCode in order to quit asking for more
@@ -79,15 +115,15 @@ class Validators
         return $languageCode;
     }
 
-    public static function validateReservedKeywords( $value )
-    {
-        $reserved = self::getReservedWords();
-        if ( in_array( strtolower( $value ), $reserved ) )
-        {
-            throw new InvalidArgumentException( sprintf( 'The value cannot contain PHP reserved words ("%s").', $value ) );
-        }
-    }
-
+    /**
+     * Validates if value is not empty
+     *
+     * @param string $value
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateNotEmpty( $value )
     {
         if ( empty( $value ) )
@@ -98,6 +134,15 @@ class Validators
         return $value;
     }
 
+    /**
+     * Validates bundle namespace
+     *
+     * @param string $namespace
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateBundleNamespace( $namespace )
     {
         if ( !preg_match( '/Bundle$/', $namespace ) )
@@ -126,6 +171,15 @@ class Validators
         return $namespace;
     }
 
+    /**
+     * Validates bundle name
+     *
+     * @param string $bundle
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
     public static function validateBundleName( $bundle )
     {
         if ( !preg_match( '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $bundle ) )
@@ -141,6 +195,27 @@ class Validators
         return $bundle;
     }
 
+    /**
+     * Validates if value is one of PHP's reserved keywords
+     *
+     * @param string $value
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     */
+    public static function validateReservedKeywords( $value )
+    {
+        $reserved = self::getReservedWords();
+        if ( in_array( strtolower( $value ), $reserved ) )
+        {
+            throw new InvalidArgumentException( sprintf( 'The value cannot contain PHP reserved words ("%s").', $value ) );
+        }
+    }
+
+    /**
+     * Returns the list of PHP's reserved keywords
+     *
+     * @return array
+     */
     public static function getReservedWords()
     {
         return array(

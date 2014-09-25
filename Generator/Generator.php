@@ -7,13 +7,15 @@ use Twig_Environment;
 
 class Generator
 {
+    /**
+     * @var array
+     */
     private $skeletonDirs;
 
     /**
-     * Sets an array of directories to look for templates.
+     * Sets an array of directories to look for templates
      *
-     * The directories must be sorted from the most specific to the most
-     * directory.
+     * The directories must be sorted from the most specific to the least specific directory
      *
      * @param array $skeletonDirs An array of skeleton dirs
      */
@@ -22,6 +24,14 @@ class Generator
         $this->skeletonDirs = is_array( $skeletonDirs ) ? $skeletonDirs : array( $skeletonDirs );
     }
 
+    /**
+     * Renders the template
+     *
+     * @param string $template
+     * @param array $parameters
+     *
+     * @return string
+     */
     protected function render( $template, $parameters )
     {
         $twig = new Twig_Environment(
@@ -37,6 +47,15 @@ class Generator
         return $twig->render( $template, $parameters );
     }
 
+    /**
+     * Renders the template to a file
+     *
+     * @param string $template
+     * @param string $target
+     * @param array $parameters
+     *
+     * @return int
+     */
     protected function renderFile( $template, $target, $parameters )
     {
         if ( !is_dir( dirname( $target ) ) )

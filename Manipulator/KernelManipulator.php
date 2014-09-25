@@ -8,13 +8,21 @@ use RuntimeException;
 
 class KernelManipulator extends Manipulator
 {
+
+    /**
+     * @var \Symfony\Component\HttpKernel\KernelInterface
+     */
     protected $kernel;
+
+    /**
+     * @var \ReflectionObject
+     */
     protected $reflected;
 
     /**
-     * Constructor.
+     * Constructor
      *
-     * @param KernelInterface $kernel A KernelInterface instance
+     * @param \Symfony\Component\HttpKernel\KernelInterface $kernel
      */
     public function __construct( KernelInterface $kernel )
     {
@@ -23,11 +31,11 @@ class KernelManipulator extends Manipulator
     }
 
     /**
-     * Adds a bundle at the end of the existing ones.
+     * Adds a bundle at the end of the existing ones
      *
      * @param string $bundle The bundle class name
      *
-     * @return Boolean true if it worked, false otherwise
+     * @return boolean true if it worked, false otherwise
      *
      * @throws \RuntimeException If bundle is already defined
      */

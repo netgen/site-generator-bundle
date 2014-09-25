@@ -337,6 +337,18 @@ class GenerateProjectCommand extends GeneratorCommand
         );
     }
 
+    /**
+     * Adds the bundle to the kernel file
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param \Symfony\Component\HttpKernel\KernelInterface $kernel
+     * @param string $namespace
+     * @param string $bundle
+     *
+     * @return array
+     */
     protected function updateKernel( DialogHelper $dialog, InputInterface $input, OutputInterface $output, KernelInterface $kernel, $namespace, $bundle )
     {
         $output->writeln( '' );
@@ -371,7 +383,18 @@ class GenerateProjectCommand extends GeneratorCommand
         }
     }
 
-    protected function updateRouting(DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format)
+    /**
+     * Updates the routing file
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $bundle
+     * @param string $format
+     *
+     * @return array
+     */
+    protected function updateRouting( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format )
     {
         $output->writeln( '' );
         $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic update of the Routing', 'no', '?' ), false );
@@ -410,6 +433,11 @@ class GenerateProjectCommand extends GeneratorCommand
         }
     }
 
+    /**
+     * Creates the generator
+     *
+     * @return \Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator
+     */
     protected function createGenerator()
     {
         return new ProjectGenerator( $this->getContainer() );

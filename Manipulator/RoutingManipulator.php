@@ -7,10 +7,13 @@ use RuntimeException;
 
 class RoutingManipulator extends Manipulator
 {
+    /**
+     * @var string
+     */
     private $file;
 
     /**
-     * Constructor.
+     * Constructor
      *
      * @param string $file The YAML routing file path
      */
@@ -20,14 +23,14 @@ class RoutingManipulator extends Manipulator
     }
 
     /**
-     * Adds a routing resource at the top of the existing ones.
+     * Adds a routing resource at the top of the existing ones
      *
      * @param string $bundle
      * @param string $format
      * @param string $prefix
      * @param string $path
      *
-     * @return Boolean true if it worked, false otherwise
+     * @return boolean true if it worked, false otherwise
      *
      * @throws \RuntimeException If bundle is already imported
      */

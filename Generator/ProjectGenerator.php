@@ -12,13 +12,27 @@ use RuntimeException;
 
 class ProjectGenerator extends Generator
 {
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
     private $container;
 
+    /**
+     * Constructor
+     *
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     */
     public function __construct( ContainerInterface $container )
     {
         $this->container = $container;
     }
 
+    /**
+     * Generates the project
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     */
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $fileSystem = $this->container->get( 'filesystem' );

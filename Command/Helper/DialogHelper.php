@@ -7,6 +7,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DialogHelper extends BaseDialogHelper
 {
+    /**
+     * Writes generator summary
+     *
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param array $errors
+     */
     public function writeGeneratorSummary( OutputInterface $output, $errors )
     {
         if ( !$errors )
@@ -28,6 +34,14 @@ class DialogHelper extends BaseDialogHelper
         }
     }
 
+    /**
+     * Returns the runner
+     *
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param array $errors
+     *
+     * @return callable
+     */
     public function getRunner( OutputInterface $output, &$errors )
     {
         $runner = function ( $err ) use ( $output, &$errors )
@@ -46,6 +60,13 @@ class DialogHelper extends BaseDialogHelper
         return $runner;
     }
 
+    /**
+     * Writes a section of text to the output
+     *
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $text
+     * @param string $style
+     */
     public function writeSection( OutputInterface $output, $text, $style = 'bg=blue;fg=white' )
     {
         $output->writeln(
@@ -57,6 +78,15 @@ class DialogHelper extends BaseDialogHelper
         );
     }
 
+    /**
+     * Returns a formatted question
+     *
+     * @param string $question
+     * @param boolean $default
+     * @param string $sep
+     *
+     * @return string
+     */
     public function getQuestion( $question, $default, $sep = ':' )
     {
         return $default ?
