@@ -114,6 +114,23 @@ class ProjectGenerator extends Generator
             Container::underscore( $bundleBaseName )
         );
 
+        // Renaming the bundle assets path
+
+        $bundleAssetsPathPart = preg_replace( '/bundle$/', '', strtolower( $bundleName ) );
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>netgenmoredemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            '/netgenmoredemo/',
+            '/' . $bundleAssetsPathPart . '/'
+        );
+
         // Cloning the legacy extension
 
         $extensionFolder = $finalBundleLocation . '/ezpublish_legacy';

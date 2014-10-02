@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
@@ -84,6 +85,16 @@ class GenerateProjectCommand extends GeneratorCommand
                 $this->getContainer()->get( 'kernel' ),
                 $input->getOption( 'bundle-namespace' ),
                 $input->getOption( 'bundle-name' )
+            )
+        );
+
+        // Install Symfony assets as relative symlinks
+        $runner(
+            $this->installAssets(
+                $dialog,
+                $input,
+                $output,
+                empty( $errors )
             )
         );
 
@@ -377,7 +388,71 @@ class GenerateProjectCommand extends GeneratorCommand
         catch ( RuntimeException $e )
         {
             return array(
-                sprintf( 'Bundle <comment>%s</comment> is already defined in <comment>AppKernel::registerBundles()</comment>.', $namespace . '\\' . $bundle ),
+                sprintf( 'Bundle <comment>%s</comment> is already defined in <comment>EzPublishKernel::registerBundles()</comment>.', $namespace . '\\' . $bundle ),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Installs Symfony assets as relative symlinks
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param bool $kernel
+     *
+     * @return array
+     */
+    protected function installAssets( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $kernelUpdated )
+    {
+        $output->writeln( '' );
+        $output->write( 'Installing assets using the <comment>symlink</comment> option: ' );
+
+        try
+        {
+            $returnMessage = array(
+                '- Run the following command from your installation root to install assets:',
+                '',
+                '    <comment>php ezpublish/console assets:install --symlink --relative</comment>',
+                '',
+            );
+
+            if ( !$kernelUpdated )
+            {
+                return $returnMessage;
+            }
+
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'assets:install',
+                    '--symlink',
+                    '--relative',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return $returnMessage;
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
                 '',
             );
         }
