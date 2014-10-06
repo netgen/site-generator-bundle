@@ -257,7 +257,7 @@ class ProjectGenerator extends Generator
         {
             if ( !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess' ) )
             {
-                throw new RuntimeException( 'Siteaccess skeleton directory for "' . $environment . '" environment found. Aborting...' );
+                throw new RuntimeException( 'Siteaccess skeleton directory for "' . $environment . '" environment not found. Aborting...' );
             }
         }
 
@@ -308,7 +308,7 @@ class ProjectGenerator extends Generator
             {
                 if ( $generateAdminSiteAccess && !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin' ) )
                 {
-                    throw new RuntimeException( 'Admin siteaccess skeleton directory for "' . $environment . '" environment found. Aborting...' );
+                    throw new RuntimeException( 'Admin siteaccess skeleton directory for "' . $environment . '" environment not found. Aborting...' );
                 }
             }
 
@@ -470,7 +470,7 @@ class ProjectGenerator extends Generator
                 $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin/' );
             }
 
-            // Validate generation of admin siteaccess
+            // Validate generation of override folder
 
             $generateOverride = true;
             if ( $fileSystem->exists( $legacyRootDir . '/settings/override' ) )
@@ -488,7 +488,7 @@ class ProjectGenerator extends Generator
             {
                 if ( $generateOverride && !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override' ) )
                 {
-                    throw new RuntimeException( 'settings/override skeleton directory for "' . $environment . '" environment found. Aborting...' );
+                    throw new RuntimeException( 'settings/override skeleton directory for "' . $environment . '" environment not found. Aborting...' );
                 }
             }
 
