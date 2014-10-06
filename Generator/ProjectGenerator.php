@@ -329,7 +329,7 @@ class ProjectGenerator extends Generator
 
             $siteName = $input->getOption( 'site-name' );
 
-            $databaseServer = $input->getOption( 'database-server' );
+            $databaseServer = $input->getOption( 'database-host' );
             $databasePort = $input->getOption( 'database-port' );
             $databaseUser = $input->getOption( 'database-user' );
             $databasePassword = $input->getOption( 'database-password' );
