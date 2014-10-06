@@ -283,7 +283,7 @@ class ProjectGenerator extends Generator
             $validSiteAccesses[$siteAccessName] = $siteAccessLanguages;
         }
 
-        if ( empty( $validSiteAccesses ) )
+        if ( !empty( $validSiteAccesses ) )
         {
             // Validate generation of admin siteaccess
 
