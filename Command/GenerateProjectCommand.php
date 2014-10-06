@@ -28,6 +28,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption( 'project', '', InputOption::VALUE_REQUIRED, 'Project name' ),
                 new InputOption( 'site-name', '', InputOption::VALUE_REQUIRED, 'Site name' ),
                 new InputOption( 'site-domain', '', InputOption::VALUE_REQUIRED, 'Site domain' ),
+                new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
                 new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
                 new InputOption( 'database-host', '', InputOption::VALUE_REQUIRED, 'Database host' ),
                 new InputOption( 'database-port', '', InputOption::VALUE_OPTIONAL, 'Database port' ),
@@ -95,6 +96,15 @@ class GenerateProjectCommand extends GeneratorCommand
                 $input,
                 $output,
                 empty( $errors )
+            )
+        );
+
+        // Install Netgen More legacy symlinks
+        $runner(
+            $this->installLegacySymlinks(
+                $dialog,
+                $input,
+                $output
             )
         );
 
@@ -204,40 +214,82 @@ class GenerateProjectCommand extends GeneratorCommand
         );
 
         $siteAccessList = array();
-        do
+
+        // Try to parse the following format
+        // eng:eng-EU|cro:cro-HR:eng-EU
+        $siteAccessListString = $input->getOption( 'site-access-list-string' );
+        if ( !empty( $siteAccessListString ) )
         {
-            $siteAccess = $dialog->askAndValidate(
-                $output,
-                $dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
-                array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
-                false
-            );
-
-            if ( !empty( $siteAccess ) )
+            $siteAccessListStringArray = explode( '|', $siteAccessListString );
+            foreach ( $siteAccessListStringArray as $siteAccessListStringArrayItem )
             {
-                $siteAccessList[] = $siteAccess;
-
-                $languageList = array();
-                do
+                if ( empty( $siteAccessListStringArrayItem ) )
                 {
-                    $language = $dialog->askAndValidate(
-                        $output,
-                        $dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
-                        array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateLanguageCode' ),
-                        false
-                    );
-
-                    if ( !empty( $language ) )
-                    {
-                        $languageList[] = $language;
-                    }
+                    throw new RuntimeException( 'Invalid site-access-list-string option provided' );
                 }
-                while ( !empty( $language ) || empty( $languageList ) );
 
-                $siteAccessList[$siteAccess] = $languageList;
+                $explodedSiteAccessItem = explode( ':', $siteAccessListStringArrayItem );
+                if ( count( $explodedSiteAccessItem ) < 2 )
+                {
+                    throw new RuntimeException( 'Invalid site-access-list-string option provided' );
+                }
+
+                foreach ( $explodedSiteAccessItem as $index => $siteAccessOrLanguage )
+                {
+                    if ( empty( $siteAccessOrLanguage ) )
+                    {
+                        throw new RuntimeException( 'Invalid site-access-list-string option provided' );
+                    }
+
+                    if ( $index == 0 )
+                    {
+                        Validators::validateSiteAccessName( $siteAccessOrLanguage );
+                        continue;
+                    }
+
+                    Validators::validateLanguageCode( $siteAccessOrLanguage );
+                    $siteAccessList[$explodedSiteAccessItem[0]][] = $siteAccessOrLanguage;
+                }
             }
         }
-        while ( !empty( $siteAccess ) || empty( $siteAccessList ) );
+
+        if ( empty( $siteAccessList ) )
+        {
+            do
+            {
+                $siteAccess = $dialog->askAndValidate(
+                    $output,
+                    $dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
+                    array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
+                    false
+                );
+
+                if ( !empty( $siteAccess ) )
+                {
+                    $siteAccessList[$siteAccess] = array();
+
+                    $languageList = array();
+                    do
+                    {
+                        $language = $dialog->askAndValidate(
+                            $output,
+                            $dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
+                            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateLanguageCode' ),
+                            false
+                        );
+
+                        if ( !empty( $language ) )
+                        {
+                            $languageList[] = $language;
+                        }
+                    }
+                    while ( !empty( $language ) || empty( $languageList ) );
+
+                    $siteAccessList[$siteAccess] = $languageList;
+                }
+            }
+            while ( !empty( $siteAccess ) || empty( $siteAccessList ) );
+        }
 
         $input->setOption( 'site-access-list', $siteAccessList );
 
@@ -400,14 +452,14 @@ class GenerateProjectCommand extends GeneratorCommand
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param bool $kernel
+     * @param bool $kernelUpdated
      *
      * @return array
      */
     protected function installAssets( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $kernelUpdated )
     {
         $output->writeln( '' );
-        $output->write( 'Installing assets using the <comment>symlink</comment> option: ' );
+        $output->write( 'Installing assets using the <comment>symlink</comment> option... ' );
 
         try
         {
@@ -447,6 +499,60 @@ class GenerateProjectCommand extends GeneratorCommand
             if ( !$process->isSuccessful() )
             {
                 return $returnMessage;
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Installs Netgen More legacy symlinks
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function installLegacySymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Installing ngmore legacy symlinks... ' );
+
+        try
+        {
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'ngmore:legacy:symlink',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to install ngmore legacy symlinks:',
+                    '',
+                    '    <comment>php ezpublish/console ngmore:legacy:symlink</comment>',
+                    '',
+                );
             }
         }
         catch ( RuntimeException $e )
