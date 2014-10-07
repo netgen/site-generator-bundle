@@ -319,9 +319,11 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'database-port', $databasePort );
 
-        $databaseUser = $dialog->ask(
+        $databaseUser = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Database user', $input->getOption( 'database-user' ) ),
+            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            false,
             $input->getOption( 'database-user' )
         );
 
