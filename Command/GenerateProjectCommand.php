@@ -355,6 +355,23 @@ class GenerateProjectCommand extends GeneratorCommand
         $errors = array();
         $runner = $dialog->getRunner( $output, $errors );
 
+        // Install Netgen More legacy symlinks
+        $runner(
+            $this->installLegacySymlinks(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
+        $runner(
+            $this->generateLegacyAutoloads(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
         // Register the bundle in the EzPublishKernel class
         $runner(
             $this->updateKernel(
@@ -377,15 +394,6 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        // Install Netgen More legacy symlinks
-        $runner(
-            $this->installLegacySymlinks(
-                $dialog,
-                $input,
-                $output
-            )
-        );
-
         // Set up routing
         $runner(
             $this->updateRouting(
@@ -394,14 +402,6 @@ class GenerateProjectCommand extends GeneratorCommand
                 $output,
                 $input->getOption( 'bundle-name' ),
                 'yml'
-            )
-        );
-
-        $runner(
-            $this->generateLegacyAutoloads(
-                $dialog,
-                $input,
-                $output
             )
         );
 
