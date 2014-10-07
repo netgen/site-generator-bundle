@@ -119,15 +119,6 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        // Import initial ngmore database
-        $runner(
-            $this->importDatabase(
-                $dialog,
-                $input,
-                $output
-            )
-        );
-
         $dialog->writeGeneratorSummary( $output, $errors );
 
         return 0;
@@ -618,82 +609,6 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             return array(
                 sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
-                '',
-            );
-        }
-    }
-
-    /**
-     * Imports initial ngmore database
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return array
-     */
-    protected function importDatabase( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
-    {
-        $output->writeln( '' );
-        $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic import of the database (all existing data will be lost)', 'no', '?' ), false );
-
-        $output->write( 'Importing the database: ' );
-
-        try
-        {
-            $databaseHost = $input->getOption( 'database-host' );
-            $databaseUser = $input->getOption( 'database-user' );
-            $databasePassword = $input->getOption( 'database-password' );
-            $databaseName = $input->getOption( 'database-name' );
-            $dumpPath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' )
-                . '/extension/' . $input->getOption( 'extension-name' ) . '/data/dump.sql';
-
-            $errorResponse = array(
-                '- Run the following command from your installation root to install ngmore legacy symlinks:',
-                '',
-                '    <comment>mysql -u' . $databaseUser . ' ' . !empty( $databasePassword ) ? ' -p' . $databasePassword : ' ' . ' -h ' . $databaseHost . ' ' . $databaseName . ' < ' . $dumpPath . '</comment>',
-                '',
-            );
-
-            if ( $autoUpdate )
-            {
-                $processBuilder = new ProcessBuilder(
-                    array(
-                        'mysql',
-                        '-u ' . $databaseUser,
-                        !empty( $databasePassword ) ? '-p' . $databasePassword : '',
-                        '-h ' . $databaseHost,
-                        $databaseName,
-                        '<',
-                        $dumpPath
-                    )
-                );
-                $process = $processBuilder->getProcess();
-                $process->setTimeout( 3600 );
-                $process->run(
-                    function ( $type, $buffer )
-                    {
-                        echo $buffer;
-                    }
-                );
-                if ( !$process->isSuccessful() )
-                {
-                    return $errorResponse;
-                }
-                else
-                {
-                    unlink( $dumpPath );
-                }
-            }
-            else
-            {
-                return $errorResponse;
-            }
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                'There was an error running the command: ' . $e->getMessage(),
                 '',
             );
         }
