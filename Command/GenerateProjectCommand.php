@@ -46,93 +46,6 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Runs the command
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return int
-     */
-    protected function execute( InputInterface $input, OutputInterface $output )
-    {
-        if ( !$input->isInteractive() )
-        {
-            $output->writeln( '<error>This command only supports interactive execution</error>' );
-            return 1;
-        }
-
-        $dialog = $this->getDialogHelper();
-        if ( !$dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you confirm project generation', 'yes', '?' ), true ) )
-        {
-            $output->writeln( '<error>Command aborted</error>' );
-            return 1;
-        }
-
-        $dialog->writeSection( $output, 'Project generation' );
-
-        /** @var \Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator $generator */
-        $generator = $this->getGenerator();
-        $generator->generate( $input, $output );
-
-        $errors = array();
-        $runner = $dialog->getRunner( $output, $errors );
-
-        // Register the bundle in the EzPublishKernel class
-        $runner(
-            $this->updateKernel(
-                $dialog,
-                $input,
-                $output,
-                $this->getContainer()->get( 'kernel' ),
-                $input->getOption( 'bundle-namespace' ),
-                $input->getOption( 'bundle-name' )
-            )
-        );
-
-        // Install Symfony assets as relative symlinks
-        $runner(
-            $this->installAssets(
-                $dialog,
-                $input,
-                $output,
-                empty( $errors )
-            )
-        );
-
-        // Install Netgen More legacy symlinks
-        $runner(
-            $this->installLegacySymlinks(
-                $dialog,
-                $input,
-                $output
-            )
-        );
-
-        // Set up routing
-        $runner(
-            $this->updateRouting(
-                $dialog,
-                $input,
-                $output,
-                $input->getOption( 'bundle-name' ),
-                'yml'
-            )
-        );
-
-        $runner(
-            $this->generateLegacyAutoloads(
-                $dialog,
-                $input,
-                $output
-            )
-        );
-
-        $dialog->writeGeneratorSummary( $output, $errors );
-
-        return 0;
-    }
-
-    /**
      * Runs the command interactively
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
@@ -408,6 +321,93 @@ class GenerateProjectCommand extends GeneratorCommand
                 ''
             )
         );
+    }
+
+    /**
+     * Runs the command
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return int
+     */
+    protected function execute( InputInterface $input, OutputInterface $output )
+    {
+        if ( !$input->isInteractive() )
+        {
+            $output->writeln( '<error>This command only supports interactive execution</error>' );
+            return 1;
+        }
+
+        $dialog = $this->getDialogHelper();
+        if ( !$dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you confirm project generation', 'yes', '?' ), true ) )
+        {
+            $output->writeln( '<error>Command aborted</error>' );
+            return 1;
+        }
+
+        $dialog->writeSection( $output, 'Project generation' );
+
+        /** @var \Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator $generator */
+        $generator = $this->getGenerator();
+        $generator->generate( $input, $output );
+
+        $errors = array();
+        $runner = $dialog->getRunner( $output, $errors );
+
+        // Register the bundle in the EzPublishKernel class
+        $runner(
+            $this->updateKernel(
+                $dialog,
+                $input,
+                $output,
+                $this->getContainer()->get( 'kernel' ),
+                $input->getOption( 'bundle-namespace' ),
+                $input->getOption( 'bundle-name' )
+            )
+        );
+
+        // Install Symfony assets as relative symlinks
+        $runner(
+            $this->installAssets(
+                $dialog,
+                $input,
+                $output,
+                empty( $errors )
+            )
+        );
+
+        // Install Netgen More legacy symlinks
+        $runner(
+            $this->installLegacySymlinks(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
+        // Set up routing
+        $runner(
+            $this->updateRouting(
+                $dialog,
+                $input,
+                $output,
+                $input->getOption( 'bundle-name' ),
+                'yml'
+            )
+        );
+
+        $runner(
+            $this->generateLegacyAutoloads(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
+        $dialog->writeGeneratorSummary( $output, $errors );
+
+        return 0;
     }
 
     /**
