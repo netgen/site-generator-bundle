@@ -119,6 +119,14 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        $runner(
+            $this->generateLegacyAutoloads(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
         $dialog->writeGeneratorSummary( $output, $errors );
 
         return 0;
@@ -611,6 +619,61 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             return array(
                 sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Generates legacy autoloads
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Generating legacy autoloads... ' );
+
+        try
+        {
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'ezpublish:legacy:script',
+                    'bin/php/ezpgenerateautoloads.php',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to generate legacy autoloads:',
+                    '',
+                    '    <comment>php ezpublish/console ezpublish:legacy:script bin/php/ezpgenerateautoloads.php</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
                 '',
             );
         }
