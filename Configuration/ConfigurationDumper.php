@@ -105,11 +105,11 @@ class ConfigurationDumper implements ConfigDumperInterface
         // Now generates environment config files
         foreach ( array_keys( $this->environments ) as $environment )
         {
-            $configFile = "$configPath/ezpublish_{$environment}.yml";
+            $configFile = "$configPath/{$environment}/ezpublish.yml";
             // Add the import statement for the root YAML file
             $envConfigArray = array(
                 'imports' => array(
-                    array( 'resource' => 'ezpublish.yml' )
+                    array( 'resource' => '../ezpublish.yml' )
                 )
             );
 
