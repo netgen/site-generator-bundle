@@ -416,6 +416,15 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        // Install Netgen More project symlinks
+        $runner(
+            $this->installProjectSymlinks(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
         // Install Netgen More legacy symlinks
         $runner(
             $this->installLegacySymlinks(
@@ -446,6 +455,60 @@ class GenerateProjectCommand extends GeneratorCommand
         $dialog->writeGeneratorSummary( $output, $errors );
 
         return 0;
+    }
+
+    /**
+     * Installs Netgen More project symlinks
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function installProjectSymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Installing ngmore project symlinks... ' );
+
+        try
+        {
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'ngmore:symlink:project',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to install ngmore project symlinks:',
+                    '',
+                    '    <comment>php ezpublish/console ngmore:symlink:project</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
     }
 
     /**
