@@ -108,8 +108,7 @@ class ConfigurationDumper implements ConfigDumperInterface
                     array( 'resource' => 'ezpublish.yml' )
                 )
             );
-
-            $envConfigArray['doctrine'] = $doctrineSettings;
+            
             $envConfigArray['ezpublish']['siteaccess']['match'] = $siteAccessMatchSettings;
 
             // File already exists, handle possible options
