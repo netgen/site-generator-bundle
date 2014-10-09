@@ -37,6 +37,8 @@ class ConfigurationConverter
      */
     public function fromLegacy( $projectName, $adminSiteAccess )
     {
+        $defaultSiteAccess = $this->getParameter( 'SiteSettings', 'DefaultAccess' );
+
         $settings = array();
 
         $settings['imports'] = array(
@@ -44,9 +46,19 @@ class ConfigurationConverter
             array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' )
         );
 
+        // Database settings
+        $databaseSettings = $this->getGroup( 'DatabaseSettings', 'site.ini', $defaultSiteAccess );
+        $repositoryName = "{$projectName}_repository";
+        $settings['doctrine'] = array(
+            'dbal' => array(
+                'connections' => array(
+                    "{$repositoryName}_connection" => $this->getDoctrineSettings( $databaseSettings )
+                )
+            )
+        );
+
         $settings['ezpublish'] = array();
         $settings['ezpublish']['siteaccess'] = array();
-        $defaultSiteAccess = $this->getParameter( 'SiteSettings', 'DefaultAccess' );
         $settings['ezpublish']['siteaccess']['default_siteaccess'] = $defaultSiteAccess;
         $siteList = $this->getParameter( 'SiteAccessSettings', 'AvailableSiteAccessList' );
 
@@ -67,16 +79,6 @@ class ConfigurationConverter
         $settings['ezpublish']['system'][$defaultSiteAccess] = array();
         $settings['ezpublish']['system'][$adminSiteAccess] = array();
 
-        // Database settings
-        $databaseSettings = $this->getGroup( 'DatabaseSettings', 'site.ini', $defaultSiteAccess );
-        $repositoryName = "{$projectName}_repository";
-        $settings['doctrine'] = array(
-            'dbal' => array(
-                'connections' => array(
-                    "{$repositoryName}_connection" => $this->getDoctrineSettings( $databaseSettings )
-                )
-            )
-        );
         $settings['ezpublish']['repositories'] = array(
             $repositoryName => array( 'engine' => 'legacy', 'connection' => "{$repositoryName}_connection" )
         );
@@ -171,19 +173,15 @@ class ConfigurationConverter
         if ( isset( $databaseMapping[$databaseType] ) )
             $databaseType = $databaseMapping[$databaseType];
 
-        $databasePassword = $databaseSettings['Password'] != '' ? $databaseSettings['Password'] : null;
         $doctrineSettings = array(
             'driver' => $databaseType,
-            'host' => $databaseSettings['Server'],
-            'user' => $databaseSettings['User'],
-            'password' => $databasePassword,
-            'dbname' => $databaseSettings['Database'],
+            'host' => '%database_host%',
+            'port' => '%database_port%',
+            'user' => '%database_user%',
+            'password' => '%database_password%',
+            'dbname' => '%database_name%',
             'charset' => 'UTF8'
         );
-        if ( isset( $databaseSettings['Port'] ) && !empty( $databaseSettings['Port'] ) )
-            $doctrineSettings['port'] = $databaseSettings['Port'];
-        if ( isset( $databaseSettings['Socket'] ) && $databaseSettings['Socket'] !== 'disabled' )
-            $doctrineSettings['unix_socket'] = $databaseSettings['Socket'];
 
         return $doctrineSettings;
     }

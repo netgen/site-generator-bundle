@@ -139,11 +139,11 @@ class SiteAccessGenerator extends Generator
 
             $siteName = $input->getOption( 'site-name' );
 
-            $databaseServer = $input->getOption( 'database-host' );
-            $databasePort = $input->getOption( 'database-port' );
-            $databaseUser = $input->getOption( 'database-user' );
-            $databasePassword = $input->getOption( 'database-password' );
-            $databaseName = $input->getOption( 'database-name' );
+            $databaseServer = $this->container->getParameter( 'database_host' );
+            $databasePort = $this->container->getParameter( 'database_port' );
+            $databaseUser = $this->container->getParameter( 'database_user' );
+            $databasePassword = $this->container->getParameter( 'database_password' );
+            $databaseName = $this->container->getParameter( 'database_name' );
 
             $allSiteAccesses = array_keys( $validSiteAccesses );
             $allSiteAccesses[] = $adminSiteAccessName;
