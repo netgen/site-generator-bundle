@@ -75,14 +75,30 @@ class Validators
             return '';
         }
 
-        if ( $siteaccess === 'administration' )
-        {
-            throw new InvalidArgumentException( 'Siteaccess name cannot be equal to "administration"' );
-        }
-
         if ( !preg_match( '/^[a-z][a-z0-9_]*$/', $siteaccess ) )
         {
             throw new InvalidArgumentException( 'Siteaccess name is not valid.' );
+        }
+
+        self::validateReservedKeywords( $siteaccess );
+
+        return $siteaccess;
+    }
+
+    /**
+     * Validates siteaccess name
+     *
+     * @param string $siteaccess
+     *
+     * @throws \InvalidArgumentException If validation did not pass
+     *
+     * @return string
+     */
+    public static function validateAdminSiteAccessName( $siteaccess )
+    {
+        if ( !preg_match( '/^[a-z][a-z0-9_]*$/', $siteaccess ) )
+        {
+            throw new InvalidArgumentException( 'Admin siteaccess name is not valid.' );
         }
 
         self::validateReservedKeywords( $siteaccess );

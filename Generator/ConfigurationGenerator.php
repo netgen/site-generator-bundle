@@ -35,7 +35,7 @@ class ConfigurationGenerator extends Generator
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $availableEnvironments = array( 'dev', 'prod' );
-        $adminSiteAccess = 'administration';
+        $adminSiteAccess = $input->getOption( 'admin-site-access-name' );
 
         $this->container->get( 'ezpublish_legacy.kernel.lazy_loader' )->setBuildEventsEnabled( false );
 

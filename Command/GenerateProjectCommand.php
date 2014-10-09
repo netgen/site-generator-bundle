@@ -14,6 +14,7 @@ use Netgen\Bundle\GeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
 use Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use InvalidArgumentException;
 use ReflectionObject;
 use RuntimeException;
 
@@ -30,6 +31,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption( 'project', '', InputOption::VALUE_REQUIRED, 'Project name' ),
                 new InputOption( 'site-name', '', InputOption::VALUE_REQUIRED, 'Site name' ),
                 new InputOption( 'site-domain', '', InputOption::VALUE_REQUIRED, 'Site domain' ),
+                new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
                 new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
                 new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
                 new InputOption( 'database-host', '', InputOption::VALUE_REQUIRED, 'Database host' ),
@@ -125,16 +127,15 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'site-domain', $siteDomain );
 
-        $output->writeln(
-            array(
-                '',
-                'Input the name of every siteaccess you wish to create.',
-                'The first siteaccess you specify will become the default siteaccess.',
-                '<comment>administration</comment> siteaccess will be generated automatically.',
-                'The names must contain lowercase letters, underscores or numbers.',
-                ''
-            )
+        $adminSiteAccess = $dialog->askAndValidate(
+            $output,
+            $dialog->getQuestion( 'Admin siteaccess name', $input->getOption( 'admin-site-access-name' ) ),
+            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateAdminSiteAccessName' ),
+            false,
+            $input->getOption( 'admin-site-access-name' )
         );
+
+        $input->setOption( 'admin-site-access-name', $adminSiteAccess );
 
         $siteAccessList = array();
 
@@ -166,6 +167,11 @@ class GenerateProjectCommand extends GeneratorCommand
 
                     if ( $index == 0 )
                     {
+                        if ( $siteAccessOrLanguage === $adminSiteAccess )
+                        {
+                            throw new InvalidArgumentException( 'Regular siteaccess name cannot be equal to "' . $adminSiteAccess . '".' );
+                        }
+
                         Validators::validateSiteAccessName( $siteAccessOrLanguage );
                         continue;
                     }
@@ -178,6 +184,17 @@ class GenerateProjectCommand extends GeneratorCommand
 
         if ( empty( $siteAccessList ) )
         {
+            $output->writeln(
+                array(
+                    '',
+                    'Input the name of every siteaccess you wish to create.',
+                    'The first siteaccess you specify will become the default siteaccess.',
+                    '<comment>' . $adminSiteAccess . '</comment> siteaccess will be generated automatically.',
+                    'The names must contain lowercase letters, underscores or numbers.',
+                    ''
+                )
+            );
+
             do
             {
                 $siteAccess = $dialog->askAndValidate(
@@ -186,6 +203,12 @@ class GenerateProjectCommand extends GeneratorCommand
                     array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
                     false
                 );
+
+                if ( $siteAccess === $adminSiteAccess )
+                {
+                    $output->writeln( $dialog->getHelperSet()->get( 'formatter' )->formatBlock( 'Siteaccess name cannot be equal to "' . $adminSiteAccess . '".', 'error' ) );
+                    continue;
+                }
 
                 if ( !empty( $siteAccess ) )
                 {

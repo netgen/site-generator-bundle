@@ -34,6 +34,7 @@ class SiteAccessGenerator extends Generator
     {
         $fileSystem = $this->container->get( 'filesystem' );
         $availableEnvironments = array( 'dev', 'prod' );
+        $adminSiteAccessName = $input->getOption( 'admin-site-access-name' );
 
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
         $bundleNamespace = $input->getOption( 'bundle-namespace' );
@@ -97,13 +98,13 @@ class SiteAccessGenerator extends Generator
             // Validate generation of admin siteaccess
 
             $generateAdminSiteAccess = true;
-            if ( $fileSystem->exists( $legacyRootDir . '/settings/siteaccess/administration' ) )
+            if ( $fileSystem->exists( $legacyRootDir . '/settings/siteaccess/' . $adminSiteAccessName ) )
             {
                 $generateAdminSiteAccess = false;
                 $output->writeln(
                     array(
                         '',
-                        'Admin siteaccess <comment>administration</comment> already exists. Will not generate...'
+                        'Admin siteaccess <comment>' . $adminSiteAccessName . '</comment> already exists. Will not generate...'
                     )
                 );
             }
@@ -145,7 +146,7 @@ class SiteAccessGenerator extends Generator
             $databaseName = $input->getOption( 'database-name' );
 
             $allSiteAccesses = array_keys( $validSiteAccesses );
-            $allSiteAccesses[] = 'administration';
+            $allSiteAccesses[] = $adminSiteAccessName;
 
             $mainSiteAccess = '';
             if ( $generateAdminSiteAccess )
@@ -230,14 +231,14 @@ class SiteAccessGenerator extends Generator
             {
                 $fileSystem->mirror(
                     $finalExtensionLocation . '/settings/_skeleton_admin',
-                    $finalExtensionLocation . '/settings/siteaccess/administration'
+                    $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName
                 );
 
-                $this->setSkeletonDirs( $finalExtensionLocation . '/settings/siteaccess/administration' );
+                $this->setSkeletonDirs( $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName );
 
                 $this->renderFile(
                     'site.ini.append.php',
-                    $finalExtensionLocation . '/settings/siteaccess/administration/site.ini.append.php',
+                    $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
                     array(
                         'siteName' => $siteName,
                         'relatedSiteAccessList' => $allSiteAccesses,
@@ -251,14 +252,14 @@ class SiteAccessGenerator extends Generator
                 {
                     $fileSystem->mirror(
                         $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin',
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/administration'
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName
                     );
 
-                    $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/administration' );
+                    $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName );
 
                     $this->renderFile(
                         'site.ini.append.php',
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/administration/site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
                         array(
                             'siteDomain' => $siteDomain
                         )
@@ -268,7 +269,7 @@ class SiteAccessGenerator extends Generator
                 $output->writeln(
                     array(
                         '',
-                        'Generated <comment>administration</comment> siteaccess!'
+                        'Generated <comment>' . $adminSiteAccessName . '</comment> admin siteaccess!'
                     )
                 );
             }
