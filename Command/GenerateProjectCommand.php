@@ -9,6 +9,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator;
+use Netgen\Bundle\GeneratorBundle\Generator\SiteAccessGenerator;
+use Netgen\Bundle\GeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
 use Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
@@ -348,8 +350,13 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $dialog->writeSection( $output, 'Project generation' );
 
+        // Generate a project
         $projectGenerator = new ProjectGenerator( $this->getContainer() );
         $projectGenerator->generate( $input, $output );
+
+        // Generate siteaccesses
+        $siteAccessGenerator = new SiteAccessGenerator( $this->getContainer() );
+        $siteAccessGenerator->generate( $input, $output );
 
         $errors = array();
         $runner = $dialog->getRunner( $output, $errors );
@@ -366,6 +373,15 @@ class GenerateProjectCommand extends GeneratorCommand
         // Generate legacy autoloads
         $runner(
             $this->generateLegacyAutoloads(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
+        // Generate eZ 5 configuration
+        $runner(
+            $this->generateYamlConfiguration(
                 $dialog,
                 $input,
                 $output
@@ -669,6 +685,34 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Generates eZ 5 configuration
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function generateYamlConfiguration( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Generating Yaml configuration from legacy... ' );
+
+        try
+        {
+            $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
+            $configurationGenerator->generate( $input, $output );
         }
         catch ( RuntimeException $e )
         {
