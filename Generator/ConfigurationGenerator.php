@@ -61,7 +61,5 @@ class ConfigurationGenerator extends Generator
             ),
             ConfigDumperInterface::OPT_DEFAULT
         );
-
-        $output->writeln( "Configuration written to ezpublish.yml and environment related ezpublish configuration files." );
     }
 }

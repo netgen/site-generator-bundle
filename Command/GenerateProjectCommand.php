@@ -384,18 +384,41 @@ class GenerateProjectCommand extends GeneratorCommand
         $errors = array();
         $runner = $dialog->getRunner( $output, $errors );
 
-        // Install Netgen More legacy symlinks
+        // Register the bundle in the EzPublishKernel class
         $runner(
-            $this->installLegacySymlinks(
+            $this->updateKernel(
+                $dialog,
+                $input,
+                $output,
+                $this->getContainer()->get( 'kernel' ),
+                $input->getOption( 'bundle-namespace' ),
+                $input->getOption( 'bundle-name' )
+            )
+        );
+
+        // Install Symfony assets as relative symlinks
+        $runner(
+            $this->installAssets(
                 $dialog,
                 $input,
                 $output
             )
         );
 
-        // Generate eZ 5 configuration
+        // Set up routing
         $runner(
-            $this->generateYamlConfiguration(
+            $this->updateRouting(
+                $dialog,
+                $input,
+                $output,
+                $input->getOption( 'bundle-name' ),
+                'yml'
+            )
+        );
+
+        // Install Netgen More legacy symlinks
+        $runner(
+            $this->installLegacySymlinks(
                 $dialog,
                 $input,
                 $output
@@ -411,36 +434,12 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        // Register the bundle in the EzPublishKernel class
+        // Generate eZ 5 configuration
         $runner(
-            $this->updateKernel(
+            $this->generateYamlConfiguration(
                 $dialog,
                 $input,
-                $output,
-                $this->getContainer()->get( 'kernel' ),
-                $input->getOption( 'bundle-namespace' ),
-                $input->getOption( 'bundle-name' )
-            )
-        );
-
-        // Set up routing
-        $runner(
-            $this->updateRouting(
-                $dialog,
-                $input,
-                $output,
-                $input->getOption( 'bundle-name' ),
-                'yml'
-            )
-        );
-
-        // Install Symfony assets as relative symlinks
-        $runner(
-            $this->installAssets(
-                $dialog,
-                $input,
-                $output,
-                empty( $errors )
+                $output
             )
         );
 
@@ -504,6 +503,67 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
+     * Generates legacy autoloads
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Generating legacy autoloads... ' );
+
+        $currentWorkingDirectory = getcwd();
+
+        try
+        {
+            chdir( $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) );
+
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'bin/php/ezpgenerateautoloads.php',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                chdir( $currentWorkingDirectory );
+
+                return array(
+                    '- Run the following command from your ezpublish_legacy root to generate legacy autoloads:',
+                    '',
+                    '    <comment>php bin/php/ezpgenerateautoloads.php</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            chdir( $currentWorkingDirectory );
+
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
      * Generates eZ 5 configuration
      *
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
@@ -532,61 +592,6 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Generates legacy autoloads
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return array
-     */
-    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
-    {
-        $output->writeln( '' );
-        $output->write( 'Generating legacy autoloads... ' );
-
-        try
-        {
-            $processBuilder = new ProcessBuilder(
-                array(
-                    'php',
-                    'ezpublish/console',
-                    'ezpublish:legacy:script',
-                    'bin/php/ezpgenerateautoloads.php',
-                    '--quiet'
-                )
-            );
-
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout( 3600 );
-            $process->run(
-                function ( $type, $buffer )
-                {
-                    echo $buffer;
-                }
-            );
-
-            if ( !$process->isSuccessful() )
-            {
-                return array(
-                    '- Run the following command from your installation root to generate legacy autoloads:',
-                    '',
-                    '    <comment>php ezpublish/console ezpublish:legacy:script bin/php/ezpgenerateautoloads.php</comment>',
-                    '',
-                );
-            }
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                'There was an error running the command: ' . $e->getMessage(),
-                '',
-            );
-        }
-    }
-
-    /**
      * Adds the bundle to the kernel file
      *
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
@@ -601,13 +606,12 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateKernel( DialogHelper $dialog, InputInterface $input, OutputInterface $output, KernelInterface $kernel, $namespace, $bundle )
     {
         $output->writeln( '' );
-        $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic update of your Kernel', 'no', '?' ), false );
-
         $output->write( 'Enabling the bundle inside the kernel: ' );
+
         $manipulator = new KernelManipulator( $kernel );
         try
         {
-            $updated = $autoUpdate ? $manipulator->addBundle( $namespace.'\\' . $bundle ) : false;
+            $updated = $manipulator->addBundle( $namespace.'\\' . $bundle );
 
             if ( !$updated )
             {
@@ -646,13 +650,12 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateRouting( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format )
     {
         $output->writeln( '' );
-        $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic update of the Routing', 'no', '?' ), false );
-
         $output->write( 'Importing the bundle routing resource: ' );
+
         $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
         try
         {
-            $updated = $autoUpdate ? $routing->addResource( $bundle, $format ) : false;
+            $updated = $routing->addResource( $bundle, $format );
             if ( !$updated )
             {
                 if ( $format === 'annotation' )
@@ -688,29 +691,16 @@ class GenerateProjectCommand extends GeneratorCommand
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param bool $kernelUpdated
      *
      * @return array
      */
-    protected function installAssets( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $kernelUpdated )
+    protected function installAssets( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
     {
         $output->writeln( '' );
         $output->write( 'Installing assets using the <comment>symlink</comment> option... ' );
 
         try
         {
-            $returnMessage = array(
-                '- Run the following command from your installation root to install assets:',
-                '',
-                '    <comment>php ezpublish/console assets:install --symlink --relative</comment>',
-                '',
-            );
-
-            if ( !$kernelUpdated )
-            {
-                return $returnMessage;
-            }
-
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
@@ -734,7 +724,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if ( !$process->isSuccessful() )
             {
-                return $returnMessage;
+                return array(
+                    '- Run the following command from your installation root to install assets:',
+                    '',
+                    '    <comment>php ezpublish/console assets:install --symlink --relative</comment>',
+                    '',
+                );
             }
         }
         catch ( RuntimeException $e )
