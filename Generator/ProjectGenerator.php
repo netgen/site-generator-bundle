@@ -37,7 +37,6 @@ class ProjectGenerator extends Generator
     {
         $fileSystem = $this->container->get( 'filesystem' );
         $availableEnvironments = array( 'dev', 'prod' );
-        $initialEnvironment = 'dev';
 
         // Cloning the bundle
 
