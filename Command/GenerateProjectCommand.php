@@ -34,6 +34,11 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
                 new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
                 new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
+                new InputOption( 'database-host', '', InputOption::VALUE_REQUIRED, 'Database host' ),
+                new InputOption( 'database-port', '', InputOption::VALUE_OPTIONAL, 'Database port' ),
+                new InputOption( 'database-user', '', InputOption::VALUE_REQUIRED, 'Database user' ),
+                new InputOption( 'database-password', '', InputOption::VALUE_OPTIONAL, 'Database password' ),
+                new InputOption( 'database-name', '', InputOption::VALUE_REQUIRED, 'Database name' ),
                 new InputOption( 'bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace' ),
                 new InputOption( 'bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name' ),
                 new InputOption( 'extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name' ),
@@ -233,6 +238,60 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         $input->setOption( 'site-access-list', $siteAccessList );
+
+        $output->writeln(
+            array(
+                '',
+                'Input the database connection details.',
+                ''
+            )
+        );
+
+        $databaseHost = $dialog->askAndValidate(
+            $output,
+            $dialog->getQuestion( 'Database host', $input->getOption( 'database-host' ) ),
+            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            false,
+            $input->getOption( 'database-host' )
+        );
+
+        $input->setOption( 'database-host', $databaseHost );
+
+        $databasePort = $dialog->ask(
+            $output,
+            $dialog->getQuestion( 'Database port', $input->getOption( 'database-port' ) ),
+            $input->getOption( 'database-port' )
+        );
+
+        $input->setOption( 'database-port', $databasePort );
+
+        $databaseUser = $dialog->askAndValidate(
+            $output,
+            $dialog->getQuestion( 'Database user', $input->getOption( 'database-user' ) ),
+            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            false,
+            $input->getOption( 'database-user' )
+        );
+
+        $input->setOption( 'database-user', $databaseUser );
+
+        $databasePassword = $dialog->askHiddenResponse(
+            $output,
+            $dialog->getQuestion( 'Database password', $input->getOption( 'database-password' ) ),
+            $input->getOption( 'database-password' )
+        );
+
+        $input->setOption( 'database-password', $databasePassword );
+
+        $databaseName = $dialog->askAndValidate(
+            $output,
+            $dialog->getQuestion( 'Database name', $input->getOption( 'database-name' ) ),
+            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            false,
+            $input->getOption( 'database-name' )
+        );
+
+        $input->setOption( 'database-name', $databaseName );
 
         $extensionName = "ez_" . $clientNormalized . "_" . $projectNormalized;
         $extensionName = $dialog->askAndValidate(

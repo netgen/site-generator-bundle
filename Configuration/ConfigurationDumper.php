@@ -92,6 +92,10 @@ class ConfigurationDumper implements ConfigDumperInterface
             $this->backupConfigFile( $mainConfigFile );
         }
 
+        // We will transfer doctrine settings to environment specific files
+        $doctrineSettings = $configArray['doctrine'];
+        unset( $configArray['doctrine'] );
+
         // We will transfer siteaccess match settings to environment specific files
         $siteAccessMatchSettings = $configArray['ezpublish']['siteaccess']['match'];
         unset( $configArray['ezpublish']['siteaccess']['match'] );
