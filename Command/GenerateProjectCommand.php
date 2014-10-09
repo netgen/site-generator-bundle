@@ -423,16 +423,6 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        // Install Symfony assets as relative symlinks
-        $runner(
-            $this->installAssets(
-                $dialog,
-                $input,
-                $output,
-                empty( $errors )
-            )
-        );
-
         // Set up routing
         $runner(
             $this->updateRouting(
@@ -441,6 +431,16 @@ class GenerateProjectCommand extends GeneratorCommand
                 $output,
                 $input->getOption( 'bundle-name' ),
                 'yml'
+            )
+        );
+
+        // Install Symfony assets as relative symlinks
+        $runner(
+            $this->installAssets(
+                $dialog,
+                $input,
+                $output,
+                empty( $errors )
             )
         );
 
@@ -633,6 +633,56 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
+     * Updates the routing file
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $bundle
+     * @param string $format
+     *
+     * @return array
+     */
+    protected function updateRouting( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format )
+    {
+        $output->writeln( '' );
+        $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic update of the Routing', 'no', '?' ), false );
+
+        $output->write( 'Importing the bundle routing resource: ' );
+        $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
+        try
+        {
+            $updated = $autoUpdate ? $routing->addResource( $bundle, $format ) : false;
+            if ( !$updated )
+            {
+                if ( $format === 'annotation' )
+                {
+                    $help = sprintf( "        <comment>resource: \"@%s/Controller/\"</comment>\n        <comment>type: annotation</comment>\n", $bundle );
+                }
+                else
+                {
+                    $help = sprintf( "        <comment>resource: \"@%s/Resources/config/routing.%s\"</comment>\n", $bundle, $format );
+                }
+
+                return array(
+                    '- Import the bundle\'s routing resource in the main routing file:',
+                    '',
+                    sprintf( '    <comment>%s:</comment>', Container::underscore( substr( $bundle, 0, -6 ) ) ),
+                    $help,
+                    ''
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
+                '',
+            );
+        }
+    }
+
+    /**
      * Installs Symfony assets as relative symlinks
      *
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
@@ -691,56 +741,6 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             return array(
                 'There was an error running the command: ' . $e->getMessage(),
-                '',
-            );
-        }
-    }
-
-    /**
-     * Updates the routing file
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     * @param string $bundle
-     * @param string $format
-     *
-     * @return array
-     */
-    protected function updateRouting( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format )
-    {
-        $output->writeln( '' );
-        $autoUpdate = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Confirm automatic update of the Routing', 'no', '?' ), false );
-
-        $output->write( 'Importing the bundle routing resource: ' );
-        $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
-        try
-        {
-            $updated = $autoUpdate ? $routing->addResource( $bundle, $format ) : false;
-            if ( !$updated )
-            {
-                if ( $format === 'annotation' )
-                {
-                    $help = sprintf( "        <comment>resource: \"@%s/Controller/\"</comment>\n        <comment>type: annotation</comment>\n", $bundle );
-                }
-                else
-                {
-                    $help = sprintf( "        <comment>resource: \"@%s/Resources/config/routing.%s\"</comment>\n", $bundle, $format );
-                }
-
-                return array(
-                    '- Import the bundle\'s routing resource in the main routing file:',
-                    '',
-                    sprintf( '    <comment>%s:</comment>', Container::underscore( substr( $bundle, 0, -6 ) ) ),
-                    $help,
-                    ''
-                );
-            }
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
                 '',
             );
         }
