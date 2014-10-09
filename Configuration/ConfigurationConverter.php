@@ -56,16 +56,24 @@ class ConfigurationConverter
         if ( !in_array( $adminSiteAccess, $siteList ) )
             throw new InvalidArgumentException( "adminSiteAccess", "Siteaccess $adminSiteAccess wasn't found in SiteAccessSettings.AvailableSiteAccessList" );
 
+        $siteListWithoutAdmin = array_values( array_diff( $siteList, array( $adminSiteAccess ) ) );
+
         $settings['ezpublish']['siteaccess']['list'] = $siteList;
         $settings['ezpublish']['siteaccess']['groups'] = array();
         $groupName = $projectName . '_group';
+        $frontendGroupName = $projectName . '_frontend_group';
         $settings['ezpublish']['siteaccess']['groups'][$groupName] = $siteList;
+        $settings['ezpublish']['siteaccess']['groups'][$frontendGroupName] = $siteListWithoutAdmin;
         $settings['ezpublish']['siteaccess']['match'] = $this->resolveMatching();
+
         $settings['ezpublish']['system'] = array();
         $settings['ezpublish']['system'][$groupName] = array();
+        $settings['ezpublish']['system'][$frontendGroupName] = array();
 
-        $settings['ezpublish']['system'][$defaultSiteAccess] = array();
-        $settings['ezpublish']['system'][$adminSiteAccess] = array();
+        foreach ( $siteList as $siteAccess )
+        {
+            $settings['ezpublish']['system'][$siteAccess] = array();
+        }
 
         // Database settings
         $databaseSettings = $this->getGroup( 'DatabaseSettings', 'site.ini', $defaultSiteAccess );
@@ -96,7 +104,7 @@ class ConfigurationConverter
             $this->getParameter( 'FileSettings', 'VarDir', 'site.ini', $defaultSiteAccess );
 
         // Translation siteaccesses
-        $settings['ezpublish']['system'][$groupName]['translation_siteaccesses'] = array_diff( $siteList, array( $adminSiteAccess ) );
+        $settings['ezpublish']['system'][$frontendGroupName]['translation_siteaccesses'] = $siteListWithoutAdmin;
 
         // we don't map the default FileSettings.StorageDir value
         $storageDir = $this->getParameter( 'FileSettings', 'StorageDir', 'site.ini', $defaultSiteAccess );
@@ -118,7 +126,8 @@ class ConfigurationConverter
             $settings['ezpublish']['imagemagick']['enabled'] = false;
         }
 
-        $variations = $this->getImageVariations( $siteList, $groupName );
+        $variations = $this->getImageVariations( $siteListWithoutAdmin, $frontendGroupName );
+        $variations += $this->getImageVariations( array( $adminSiteAccess ) );
 
         foreach ( $variations as $siteaccess => $imgSettings )
         {
@@ -279,7 +288,7 @@ class ConfigurationConverter
      *
      * @return array
      */
-    protected function getImageVariations( array $siteList, $groupName )
+    protected function getImageVariations( array $siteList, $groupName = null )
     {
         $result = array();
         $allSame = true;
@@ -293,7 +302,7 @@ class ConfigurationConverter
             }
             $previousSA = $siteaccess;
         }
-        if ( $allSame )
+        if ( $allSame && $groupName !== null )
         {
             return array( $groupName => $result[$previousSA] );
         }
