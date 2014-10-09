@@ -364,6 +364,7 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        // Generate legacy autoloads
         $runner(
             $this->generateLegacyAutoloads(
                 $dialog,
