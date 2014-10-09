@@ -370,18 +370,18 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        // Generate legacy autoloads
+        // Generate eZ 5 configuration
         $runner(
-            $this->generateLegacyAutoloads(
+            $this->generateYamlConfiguration(
                 $dialog,
                 $input,
                 $output
             )
         );
 
-        // Generate eZ 5 configuration
+        // Generate legacy autoloads
         $runner(
-            $this->generateYamlConfiguration(
+            $this->generateLegacyAutoloads(
                 $dialog,
                 $input,
                 $output
@@ -424,6 +424,143 @@ class GenerateProjectCommand extends GeneratorCommand
         $dialog->writeGeneratorSummary( $output, $errors );
 
         return 0;
+    }
+
+    /**
+     * Installs Netgen More legacy symlinks
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function installLegacySymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Installing ngmore legacy symlinks... ' );
+
+        try
+        {
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'ngmore:legacy:symlink',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to install ngmore legacy symlinks:',
+                    '',
+                    '    <comment>php ezpublish/console ngmore:legacy:symlink</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Generates eZ 5 configuration
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function generateYamlConfiguration( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Generating Yaml configuration from legacy... ' );
+
+        try
+        {
+            $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
+            $configurationGenerator->generate( $input, $output );
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Generates legacy autoloads
+     *
+     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $output->writeln( '' );
+        $output->write( 'Generating legacy autoloads... ' );
+
+        try
+        {
+            $processBuilder = new ProcessBuilder(
+                array(
+                    'php',
+                    'ezpublish/console',
+                    'ezpublish:legacy:script',
+                    'bin/php/ezpgenerateautoloads.php',
+                    '--quiet'
+                )
+            );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to generate legacy autoloads:',
+                    '',
+                    '    <comment>php ezpublish/console ezpublish:legacy:script bin/php/ezpgenerateautoloads.php</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
     }
 
     /**
@@ -537,60 +674,6 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Installs Netgen More legacy symlinks
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return array
-     */
-    protected function installLegacySymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
-    {
-        $output->writeln( '' );
-        $output->write( 'Installing ngmore legacy symlinks... ' );
-
-        try
-        {
-            $processBuilder = new ProcessBuilder(
-                array(
-                    'php',
-                    'ezpublish/console',
-                    'ngmore:legacy:symlink',
-                    '--quiet'
-                )
-            );
-
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout( 3600 );
-            $process->run(
-                function ( $type, $buffer )
-                {
-                    echo $buffer;
-                }
-            );
-
-            if ( !$process->isSuccessful() )
-            {
-                return array(
-                    '- Run the following command from your installation root to install ngmore legacy symlinks:',
-                    '',
-                    '    <comment>php ezpublish/console ngmore:legacy:symlink</comment>',
-                    '',
-                );
-            }
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                'There was an error running the command: ' . $e->getMessage(),
-                '',
-            );
-        }
-    }
-
-    /**
      * Updates the routing file
      *
      * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
@@ -635,89 +718,6 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             return array(
                 sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
-                '',
-            );
-        }
-    }
-
-    /**
-     * Generates legacy autoloads
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return array
-     */
-    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
-    {
-        $output->writeln( '' );
-        $output->write( 'Generating legacy autoloads... ' );
-
-        try
-        {
-            $processBuilder = new ProcessBuilder(
-                array(
-                    'php',
-                    'ezpublish/console',
-                    'ezpublish:legacy:script',
-                    'bin/php/ezpgenerateautoloads.php',
-                    '--quiet'
-                )
-            );
-
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout( 3600 );
-            $process->run(
-                function ( $type, $buffer )
-                {
-                    echo $buffer;
-                }
-            );
-
-            if ( !$process->isSuccessful() )
-            {
-                return array(
-                    '- Run the following command from your installation root to generate legacy autoloads:',
-                    '',
-                    '    <comment>php ezpublish/console ezpublish:legacy:script bin/php/ezpgenerateautoloads.php</comment>',
-                    '',
-                );
-            }
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                'There was an error running the command: ' . $e->getMessage(),
-                '',
-            );
-        }
-    }
-
-    /**
-     * Generates eZ 5 configuration
-     *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return array
-     */
-    protected function generateYamlConfiguration( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
-    {
-        $output->writeln( '' );
-        $output->write( 'Generating Yaml configuration from legacy... ' );
-
-        try
-        {
-            $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
-            $configurationGenerator->generate( $input, $output );
-        }
-        catch ( RuntimeException $e )
-        {
-            return array(
-                'There was an error running the command: ' . $e->getMessage(),
                 '',
             );
         }
