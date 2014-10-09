@@ -468,7 +468,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 array(
                     'php',
                     'ezpublish/console',
-                    'ngmore:legacy:symlink',
+                    'ngmore:symlink:legacy',
                     '--quiet'
                 )
             );
@@ -488,7 +488,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Run the following command from your installation root to install ngmore legacy symlinks:',
                     '',
-                    '    <comment>php ezpublish/console ngmore:legacy:symlink</comment>',
+                    '    <comment>php ezpublish/console ngmore:symlink:legacy</comment>',
                     '',
                 );
             }
