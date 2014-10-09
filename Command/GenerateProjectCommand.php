@@ -348,9 +348,8 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $dialog->writeSection( $output, 'Project generation' );
 
-        /** @var \Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator $generator */
-        $generator = $this->getGenerator();
-        $generator->generate( $input, $output );
+        $projectGenerator = new ProjectGenerator( $this->getContainer() );
+        $projectGenerator->generate( $input, $output );
 
         $errors = array();
         $runner = $dialog->getRunner( $output, $errors );
@@ -678,15 +677,5 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             );
         }
-    }
-
-    /**
-     * Creates the generator
-     *
-     * @return \Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator
-     */
-    protected function createGenerator()
-    {
-        return new ProjectGenerator( $this->getContainer() );
     }
 }
