@@ -42,7 +42,6 @@ class ConfigurationConverter
 
         $settings['imports'] = array(
             array( 'resource' => 'ngmore.yml' ),
-            array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' ),
             array( 'resource' => '@' . $bundleName . '/Resources/config/ezpublish.yml' )
         );
 
