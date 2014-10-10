@@ -20,7 +20,6 @@ class ProjectGenerator extends Generator
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $fileSystem = $this->container->get( 'filesystem' );
-        $availableEnvironments = array( 'dev', 'prod' );
 
         // Cloning the bundle
 
