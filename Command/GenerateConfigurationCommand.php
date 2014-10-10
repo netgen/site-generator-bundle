@@ -18,7 +18,8 @@ class GenerateConfigurationCommand extends GeneratorCommand
         $this->setDefinition(
             array(
                 new InputOption( 'project', '', InputOption::VALUE_REQUIRED, 'Project name' ),
-                new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' )
+                new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
+                new InputOption( 'bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name' )
             )
         );
         $this->setDescription( 'Generates Netgen More project configuration' );
@@ -45,6 +46,12 @@ class GenerateConfigurationCommand extends GeneratorCommand
         if ( empty( $adminSiteAccessName ) )
         {
             throw new InvalidArgumentException( 'The "--admin-site-access-name" option must be defined' );
+        }
+
+        $bundleName = $input->getOption( 'bundle-name' );
+        if ( empty( $bundleName ) )
+        {
+            throw new InvalidArgumentException( 'The "--bundle-name" option must be defined' );
         }
 
         $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );

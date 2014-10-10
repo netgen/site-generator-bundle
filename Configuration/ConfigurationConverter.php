@@ -39,6 +39,10 @@ class ConfigurationConverter
     {
         $settings = array();
 
+        $settings['imports'] = array(
+            array( 'resource' => 'ngmore.yml' )
+        );
+
         $settings['ezpublish'] = array();
         $settings['ezpublish']['siteaccess'] = array();
         $defaultSiteAccess = $this->getParameter( 'SiteSettings', 'DefaultAccess' );

@@ -30,6 +30,8 @@ class ConfigurationGenerator extends Generator
             $this->container->getParameter( 'netgen_more.generator.available_environments' ),
             $this->container->getParameter( 'kernel.root_dir' ),
             $this->container->getParameter( 'kernel.cache_dir' ),
+            strtolower( $input->getOption( 'project' ) ),
+            $input->getOption( 'bundle-name' ),
             $this->container->get( 'ezpublish_legacy.webconfigurator' )
         );
 
