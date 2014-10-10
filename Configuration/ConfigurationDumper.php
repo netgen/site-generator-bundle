@@ -109,6 +109,8 @@ class ConfigurationDumper implements ConfigDumperInterface
             file_put_contents( $configFile, Yaml::dump( $envConfigArray, 14 ) );
         }
 
+        file_put_contents( $netgenMoreConfigFile, Yaml::dump( $netgenMoreConfigArray, 7 ) );
+
         // Handling %secret%
         $this->sensioConfigurator->mergeParameters(
             array(
