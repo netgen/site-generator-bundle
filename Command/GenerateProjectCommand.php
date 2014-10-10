@@ -603,10 +603,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 }
             );
 
+            chdir( $currentWorkingDirectory );
+
             if ( !$process->isSuccessful() )
             {
-                chdir( $currentWorkingDirectory );
-
                 return array(
                     '- Run the following command from your ezpublish_legacy root to generate legacy autoloads:',
                     '',
