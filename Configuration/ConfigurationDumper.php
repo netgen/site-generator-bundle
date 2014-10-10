@@ -34,34 +34,18 @@ class ConfigurationDumper implements ConfigDumperInterface
     protected $cacheDir;
 
     /**
-     * Name of the project
-     *
-     * @var string
-     */
-    protected $projectName;
-
-    /**
-     * Name of the bundle
-     *
-     * @var string
-     */
-    protected $bundleName;
-
-    /**
      * Set of environments to pre-generate config file for. Key is the environment name.
      *
      * @var array
      */
     protected $environments;
 
-    public function __construct( Filesystem $fileSystem, array $environments, $rootDir, $cacheDir, $projectName, $bundleName, Configurator $sensioConfigurator )
+    public function __construct( Filesystem $fileSystem, array $environments, $rootDir, $cacheDir, Configurator $sensioConfigurator )
     {
         $this->fileSystem = $fileSystem;
         $this->rootDir = $rootDir;
         $this->cacheDir = $cacheDir;
         $this->environments = array_fill_keys( $environments, true );
-        $this->projectName = $projectName;
-        $this->bundleName = $bundleName;
         $this->sensioConfigurator = $sensioConfigurator;
     }
 
@@ -123,27 +107,6 @@ class ConfigurationDumper implements ConfigDumperInterface
             }
 
             file_put_contents( $configFile, Yaml::dump( $envConfigArray, 14 ) );
-        }
-
-        // Now generate netgen more config file
-
-        $netgenMoreConfigArray = array();
-
-        $netgenMoreConfigArray['ezpublish']['system'][$this->projectName . '_frontend_group']['user'] = array(
-            'layout' => $this->bundleName . '::pagelayout.html.twig'
-        );
-
-        $netgenMoreConfigArray['ez_publish_legacy']['system'][$this->projectName . '_frontend_group']['templating'] = array(
-            'view_layout' => $this->bundleName . '::pagelayout_legacy.html.twig',
-            'module_layout' => $this->bundleName . '::pagelayout_module.html.twig'
-        );
-
-        $netgenMoreConfigFile = "$configPath/ngmore.yml";
-
-        // File already exists, handle possible options
-        if ( $this->fileSystem->exists( $netgenMoreConfigFile ) && $options & static::OPT_BACKUP_CONFIG )
-        {
-            $this->backupConfigFile( $netgenMoreConfigFile );
         }
 
         file_put_contents( $netgenMoreConfigFile, Yaml::dump( $netgenMoreConfigArray, 7 ) );

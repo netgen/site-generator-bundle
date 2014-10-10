@@ -644,7 +644,6 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             $project = $input->getOption( 'project' );
             $adminSiteAccess = $input->getOption( 'admin-site-access-name' );
-            $bundleName = $input->getOption( 'bundle-name' );
 
             $processBuilder = new ProcessBuilder(
                 array(
@@ -653,7 +652,6 @@ class GenerateProjectCommand extends GeneratorCommand
                     'ngmore:generate:configuration',
                     '--project=' . $project,
                     '--admin-site-access-name=' . $adminSiteAccess,
-                    '--bundle-name=' . $bundleName,
                     '--quiet'
                 )
             );
@@ -673,7 +671,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Run the following command from your installation root to generate Yaml configuration from legacy:',
                     '',
-                    '    <comment>php ezpublish/console ngmore:generate:configuration --project=' . $project . ' --admin-site-access-name=' . $adminSiteAccess . ' --bundle-name=' . $bundleName . '</comment>',
+                    '    <comment>php ezpublish/console ngmore:generate:configuration --project=' . $project . ' --admin-site-access-name=' . $adminSiteAccess . '</comment>',
                     '',
                 );
             }
