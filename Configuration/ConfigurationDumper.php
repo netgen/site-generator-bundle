@@ -34,11 +34,11 @@ class ConfigurationDumper implements ConfigDumperInterface
     protected $cacheDir;
 
     /**
-     * Name of the admin siteaccess
+     * Name of the project
      *
      * @var string
      */
-    protected $adminSiteAccess;
+    protected $projectName;
 
     /**
      * Name of the bundle
@@ -54,13 +54,13 @@ class ConfigurationDumper implements ConfigDumperInterface
      */
     protected $environments;
 
-    public function __construct( Filesystem $fileSystem, array $environments, $rootDir, $cacheDir, $adminSiteAccess, $bundleName, Configurator $sensioConfigurator )
+    public function __construct( Filesystem $fileSystem, array $environments, $rootDir, $cacheDir, $projectName, $bundleName, Configurator $sensioConfigurator )
     {
         $this->fileSystem = $fileSystem;
         $this->rootDir = $rootDir;
         $this->cacheDir = $cacheDir;
         $this->environments = array_fill_keys( $environments, true );
-        $this->adminSiteAccess = $adminSiteAccess;
+        $this->projectName = $projectName;
         $this->bundleName = $bundleName;
         $this->sensioConfigurator = $sensioConfigurator;
     }
@@ -105,11 +105,11 @@ class ConfigurationDumper implements ConfigDumperInterface
         // Now generates environment config files
         foreach ( array_keys( $this->environments ) as $environment )
         {
-            $configFile = "$configPath/ezpublish_{$environment}.yml";
+            $configFile = "$configPath/{$environment}/ezpublish.yml";
             // Add the import statement for the root YAML file
             $envConfigArray = array(
                 'imports' => array(
-                    array( 'resource' => 'ezpublish.yml' )
+                    array( 'resource' => '../ezpublish.yml' )
                 )
             );
 
@@ -128,20 +128,15 @@ class ConfigurationDumper implements ConfigDumperInterface
         // Now generate netgen more config file
 
         $netgenMoreConfigArray = array();
-        $netgenMoreConfigArray['ez_publish_legacy'] = array();
-        $netgenMoreConfigArray['ez_publish_legacy']['system'] = array();
 
-        foreach ( $configArray['ezpublish']['siteaccess']['list'] as $siteAccess )
-        {
-            if ( $siteAccess !== $this->adminSiteAccess )
-            {
-                $netgenMoreConfigArray['ez_publish_legacy']['system'][$siteAccess] = array();
-                $netgenMoreConfigArray['ez_publish_legacy']['system'][$siteAccess]['templating'] = array(
-                    'view_layout' => $this->bundleName . '::pagelayout_legacy.html.twig',
-                    'module_layout' => $this->bundleName . '::pagelayout_module.html.twig'
-                );
-            }
-        }
+        $netgenMoreConfigArray['ezpublish']['system'][$this->projectName . '_frontend_group']['user'] = array(
+            'layout' => $this->bundleName . '::pagelayout.html.twig'
+        );
+
+        $netgenMoreConfigArray['ez_publish_legacy']['system'][$this->projectName . '_frontend_group']['templating'] = array(
+            'view_layout' => $this->bundleName . '::pagelayout_legacy.html.twig',
+            'module_layout' => $this->bundleName . '::pagelayout_module.html.twig'
+        );
 
         $netgenMoreConfigFile = "$configPath/ngmore.yml";
 
