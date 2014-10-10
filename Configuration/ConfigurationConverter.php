@@ -30,17 +30,19 @@ class ConfigurationConverter
      * Converts from legacy settings to an array dumpable to ezpublish.yml
      * @param string $projectName Name of the project
      * @param string $adminSiteAccess Name of the admin siteaccess
+     * @param string $bundleName Name of the bundle
      *
      * @throws \eZ\Publish\Core\Base\Exceptions\InvalidArgumentException
      *
      * @return array
      */
-    public function fromLegacy( $projectName, $adminSiteAccess )
+    public function fromLegacy( $projectName, $adminSiteAccess, $bundleName )
     {
         $settings = array();
 
         $settings['imports'] = array(
-            array( 'resource' => 'ngmore.yml' )
+            array( 'resource' => 'ngmore.yml' ),
+            array( 'resource' => '@' . $bundleName . '/Resources/config/ezpublish.yml' )
         );
 
         $settings['ezpublish'] = array();
