@@ -3,7 +3,6 @@
 namespace Netgen\Bundle\GeneratorBundle\Generator;
 
 use eZ\Publish\Core\MVC\Symfony\ConfigDumperInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\GeneratorBundle\Configuration\ConfigurationConverter;
@@ -11,21 +10,6 @@ use Netgen\Bundle\GeneratorBundle\Configuration\ConfigurationDumper;
 
 class ConfigurationGenerator extends Generator
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    /**
-     * Constructor
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-     */
-    public function __construct( ContainerInterface $container )
-    {
-        $this->container = $container;
-    }
-
     /**
      * Generates Symfony configuration from eZ 5 config
      *

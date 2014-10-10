@@ -2,15 +2,31 @@
 
 namespace Netgen\Bundle\GeneratorBundle\Generator;
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig_Loader_Filesystem;
 use Twig_Environment;
 
-class Generator
+abstract class Generator
 {
     /**
      * @var array
      */
-    private $skeletonDirs;
+    protected $skeletonDirs;
+
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * Constructor
+     *
+     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
+     */
+    public function __construct( ContainerInterface $container )
+    {
+        $this->container = $container;
+    }
 
     /**
      * Sets an array of directories to look for templates

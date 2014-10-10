@@ -2,28 +2,12 @@
 
 namespace Netgen\Bundle\GeneratorBundle\Generator;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use RuntimeException;
 
 class SiteAccessGenerator extends Generator
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    private $container;
-
-    /**
-     * Constructor
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-     */
-    public function __construct( ContainerInterface $container )
-    {
-        $this->container = $container;
-    }
-
     /**
      * Generates the siteaccesses
      *
