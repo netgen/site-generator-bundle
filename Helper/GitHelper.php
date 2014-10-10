@@ -11,13 +11,12 @@ class GitHelper
     /**
      * Clones the git repo
      *
-     * @param \Symfony\Component\Filesystem\Filesystem $fileSystem
      * @param string $repoUrl
      * @param string $location
      */
-    public static function cloneRepo( Filesystem $fileSystem, $repoUrl, $location )
+    public static function cloneRepo( $repoUrl, $location )
     {
-        if ( $fileSystem->exists( $location ) )
+        if ( file_exists( $location ) )
         {
             throw new RuntimeException( 'The folder "' . $location . '" already exists. Aborting...' );
         }

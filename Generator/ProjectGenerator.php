@@ -32,7 +32,6 @@ class ProjectGenerator extends Generator
         $output->writeln( 'Cloning the demo bundle into <comment>' . $finalBundleLocation . '</comment>' );
 
         GitHelper::cloneRepo(
-            $fileSystem,
             $this->container->getParameter( 'netgen_more.generator.demo_bundle_url' ),
             $finalBundleLocation
         );
@@ -133,7 +132,6 @@ class ProjectGenerator extends Generator
         );
 
         GitHelper::cloneRepo(
-            $fileSystem,
             $this->container->getParameter( 'netgen_more.generator.demo_extension_url' ),
             $finalExtensionLocation
         );
