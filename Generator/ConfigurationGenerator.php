@@ -18,8 +18,6 @@ class ConfigurationGenerator extends Generator
      */
     public function generate( InputInterface $input, OutputInterface $output )
     {
-        $availableEnvironments = array( 'dev', 'prod' );
-
         $this->container->get( 'ezpublish_legacy.kernel.lazy_loader' )->setBuildEventsEnabled( false );
 
         $configurationConverter = new ConfigurationConverter(
@@ -29,7 +27,7 @@ class ConfigurationGenerator extends Generator
 
         $configurationDumper = new ConfigurationDumper(
             $this->container->get( 'filesystem' ),
-            $availableEnvironments,
+            $this->container->getParameter( 'netgen_more.generator.available_environments' ),
             $this->container->getParameter( 'kernel.root_dir' ),
             $this->container->getParameter( 'kernel.cache_dir' ),
             strtolower( $input->getOption( 'project' ) ),

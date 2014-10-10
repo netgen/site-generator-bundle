@@ -17,7 +17,7 @@ class SiteAccessGenerator extends Generator
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $fileSystem = $this->container->get( 'filesystem' );
-        $availableEnvironments = array( 'dev', 'prod' );
+        $availableEnvironments = $this->container->getParameter( 'netgen_more.generator.available_environments' );
         $adminSiteAccessName = $input->getOption( 'admin-site-access-name' );
 
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';

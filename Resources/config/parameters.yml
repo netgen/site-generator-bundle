@@ -1,3 +1,4 @@
 parameters:
     netgen_more.generator.demo_bundle_url: git@bitbucket.org:netgen/NetgenMoreDemoBundle.git
     netgen_more.generator.demo_extension_url: git@bitbucket.org:netgen/ez_netgen_ngmore_demo.git
+    netgen_more.generator.available_environments: [ dev, prod ]
