@@ -118,6 +118,24 @@ class ProjectGenerator extends Generator
             '/' . $bundleAssetsPathPart . '/'
         );
 
+        // Renaming the frontend group name
+
+        $project = strtolower( $input->getOption( 'project' ) );
+        $frontendGroupName = $project . '_frontend_group';
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>ngmore_frontend_group</comment> name <comment>' . $frontendGroupName . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'ngmore_frontend_group',
+            $frontendGroupName
+        );
+
         // Cloning the legacy extension
 
         $extensionFolder = $finalBundleLocation . '/ezpublish_legacy';
