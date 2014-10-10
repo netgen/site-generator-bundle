@@ -38,8 +38,7 @@ class ConfigurationGenerator extends Generator
         $configurationDumper->dump(
             $configurationConverter->fromLegacy(
                 strtolower( $input->getOption( 'project' ) ),
-                $input->getOption( 'admin-site-access-name' ),
-                $input->getOption( 'bundle-name' )
+                $input->getOption( 'admin-site-access-name' )
             ),
             ConfigDumperInterface::OPT_DEFAULT
         );
