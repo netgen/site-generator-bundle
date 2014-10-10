@@ -48,7 +48,11 @@ class ProjectGenerator extends Generator
 
         $output->writeln( 'Cloning the demo bundle into <comment>' . $finalBundleLocation . '</comment>' );
 
-        GitHelper::cloneRepo( $fileSystem, 'git@bitbucket.org:netgen/NetgenMoreDemoBundle.git', $finalBundleLocation );
+        GitHelper::cloneRepo(
+            $fileSystem,
+            $this->container->getParameter( 'netgen_more.generator.demo_bundle_url' ),
+            $finalBundleLocation
+        );
         $fileSystem->remove( $finalBundleLocation . '/.git/' );
 
         // Renaming the bundle namespace
@@ -145,7 +149,11 @@ class ProjectGenerator extends Generator
             )
         );
 
-        GitHelper::cloneRepo( $fileSystem, 'git@bitbucket.org:netgen/ez_netgen_ngmore_demo.git', $finalExtensionLocation );
+        GitHelper::cloneRepo(
+            $fileSystem,
+            $this->container->getParameter( 'netgen_more.generator.demo_extension_url' ),
+            $finalExtensionLocation
+        );
         $fileSystem->remove( $finalExtensionLocation . '/.git/' );
 
         // Symlinking the legacy extension to eZ Publish legacy extension folder
