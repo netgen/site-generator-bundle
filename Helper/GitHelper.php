@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Helper;
+namespace Netgen\Bundle\MoreGeneratorBundle\Helper;
 
 use Symfony\Component\Process\ProcessBuilder;
 use Symfony\Component\Filesystem\Filesystem;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Manipulator;
+namespace Netgen\Bundle\MoreGeneratorBundle\Manipulator;
 
 class Manipulator
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Command;
+namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use InvalidArgumentException;
 

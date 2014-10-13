@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Command;
+namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -8,12 +8,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
-use Netgen\Bundle\GeneratorBundle\Generator\ProjectGenerator;
-use Netgen\Bundle\GeneratorBundle\Generator\SiteAccessGenerator;
-use Netgen\Bundle\GeneratorBundle\Generator\ConfigurationGenerator;
-use Netgen\Bundle\GeneratorBundle\Manipulator\KernelManipulator;
-use Netgen\Bundle\GeneratorBundle\Manipulator\RoutingManipulator;
-use Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Manipulator\KernelManipulator;
+use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
+use Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper;
 use InvalidArgumentException;
 use ReflectionObject;
 use RuntimeException;
@@ -76,7 +76,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $dialog->askAndValidate(
                 $output,
                 $dialog->getQuestion( 'Client name', $input->getOption( 'client' ) ),
-                array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
+                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
                 false,
                 $input->getOption( 'client' )
             )
@@ -89,7 +89,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $dialog->askAndValidate(
                 $output,
                 $dialog->getQuestion( 'Project name', $input->getOption( 'project' ) ),
-                array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
+                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
                 false,
                 $input->getOption( 'project' )
             )
@@ -110,7 +110,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $siteName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Site name', $input->getOption( 'site-name' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
             $input->getOption( 'site-name' )
         );
@@ -120,7 +120,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $siteDomain = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Site domain', $input->getOption( 'site-domain' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
             $input->getOption( 'site-domain' )
         );
@@ -130,7 +130,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $adminSiteAccess = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Admin siteaccess name', $input->getOption( 'admin-site-access-name' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateAdminSiteAccessName' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateAdminSiteAccessName' ),
             false,
             $input->getOption( 'admin-site-access-name' )
         );
@@ -200,7 +200,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 $siteAccess = $dialog->askAndValidate(
                     $output,
                     $dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
-                    array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
+                    array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
                     false
                 );
 
@@ -220,7 +220,7 @@ class GenerateProjectCommand extends GeneratorCommand
                         $language = $dialog->askAndValidate(
                             $output,
                             $dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
-                            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateLanguageCode' ),
+                            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLanguageCode' ),
                             false
                         );
 
@@ -250,7 +250,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $databaseHost = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Database host', $input->getOption( 'database-host' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
             $input->getOption( 'database-host' )
         );
@@ -268,7 +268,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $databaseUser = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Database user', $input->getOption( 'database-user' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
             $input->getOption( 'database-user' )
         );
@@ -286,7 +286,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $databaseName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Database name', $input->getOption( 'database-name' ) ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateNotEmpty' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
             $input->getOption( 'database-name' )
         );
@@ -297,7 +297,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $extensionName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Extension name', $extensionName ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
             false,
             $extensionName
         );
@@ -308,7 +308,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $designName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Design name', $designName ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
             false,
             $designName
         );
@@ -319,7 +319,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $bundleNamespace = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Bundle namespace', $bundleNamespace ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateBundleNamespace' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateBundleNamespace' ),
             false,
             $bundleNamespace
         );
@@ -330,7 +330,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $bundleName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Bundle name', $bundleName ),
-            array( 'Netgen\Bundle\GeneratorBundle\Command\Validators', 'validateBundleName' ),
+            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateBundleName' ),
             false,
             $bundleName
         );
@@ -460,7 +460,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Netgen More project symlinks
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
@@ -514,7 +514,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Netgen More legacy symlinks
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
@@ -568,7 +568,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Generates legacy autoloads
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
@@ -629,7 +629,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Generates eZ 5 configuration
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
@@ -690,7 +690,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Adds the bundle to the kernel file
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param \Symfony\Component\HttpKernel\KernelInterface $kernel
@@ -735,7 +735,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Updates the routing file
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param string $bundle
@@ -784,7 +784,7 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Symfony assets as relative symlinks
      *
-     * @param \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *

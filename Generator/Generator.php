@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Generator;
+namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig_Loader_Filesystem;

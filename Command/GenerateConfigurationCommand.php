@@ -1,11 +1,11 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Command;
+namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Netgen\Bundle\GeneratorBundle\Generator\ConfigurationGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
 use InvalidArgumentException;
 
 class GenerateConfigurationCommand extends GeneratorCommand

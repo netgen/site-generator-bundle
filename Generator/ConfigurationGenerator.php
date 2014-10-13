@@ -1,12 +1,12 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Generator;
+namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use eZ\Publish\Core\MVC\Symfony\ConfigDumperInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Netgen\Bundle\GeneratorBundle\Configuration\ConfigurationConverter;
-use Netgen\Bundle\GeneratorBundle\Configuration\ConfigurationDumper;
+use Netgen\Bundle\MoreGeneratorBundle\Configuration\ConfigurationConverter;
+use Netgen\Bundle\MoreGeneratorBundle\Configuration\ConfigurationDumper;
 
 class ConfigurationGenerator extends Generator
 {

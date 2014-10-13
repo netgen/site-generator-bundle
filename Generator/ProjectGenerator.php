@@ -1,11 +1,11 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Generator;
+namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Netgen\Bundle\GeneratorBundle\Helper\FileHelper;
-use Netgen\Bundle\GeneratorBundle\Helper\GitHelper;
+use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
+use Netgen\Bundle\MoreGeneratorBundle\Helper\GitHelper;
 use Symfony\Component\DependencyInjection\Container;
 use RuntimeException;
 

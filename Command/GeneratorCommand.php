@@ -1,21 +1,21 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Command;
+namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper;
+use Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper;
 
 abstract class GeneratorCommand extends ContainerAwareCommand
 {
     /**
      * Returns the dialog helper
      *
-     * @return \Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper
+     * @return \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper
      */
     protected function getDialogHelper()
     {
         $dialog = $this->getHelperSet()->get( 'dialog' );
-        if ( !$dialog || get_class( $dialog ) !== 'Netgen\Bundle\GeneratorBundle\Command\Helper\DialogHelper' )
+        if ( !$dialog || get_class( $dialog ) !== 'Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper' )
         {
             $this->getHelperSet()->set( $dialog = new DialogHelper() );
         }

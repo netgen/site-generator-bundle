@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Helper;
+namespace Netgen\Bundle\MoreGeneratorBundle\Helper;
 
 class FileHelper
 {

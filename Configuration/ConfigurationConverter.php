@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Configuration;
+namespace Netgen\Bundle\MoreGeneratorBundle\Configuration;
 
 use eZ\Bundle\EzPublishLegacyBundle\DependencyInjection\Configuration\LegacyConfigResolver;
 use eZ\Publish\Core\Base\Exceptions\InvalidArgumentException;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Configuration;
+namespace Netgen\Bundle\MoreGeneratorBundle\Configuration;
 
 use Sensio\Bundle\DistributionBundle\Configurator\Configurator;
 use eZ\Publish\Core\MVC\Symfony\ConfigDumperInterface;

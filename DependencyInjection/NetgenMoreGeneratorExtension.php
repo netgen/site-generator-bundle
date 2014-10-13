@@ -1,13 +1,13 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\DependencyInjection;
+namespace Netgen\Bundle\MoreGeneratorBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
-class NetgenGeneratorExtension extends Extension
+class NetgenMoreGeneratorExtension extends Extension
 {
     /**
      * {@inheritDoc}

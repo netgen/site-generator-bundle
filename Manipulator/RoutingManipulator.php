@@ -1,6 +1,6 @@
 <?php
 
-namespace Netgen\Bundle\GeneratorBundle\Manipulator;
+namespace Netgen\Bundle\MoreGeneratorBundle\Manipulator;
 
 use Symfony\Component\DependencyInjection\Container;
 use RuntimeException;
