@@ -452,6 +452,15 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        // Import MySQL database
+        $runner(
+            $this->importDatabase(
+                $dialog,
+                $input,
+                $output
+            )
+        );
+
         $dialog->writeGeneratorSummary( $output, $errors );
 
         return 0;
@@ -674,6 +683,91 @@ class GenerateProjectCommand extends GeneratorCommand
                     '- Run the following command from your installation root to generate Yaml configuration from legacy:',
                     '',
                     '    <comment>php ezpublish/console ngmore:generate:configuration --project=' . $project . ' --admin-site-access-name=' . $adminSiteAccess . ' --bundle-name=' . $bundleName . '</comment>',
+                    '',
+                );
+            }
+        }
+        catch ( RuntimeException $e )
+        {
+            return array(
+                'There was an error running the command: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Imports MySQL database
+     *
+     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return array
+     */
+    protected function importDatabase( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    {
+        $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/../ezpublish_legacy/extension/' .
+                        $input->getOption( 'extension-name' ) . '/data/dump.sql';
+
+        if ( !file_exists( $databasePath ) )
+        {
+            return;
+        }
+
+        $output->writeln( '' );
+        $output->write( 'Importing MySQL database... ' );
+
+        try
+        {
+            $databaseHost = $input->getOption( 'database-host' );
+            $databasePort = $input->getOption( 'database-port' );
+            $databaseUser = $input->getOption( 'database-user' );
+            $databasePassword = $input->getOption( 'database-password' );
+            $databaseName = $input->getOption( 'database-name' );
+
+            $processParams = array(
+                'mysql',
+                '-u',
+                $databaseUser,
+                '-h',
+                $databaseHost
+            );
+
+            if ( !empty( $databasePassword ) )
+            {
+                $processParams[] = '-p' . $databasePassword;
+            }
+
+            if ( !empty( $databasePort ) )
+            {
+                $processParams[] = '-P';
+                $processParams[] = $databasePort;
+            }
+
+            $processParams[] = $databaseName;
+
+            $processBuilder = new ProcessBuilder( $processParams );
+
+            $process = $processBuilder->getProcess();
+
+            $process->setTimeout( 3600 );
+
+            $process->setEnv( array( "LANG" => "en_US.UTF-8" ) );
+            $process->setStdin( file_get_contents( $databasePath ) );
+            $process->run(
+                function ( $type, $buffer )
+                {
+                    echo $buffer;
+                }
+            );
+
+            if ( !$process->isSuccessful() )
+            {
+                return array(
+                    '- Run the following command from your installation root to import the database:',
+                    '',
+                    '    <comment>mysql ' . $databaseName . ' < ' . $databasePath . '</comment>',
                     '',
                 );
             }
