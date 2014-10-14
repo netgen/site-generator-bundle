@@ -63,8 +63,10 @@ class ConfigurationConverter
         $settings['ezpublish']['siteaccess']['groups'] = array();
         $groupName = $projectName . '_group';
         $frontendGroupName = $projectName . '_frontend_group';
+        $administrationGroupName = $projectName . '_administration_group';
         $settings['ezpublish']['siteaccess']['groups'][$groupName] = $siteList;
         $settings['ezpublish']['siteaccess']['groups'][$frontendGroupName] = $siteListWithoutAdmin;
+        $settings['ezpublish']['siteaccess']['groups'][$administrationGroupName] = array( $adminSiteAccess );
         $settings['ezpublish']['siteaccess']['match'] = $this->resolveMatching();
 
         $settings['ezpublish']['system'] = array();
@@ -125,14 +127,6 @@ class ConfigurationConverter
         else
         {
             $settings['ezpublish']['imagemagick']['enabled'] = false;
-        }
-
-        $variations = $this->getImageVariations( $siteListWithoutAdmin, $frontendGroupName );
-        $variations += $this->getImageVariations( array( $adminSiteAccess ) );
-
-        foreach ( $variations as $siteaccess => $imgSettings )
-        {
-            $settings['ezpublish']['system'][$siteaccess]['image_variations'] = $imgSettings;
         }
 
         // Explicitly set Http cache purge type to "local"

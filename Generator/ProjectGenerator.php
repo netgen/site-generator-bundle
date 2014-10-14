@@ -118,15 +118,16 @@ class ProjectGenerator extends Generator
             '/' . $bundleAssetsPathPart . '/'
         );
 
-        // Renaming the frontend group name
+        // Renaming the siteaccess group names
 
         $project = strtolower( $input->getOption( 'project' ) );
         $frontendGroupName = $project . '_frontend_group';
+        $administrationGroupName = $project . '_administration_group';
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>ngmore_frontend_group</comment> name <comment>' . $frontendGroupName . '</comment>'
+                'Renaming <comment>ngmore_frontend_group</comment> name into <comment>' . $frontendGroupName . '</comment>'
             )
         );
 
@@ -134,6 +135,19 @@ class ProjectGenerator extends Generator
             FileHelper::findFilesInDirectory( $finalBundleLocation ),
             'ngmore_frontend_group',
             $frontendGroupName
+        );
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>ngmore_administration_group</comment> name into <comment>' . $administrationGroupName . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'ngmore_administration_group',
+            $administrationGroupName
         );
 
         // Cloning the legacy extension
