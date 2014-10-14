@@ -723,6 +723,7 @@ class GenerateProjectCommand extends GeneratorCommand
             '',
         );
 
+        $output->writeln( '' );
         $doImport = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
 
         $output->writeln( '' );
