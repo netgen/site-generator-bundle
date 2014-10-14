@@ -710,21 +710,30 @@ class GenerateProjectCommand extends GeneratorCommand
         $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/../ezpublish_legacy/extension/' .
                         $input->getOption( 'extension-name' ) . '/data/dump.sql';
 
-        if ( !file_exists( $databasePath ) )
-        {
-            return;
-        }
+        $databaseHost = $input->getOption( 'database-host' );
+        $databasePort = $input->getOption( 'database-port' );
+        $databaseUser = $input->getOption( 'database-user' );
+        $databasePassword = $input->getOption( 'database-password' );
+        $databaseName = $input->getOption( 'database-name' );
+
+        $errorOutput = array(
+            '- Run the following command from your installation root to import the database:',
+            '',
+            '    <comment>mysql -u ' . $databaseUser . ' -h ' . $databaseHost . ' -p ' . $databaseName . ' < ' . $databasePath . '</comment>',
+            '',
+        );
+
+        $doImport = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
 
         $output->writeln( '' );
         $output->write( 'Importing MySQL database... ' );
 
         try
         {
-            $databaseHost = $input->getOption( 'database-host' );
-            $databasePort = $input->getOption( 'database-port' );
-            $databaseUser = $input->getOption( 'database-user' );
-            $databasePassword = $input->getOption( 'database-password' );
-            $databaseName = $input->getOption( 'database-name' );
+            if ( !file_exists( $databasePath ) || !$doImport )
+            {
+                return $errorOutput;
+            }
 
             $processParams = array(
                 'mysql',
@@ -748,13 +757,12 @@ class GenerateProjectCommand extends GeneratorCommand
             $processParams[] = $databaseName;
 
             $processBuilder = new ProcessBuilder( $processParams );
-
             $process = $processBuilder->getProcess();
-
             $process->setTimeout( 3600 );
 
             $process->setEnv( array( "LANG" => "en_US.UTF-8" ) );
             $process->setStdin( file_get_contents( $databasePath ) );
+
             $process->run(
                 function ( $type, $buffer )
                 {
@@ -764,12 +772,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if ( !$process->isSuccessful() )
             {
-                return array(
-                    '- Run the following command from your installation root to import the database:',
-                    '',
-                    '    <comment>mysql ' . $databaseName . ' < ' . $databasePath . '</comment>',
-                    '',
-                );
+                return $errorOutput;
             }
         }
         catch ( RuntimeException $e )
