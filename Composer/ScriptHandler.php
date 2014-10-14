@@ -5,6 +5,11 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Composer;
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as DistributionBundleScriptHandler;
 use Composer\Script\CommandEvent;
 
+use eZ\Bundle\EzPublishCoreBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Debug\Debug;
+use EzPublishKernel;
+
 class ScriptHandler extends DistributionBundleScriptHandler
 {
     /**
@@ -14,15 +19,23 @@ class ScriptHandler extends DistributionBundleScriptHandler
      */
     public static function generateNetgenMoreProject( CommandEvent $event )
     {
-        $options = self::getOptions( $event );
-        $appDir = $options['symfony-app-dir'];
+        require_once getcwd() . '/ezpublish/autoload.php';
+        require_once getcwd() . '/ezpublish/EzPublishKernel.php';
 
-        if ( !is_dir( $appDir ) )
+        $input = new ArrayInput(
+            array(
+                'command' => 'ngmore:generate:project'
+            )
+        );
+
+        $env = $input->getParameterOption( array( '--env', '-e' ), getenv( 'SYMFONY_ENV' ) ?: 'dev' );
+        $debug = getenv( 'SYMFONY_DEBUG' ) !== '0' && !$input->hasParameterOption( array( '--no-debug', '' ) ) && $env !== 'prod';
+        if ( $debug )
         {
-            echo 'The symfony-app-dir (' . $appDir . ') specified in composer.json was not found in ' . getcwd() . ', can not generate project.' . PHP_EOL;
-            return;
+            Debug::enable();
         }
 
-        static::executeCommand( $event, $appDir, 'ngmore:generate:project', $options['process-timeout'] );
+        $application = new Application( new EzPublishKernel( $env, $debug ) );
+        $application->run( $input );
     }
 }
