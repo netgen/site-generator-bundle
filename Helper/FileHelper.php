@@ -2,6 +2,9 @@
 
 namespace Netgen\Bundle\MoreGeneratorBundle\Helper;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 class FileHelper
 {
     /**
@@ -20,7 +23,7 @@ class FileHelper
 
         foreach ( $files as $file )
         {
-            if ( !is_file( $file ) || !is_readable( $file ) || !is_writeable( $file ) )
+            if ( !is_file( $file ) || !is_readable( $file ) || !is_writeable( $file ) || is_link( $file ) )
             {
                 continue;
             }
@@ -40,39 +43,20 @@ class FileHelper
      */
     public static function findFilesInDirectory( $directory )
     {
-        if ( !is_dir( $directory ) )
-        {
-            return array();
-        }
-
-        $directoryFiles = scandir( $directory );
-
-        if ( empty( $directoryFiles ) )
+        if ( !is_dir( $directory ) || is_link( $directory ) )
         {
             return array();
         }
 
         $allFiles = array();
 
-        foreach ( $directoryFiles as $file )
+        foreach( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory ) ) as $subItem )
         {
-            if ( $file == '.' || $file == '..' )
+            /** @var \SplFileInfo $subItem */
+            if ( $subItem->isFile() && !$subItem->isLink() )
             {
-                continue;
+                $allFiles[] = $subItem->getPathname();
             }
-
-            if ( is_dir( $directory . '/' . $file ) )
-            {
-                $allFiles = array_merge( self::findFilesInDirectory( $directory . '/' . $file ), $allFiles );
-                continue;
-            }
-
-            if ( !is_file( $directory . '/' . $file ) )
-            {
-                continue;
-            }
-
-            $allFiles[] = $directory . '/' . $file;
         }
 
         return $allFiles;
