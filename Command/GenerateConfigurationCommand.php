@@ -55,7 +55,11 @@ class GenerateConfigurationCommand extends GeneratorCommand
         }
 
         $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
-        $configurationGenerator->generate( $input, $output );
+        $configurationGenerator->generate(
+            $input->getOption( 'project' ),
+            $input->getOption( 'admin-site-access-name' ),
+            $input->getOption( 'bundle-name' )
+        );
 
         $output->writeln( 'Generated <comment>ezpublish.yml</comment> and related environment config files!' );
     }

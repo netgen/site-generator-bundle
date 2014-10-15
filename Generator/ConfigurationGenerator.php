@@ -3,8 +3,6 @@
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use eZ\Publish\Core\MVC\Symfony\ConfigDumperInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Configuration\ConfigurationConverter;
 use Netgen\Bundle\MoreGeneratorBundle\Configuration\ConfigurationDumper;
 
@@ -13,10 +11,11 @@ class ConfigurationGenerator extends Generator
     /**
      * Generates Symfony configuration from eZ 5 config
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     * @param string $projectName
+     * @param string $adminSiteAccessName
+     * @param string $bundleName
      */
-    public function generate( InputInterface $input, OutputInterface $output )
+    public function generate( $projectName, $adminSiteAccessName, $bundleName )
     {
         $this->container->get( 'ezpublish_legacy.kernel.lazy_loader' )->setBuildEventsEnabled( false );
 
@@ -35,9 +34,9 @@ class ConfigurationGenerator extends Generator
 
         $configurationDumper->dump(
             $configurationConverter->fromLegacy(
-                strtolower( $input->getOption( 'project' ) ),
-                $input->getOption( 'admin-site-access-name' ),
-                $input->getOption( 'bundle-name' )
+                strtolower( $projectName ),
+                $adminSiteAccessName,
+                $bundleName
             ),
             ConfigDumperInterface::OPT_DEFAULT
         );
