@@ -364,49 +364,28 @@ class GenerateProjectCommand extends GeneratorCommand
         $runner = $this->dialog->getRunner( $this->output, $errors );
 
         // Register the bundle in the EzPublishKernel class
-        $runner(
-            $this->updateKernel(
-                $this->getContainer()->get( 'kernel' ),
-                $this->input->getOption( 'bundle-namespace' ) . '\\' . $this->input->getOption( 'bundle-name' )
-            )
-        );
+        $runner( $this->updateKernel() );
 
         // Install Symfony assets as relative symlinks
-        $runner(
-            $this->installAssets()
-        );
+        $runner( $this->installAssets() );
 
         // Set up routing
-        $runner(
-            $this->updateRouting(
-                $this->input->getOption( 'bundle-name' )
-            )
-        );
+        $runner( $this->updateRouting() );
 
         // Install Netgen More project symlinks
-        $runner(
-            $this->installProjectSymlinks()
-        );
+        $runner( $this->installProjectSymlinks() );
 
         // Install Netgen More legacy symlinks
-        $runner(
-            $this->installLegacySymlinks()
-        );
+        $runner( $this->installLegacySymlinks() );
 
         // Generate legacy autoloads
-        $runner(
-            $this->generateLegacyAutoloads()
-        );
+        $runner( $this->generateLegacyAutoloads() );
 
         // Generate eZ 5 configuration
-        $runner(
-            $this->generateYamlConfiguration()
-        );
+        $runner( $this->generateYamlConfiguration() );
 
         // Import MySQL database
-        $runner(
-            $this->importDatabase()
-        );
+        $runner( $this->importDatabase() );
 
         $this->dialog->writeGeneratorSummary( $this->output, $errors );
 
@@ -716,19 +695,19 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Adds the bundle to the kernel file
      *
-     * @param \Symfony\Component\HttpKernel\KernelInterface $kernel
-     * @param string $bundleFQN
-     *
      * @return array
      */
-    protected function updateKernel( KernelInterface $kernel, $bundleFQN )
+    protected function updateKernel()
     {
         $this->output->writeln( '' );
         $this->output->write( 'Enabling the bundle inside the kernel: ' );
 
+        $kernel = $this->getContainer()->get( 'kernel' );
+
         $manipulator = new KernelManipulator( $kernel );
         try
         {
+            $bundleFQN = $this->input->getOption( 'bundle-namespace' ) . '\\' . $this->input->getOption( 'bundle-name' );
             $updated = $manipulator->addBundle( $bundleFQN );
 
             if ( !$updated )
@@ -757,11 +736,9 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Updates the routing file
      *
-     * @param string $bundle
-     *
      * @return array
      */
-    protected function updateRouting( $bundle )
+    protected function updateRouting()
     {
         $this->output->writeln( '' );
         $this->output->write( 'Importing the bundle routing resource: ' );
@@ -769,14 +746,15 @@ class GenerateProjectCommand extends GeneratorCommand
         $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
         try
         {
-            $updated = $routing->addResource( $bundle );
+            $bundleName = $this->input->getOption( 'bundle-name' );
+            $updated = $routing->addResource( $bundleName );
             if ( !$updated )
             {
                 return array(
                     '- Import the bundle\'s routing resource in the main routing file:',
                     '',
-                    '    <comment>' . Container::underscore( substr( $bundle, 0, -6 ) ) . ':</comment>',
-                    '        <comment>resource: \"@' . $bundle . '/Resources/config/routing.yml\"</comment>\n',
+                    '    <comment>' . Container::underscore( substr( $bundleName, 0, -6 ) ) . ':</comment>',
+                    '        <comment>resource: \"@' . $bundleName . '/Resources/config/routing.yml\"</comment>\n',
                     ''
                 );
             }
