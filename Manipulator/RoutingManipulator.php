@@ -26,7 +26,6 @@ class RoutingManipulator extends Manipulator
      * Adds a routing resource at the top of the existing ones
      *
      * @param string $bundle
-     * @param string $format
      * @param string $prefix
      * @param string $path
      *
@@ -34,7 +33,7 @@ class RoutingManipulator extends Manipulator
      *
      * @throws \RuntimeException If bundle is already imported
      */
-    public function addResource( $bundle, $format, $prefix = '/', $path = 'routing' )
+    public function addResource( $bundle, $prefix = '/', $path = 'routing' )
     {
         $current = '';
         if ( file_exists( $this->file ) )
@@ -53,14 +52,7 @@ class RoutingManipulator extends Manipulator
         }
 
         $code = "\n" . sprintf( "%s:\n", Container::underscore( substr( $bundle, 0, -6 ) ) . ( '/' !== $prefix ? '_' . str_replace( '/', '_', substr( $prefix, 1 ) ) : '' ) );
-        if ( $format == 'annotation' )
-        {
-            $code .= sprintf( "    resource: \"@%s/Controller/\"\n    type: annotation\n", $bundle );
-        }
-        else
-        {
-            $code .= sprintf( "    resource: \"@%s/Resources/config/%s.%s\"\n", $bundle, $path, $format );
-        }
+        $code .= sprintf( "    resource: \"@%s/Resources/config/%s.yml\"\n", $bundle, $path );
         $code = $current . $code;
 
         if ( file_put_contents( $this->file, $code ) === false )

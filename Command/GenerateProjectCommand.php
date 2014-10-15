@@ -10,16 +10,30 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
-use Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper;
 use InvalidArgumentException;
 use ReflectionObject;
 use RuntimeException;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
+
+    /**
+     * @var \Symfony\Component\Console\Input\InputInterface
+     */
+    protected $input;
+
+    /**
+     * @var \Symfony\Component\Console\Output\OutputInterface
+     */
+    protected $output;
+
+    /**
+     * @var \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper
+     */
+    protected $dialog;
+
     /**
      * Configures the command
      */
@@ -59,122 +73,93 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function interact( InputInterface $input, OutputInterface $output )
     {
-        $dialog = $this->getDialogHelper();
-        $dialog->writeSection( $output, 'Welcome to the Netgen More project generator' );
+        $this->input = $input;
+        $this->output = $output;
+        $this->dialog = $this->getDialogHelper();
 
-        while ( !$this->doInteract( $input, $output ) )
+        $this->dialog->writeSection( $this->output, 'Welcome to the Netgen More project generator' );
+
+        while ( !$this->doInteract() )
         {
             // We will always ask for siteaccesses
-            $input->setOption( 'site-access-list-string', null );
-            $input->setOption( 'site-access-list', null );
+            $this->input->setOption( 'site-access-list-string', null );
+            $this->input->setOption( 'site-access-list', null );
         }
     }
 
     /**
      * Collects all the project data interactively
      *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return bool
      */
-    protected function doInteract( InputInterface $input, OutputInterface $output )
+    protected function doInteract()
     {
-        $dialog = $this->getDialogHelper();
-
-        $output->writeln(
+        $this->output->writeln(
             array(
                 'Input the client and project names. These values will be used to generate',
                 'bundle name, as well as legacy extension name and legacy design name.',
-                'First letter of the names must be uppercased, and it is recommended',
+                '<comment>First letter</comment> of the names must be <comment>uppercased</comment>, and it is recommended',
                 'to use <comment>CamelCasing</comment> for the rest of the names.',
                 ''
             )
         );
 
         $client = ucfirst(
-            $dialog->askAndValidate(
-                $output,
-                $dialog->getQuestion( 'Client name', $input->getOption( 'client' ) ),
-                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
-                false,
-                $input->getOption( 'client' )
+            $this->askForData(
+                'client',
+                'Client name',
+                '',
+                'validateCamelCaseName'
             )
         );
-
-        $input->setOption( 'client', $client );
         $clientNormalized = Container::underscore( $client );
 
         $project = ucfirst(
-            $dialog->askAndValidate(
-                $output,
-                $dialog->getQuestion( 'Project name', $input->getOption( 'project' ) ),
-                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateCamelCaseName' ),
-                false,
-                $input->getOption( 'project' )
+            $this->askForData(
+                'project',
+                'Project name',
+                '',
+                'validateCamelCaseName'
             )
         );
-
-        $input->setOption( 'project', $project );
         $projectNormalized = Container::underscore( $project );
 
-        $output->writeln(
+        $this->output->writeln(
             array(
                 '',
-                'Input the site name and site domain. Site name will be visible as the title',
-                'of the pages in eZ Publish, so you are free to input what ever you like here.',
+                'Input the site name, site domain and admin siteaccess name. Site name will be visible',
+                'as the title of the pages in eZ Publish, so you are free to input whatever you like here.',
                 ''
             )
         );
 
-        $siteName = $input->getOption( 'site-name' );
-        $siteName = !empty( $siteName ) ? $siteName :
-            ucfirst( str_replace( '_', ' ', $projectNormalized ) );
-
-        $siteName = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Site name', $siteName ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
-            false,
-            $siteName
+        $this->askForData(
+            'site-name',
+            'Site name',
+            ucfirst( str_replace( '_', ' ', $projectNormalized ) ),
+            'validateNotEmpty'
         );
 
-        $input->setOption( 'site-name', $siteName );
-
-        $siteDomain = $input->getOption( 'site-domain' );
-        $siteDomain = !empty( $siteDomain ) ? $siteDomain :
+        $this->askForData(
+            'site-domain',
+            'Site domain',
             str_replace( '_', '-', $projectNormalized ) . '.' .
-            trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' );
-
-        $siteDomain = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Site domain', $siteDomain ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
-            false,
-            $siteDomain
+                trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' ),
+            'validateNotEmpty'
         );
 
-        $input->setOption( 'site-domain', $siteDomain );
-
-        $adminSiteAccess = $input->getOption( 'admin-site-access-name' );
-        $adminSiteAccess = !empty( $adminSiteAccess ) ? $adminSiteAccess :
-            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.admin_siteaccess_name' );
-
-        $adminSiteAccess = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Admin siteaccess name', $adminSiteAccess ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateAdminSiteAccessName' ),
-            false,
-            $adminSiteAccess
+        $adminSiteAccess = $this->askForData(
+            'admin-site-access-name',
+            'Admin siteaccess name',
+            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.admin_siteaccess_name' ),
+            'validateAdminSiteAccessName'
         );
-
-        $input->setOption( 'admin-site-access-name', $adminSiteAccess );
 
         $siteAccessList = array();
 
         // Try to parse the following format
         // eng:eng-EU|cro:cro-HR:eng-EU
-        $siteAccessListString = $input->getOption( 'site-access-list-string' );
+        $siteAccessListString = $this->input->getOption( 'site-access-list-string' );
         if ( !empty( $siteAccessListString ) )
         {
             $siteAccessListStringArray = explode( '|', $siteAccessListString );
@@ -217,29 +202,29 @@ class GenerateProjectCommand extends GeneratorCommand
 
         if ( empty( $siteAccessList ) )
         {
-            $output->writeln(
+            $this->output->writeln(
                 array(
                     '',
                     'Input the name of every siteaccess you wish to create.',
                     'The first siteaccess you specify will become the default siteaccess.',
-                    '<comment>' . $adminSiteAccess . '</comment> siteaccess will be generated automatically.',
-                    'The names must contain lowercase letters, underscores or numbers.',
+                    'Admin siteaccess (<comment>' . $adminSiteAccess . '</comment>) will be generated automatically.',
+                    'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
                     ''
                 )
             );
 
             do
             {
-                $siteAccess = $dialog->askAndValidate(
-                    $output,
-                    $dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
+                $siteAccess = $this->dialog->askAndValidate(
+                    $this->output,
+                    $this->dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
                     array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
                     false
                 );
 
                 if ( $siteAccess === $adminSiteAccess )
                 {
-                    $output->writeln( $dialog->getHelperSet()->get( 'formatter' )->formatBlock( 'Siteaccess name cannot be equal to "' . $adminSiteAccess . '".', 'error' ) );
+                    $this->output->writeln( '<error> Siteaccess name cannot be equal to "' . $adminSiteAccess . '". </error>' );
                     continue;
                 }
 
@@ -250,9 +235,9 @@ class GenerateProjectCommand extends GeneratorCommand
                     $languageList = array();
                     do
                     {
-                        $language = $dialog->askAndValidate(
-                            $output,
-                            $dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
+                        $language = $this->dialog->askAndValidate(
+                            $this->output,
+                            $this->dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
                             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLanguageCode' ),
                             false
                         );
@@ -270,9 +255,9 @@ class GenerateProjectCommand extends GeneratorCommand
             while ( !empty( $siteAccess ) || empty( $siteAccessList ) );
         }
 
-        $input->setOption( 'site-access-list', $siteAccessList );
+        $this->input->setOption( 'site-access-list', $siteAccessList );
 
-        $output->writeln(
+        $this->output->writeln(
             array(
                 '',
                 'Input the database connection details.',
@@ -280,133 +265,73 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        $databaseHost = $input->getOption( 'database-host' );
-        $databaseHost = !empty( $databaseHost ) ? $databaseHost :
-            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_host' );
+        $this->askForData( 'database-host', 'Database host', $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_host' ), 'validateNotEmpty' );
+        $this->askForData( 'database-port', 'Database port', '' );
+        $this->askForData( 'database-user', 'Database user', $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_user' ), 'validateNotEmpty' );
+        $this->askForData( 'database-password', 'Database password', '' );
+        $this->askForData( 'database-name', 'Database name', '', 'validateNotEmpty' );
 
-        $databaseHost = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Database host', $databaseHost ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
-            false,
-            $databaseHost
-        );
-
-        $input->setOption( 'database-host', $databaseHost );
-
-        $databasePort = $dialog->ask(
-            $output,
-            $dialog->getQuestion( 'Database port', $input->getOption( 'database-port' ) ),
-            $input->getOption( 'database-port' )
-        );
-
-        $input->setOption( 'database-port', $databasePort );
-
-        $databaseUser = $input->getOption( 'database-user' );
-        $databaseUser = !empty( $databaseUser ) ? $databaseUser :
-            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_user' );
-
-        $databaseUser = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Database user', $databaseUser ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
-            false,
-            $databaseUser
-        );
-
-        $input->setOption( 'database-user', $databaseUser );
-
-        $databasePassword = $dialog->askHiddenResponse(
-            $output,
-            $dialog->getQuestion( 'Database password', $input->getOption( 'database-password' ) ),
-            $input->getOption( 'database-password' )
-        );
-
-        $input->setOption( 'database-password', $databasePassword );
-
-        $databaseName = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Database name', $input->getOption( 'database-name' ) ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
-            false,
-            $input->getOption( 'database-name' )
-        );
-
-        $input->setOption( 'database-name', $databaseName );
-
-        $extensionName = $input->getOption( 'extension-name' );
-        $extensionName = !empty( $extensionName ) ? $extensionName :
-            "ez_" . $clientNormalized . "_" . $projectNormalized;
-
-        $extensionName = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Extension name', $extensionName ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
-            false,
-            $extensionName
-        );
-
-        $input->setOption( 'extension-name', $extensionName );
-
-        $designName = $input->getOption( 'design-name' );
-        $designName = !empty( $designName ) ? $designName :
-            $projectNormalized;
-
-        $designName = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Design name', $designName ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLowerCaseName' ),
-            false,
-            $designName
-        );
-
-        $input->setOption( 'design-name', $designName );
-
-        $bundleNamespace = $input->getOption( 'bundle-namespace' );
-        $bundleNamespace = !empty( $bundleNamespace ) ? $bundleNamespace :
-            $client . "\\Bundle\\" . $project . "Bundle";
-
-        $bundleNamespace = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Bundle namespace', $bundleNamespace ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateBundleNamespace' ),
-            false,
-            $bundleNamespace
-        );
-
-        $input->setOption( 'bundle-namespace', $bundleNamespace );
-
-        $bundleName = $input->getOption( 'bundle-name' );
-        $bundleName = !empty( $bundleName ) ? $bundleName :
-            $client . $project . "Bundle";
-
-        $bundleName = $dialog->askAndValidate(
-            $output,
-            $dialog->getQuestion( 'Bundle name', $bundleName ),
-            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateBundleName' ),
-            false,
-            $bundleName
-        );
-
-        $input->setOption( 'bundle-name', $bundleName );
-
-        $dialog->writeSection( $output, 'Summary before generation' );
-
-        // Summary
-        $output->writeln(
+        $this->output->writeln(
             array(
-                sprintf( "You are going to generate a \"<info>%s\\%s</info>\" bundle\nand \"<info>%s</info>\" legacy extension using the \"<info>%s</info>\" legacy design.", $bundleNamespace, $bundleName, $extensionName, $designName ),
+                '',
+                'Input the legacy extension and bundle details.',
                 ''
             )
         );
 
-        if ( !$dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you confirm project generation (answering <comment>no</comment> will restart the process)', 'yes', '?' ), true ) )
+        $extensionName = $this->askForData( 'extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName' );
+        $designName = $this->askForData( 'design-name', 'Design name', $projectNormalized, 'validateLowerCaseName' );
+        $bundleNamespace = $this->askForData( 'bundle-namespace', 'Bundle namespace', $client . "\\Bundle\\" . $project . 'Bundle', 'validateBundleNamespace' );
+        $bundleName = $this->askForData( 'bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName' );
+
+        $this->dialog->writeSection( $this->output, 'Summary before generation' );
+
+        // Summary
+        $this->output->writeln(
+            array(
+                'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle',
+                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $designName . '</info> legacy design.',
+                ''
+            )
+        );
+
+        if ( !$this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you confirm project generation (answering <comment>no</comment> will restart the process)', 'yes', '?' ), true ) )
         {
-            $output->writeln( '' );
+            $this->output->writeln( '' );
             return false;
         }
 
         return true;
+    }
+
+    protected function askForData( $optionIdentifier, $optionName, $defaultValue, $validator = null )
+    {
+        $optionValue = $this->input->getOption( $optionIdentifier );
+        $optionValue = !empty( $optionValue ) ? $optionValue :
+            $defaultValue;
+
+        if ( $validator !== null )
+        {
+            $optionValue = $this->dialog->askAndValidate(
+                $this->output,
+                $this->dialog->getQuestion( $optionName, $optionValue ),
+                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator ),
+                false,
+                $optionValue
+            );
+        }
+        else
+        {
+            $optionValue = $this->dialog->ask(
+                $this->output,
+                $this->dialog->getQuestion( $optionName, $optionValue ),
+                $optionValue
+            );
+        }
+
+        $this->input->setOption( $optionIdentifier, $optionValue );
+
+        return $optionValue;
     }
 
     /**
@@ -425,98 +350,65 @@ class GenerateProjectCommand extends GeneratorCommand
             return 1;
         }
 
-        $dialog = $this->getDialogHelper();
-        $dialog->writeSection( $output, 'Project generation' );
+        $this->dialog->writeSection( $this->output, 'Project generation' );
 
         // Generate a project
         $projectGenerator = new ProjectGenerator( $this->getContainer() );
-        $projectGenerator->generate( $input, $output );
+        $projectGenerator->generate( $this->input, $this->output );
 
         // Generate siteaccesses
         $siteAccessGenerator = new SiteAccessGenerator( $this->getContainer() );
-        $siteAccessGenerator->generate( $input, $output );
+        $siteAccessGenerator->generate( $this->input, $this->output );
 
         $errors = array();
-        $runner = $dialog->getRunner( $output, $errors );
+        $runner = $this->dialog->getRunner( $this->output, $errors );
 
         // Register the bundle in the EzPublishKernel class
         $runner(
             $this->updateKernel(
-                $dialog,
-                $input,
-                $output,
                 $this->getContainer()->get( 'kernel' ),
-                $input->getOption( 'bundle-namespace' ),
-                $input->getOption( 'bundle-name' )
+                $this->input->getOption( 'bundle-namespace' ) . '\\' . $this->input->getOption( 'bundle-name' )
             )
         );
 
         // Install Symfony assets as relative symlinks
         $runner(
-            $this->installAssets(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->installAssets()
         );
 
         // Set up routing
         $runner(
             $this->updateRouting(
-                $dialog,
-                $input,
-                $output,
-                $input->getOption( 'bundle-name' ),
-                'yml'
+                $this->input->getOption( 'bundle-name' )
             )
         );
 
         // Install Netgen More project symlinks
         $runner(
-            $this->installProjectSymlinks(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->installProjectSymlinks()
         );
 
         // Install Netgen More legacy symlinks
         $runner(
-            $this->installLegacySymlinks(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->installLegacySymlinks()
         );
 
         // Generate legacy autoloads
         $runner(
-            $this->generateLegacyAutoloads(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->generateLegacyAutoloads()
         );
 
         // Generate eZ 5 configuration
         $runner(
-            $this->generateYamlConfiguration(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->generateYamlConfiguration()
         );
 
         // Import MySQL database
         $runner(
-            $this->importDatabase(
-                $dialog,
-                $input,
-                $output
-            )
+            $this->importDatabase()
         );
 
-        $dialog->writeGeneratorSummary( $output, $errors );
+        $this->dialog->writeGeneratorSummary( $this->output, $errors );
 
         return 0;
     }
@@ -524,16 +416,12 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Netgen More project symlinks
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return array
      */
-    protected function installProjectSymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function installProjectSymlinks()
     {
-        $output->writeln( '' );
-        $output->write( 'Installing ngmore project symlinks... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Installing ngmore project symlinks... ' );
 
         try
         {
@@ -578,16 +466,12 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Netgen More legacy symlinks
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return array
      */
-    protected function installLegacySymlinks( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function installLegacySymlinks()
     {
-        $output->writeln( '' );
-        $output->write( 'Installing ngmore legacy symlinks... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Installing ngmore legacy symlinks... ' );
 
         try
         {
@@ -632,16 +516,12 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Generates legacy autoloads
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return array
      */
-    protected function generateLegacyAutoloads( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function generateLegacyAutoloads()
     {
-        $output->writeln( '' );
-        $output->write( 'Generating legacy autoloads... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Generating legacy autoloads... ' );
 
         $currentWorkingDirectory = getcwd();
 
@@ -693,22 +573,19 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Generates eZ 5 configuration
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return array
      */
-    protected function generateYamlConfiguration( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function generateYamlConfiguration()
     {
-        $output->writeln( '' );
-        $output->write( 'Generating Yaml configuration from legacy... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Generating Yaml configuration from legacy... ' );
 
         try
         {
-            $project = $input->getOption( 'project' );
-            $adminSiteAccess = $input->getOption( 'admin-site-access-name' );
-            $bundleName = $input->getOption( 'bundle-name' );
+            $project = $this->input->getOption( 'project' );
+            $adminSiteAccess = $this->input->getOption( 'admin-site-access-name' );
+            $bundleName = $this->input->getOption( 'bundle-name' );
 
             $processBuilder = new ProcessBuilder(
                 array(
@@ -754,22 +631,18 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Imports MySQL database
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return array
      */
-    protected function importDatabase( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function importDatabase()
     {
         $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/../ezpublish_legacy/extension/' .
-                        $input->getOption( 'extension-name' ) . '/data/dump.sql';
+                        $this->input->getOption( 'extension-name' ) . '/data/dump.sql';
 
-        $databaseHost = $input->getOption( 'database-host' );
-        $databasePort = $input->getOption( 'database-port' );
-        $databaseUser = $input->getOption( 'database-user' );
-        $databasePassword = $input->getOption( 'database-password' );
-        $databaseName = $input->getOption( 'database-name' );
+        $databaseHost = $this->input->getOption( 'database-host' );
+        $databasePort = $this->input->getOption( 'database-port' );
+        $databaseUser = $this->input->getOption( 'database-user' );
+        $databasePassword = $this->input->getOption( 'database-password' );
+        $databaseName = $this->input->getOption( 'database-name' );
 
         $errorOutput = array(
             '- Run the following command from your installation root to import the database:',
@@ -778,11 +651,11 @@ class GenerateProjectCommand extends GeneratorCommand
             '',
         );
 
-        $output->writeln( '' );
-        $doImport = $dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
+        $this->output->writeln( '' );
+        $doImport = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
 
-        $output->writeln( '' );
-        $output->write( 'Importing MySQL database... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Importing MySQL database... ' );
 
         try
         {
@@ -843,35 +716,31 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Adds the bundle to the kernel file
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param \Symfony\Component\HttpKernel\KernelInterface $kernel
-     * @param string $namespace
-     * @param string $bundle
+     * @param string $bundleFQN
      *
      * @return array
      */
-    protected function updateKernel( DialogHelper $dialog, InputInterface $input, OutputInterface $output, KernelInterface $kernel, $namespace, $bundle )
+    protected function updateKernel( KernelInterface $kernel, $bundleFQN )
     {
-        $output->writeln( '' );
-        $output->write( 'Enabling the bundle inside the kernel: ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Enabling the bundle inside the kernel: ' );
 
         $manipulator = new KernelManipulator( $kernel );
         try
         {
-            $updated = $manipulator->addBundle( $namespace.'\\' . $bundle );
+            $updated = $manipulator->addBundle( $bundleFQN );
 
             if ( !$updated )
             {
                 $reflected = new ReflectionObject( $kernel );
 
                 return array(
-                    sprintf( '- Edit <comment>%s</comment>', $reflected->getFilename() ),
+                    '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, just before <comment>return $bundles;</comment> line:',
                     '',
-                    sprintf( '    <comment>$bundles[] = new \\%s();</comment>', $namespace . '\\' . $bundle ),
+                    '    <comment>$bundles[] = new \\' . $bundleFQN . '();</comment>',
                     '',
                 );
             }
@@ -879,7 +748,7 @@ class GenerateProjectCommand extends GeneratorCommand
         catch ( RuntimeException $e )
         {
             return array(
-                sprintf( 'Bundle <comment>%s</comment> is already defined in <comment>EzPublishKernel::registerBundles()</comment>.', $namespace . '\\' . $bundle ),
+                'There was an error activating bundle inside the kernel: ' . $e->getMessage(),
                 '',
             );
         }
@@ -888,39 +757,26 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Updates the routing file
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      * @param string $bundle
-     * @param string $format
      *
      * @return array
      */
-    protected function updateRouting( DialogHelper $dialog, InputInterface $input, OutputInterface $output, $bundle, $format )
+    protected function updateRouting( $bundle )
     {
-        $output->writeln( '' );
-        $output->write( 'Importing the bundle routing resource: ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Importing the bundle routing resource: ' );
 
         $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
         try
         {
-            $updated = $routing->addResource( $bundle, $format );
+            $updated = $routing->addResource( $bundle );
             if ( !$updated )
             {
-                if ( $format === 'annotation' )
-                {
-                    $help = sprintf( "        <comment>resource: \"@%s/Controller/\"</comment>\n        <comment>type: annotation</comment>\n", $bundle );
-                }
-                else
-                {
-                    $help = sprintf( "        <comment>resource: \"@%s/Resources/config/routing.%s\"</comment>\n", $bundle, $format );
-                }
-
                 return array(
                     '- Import the bundle\'s routing resource in the main routing file:',
                     '',
-                    sprintf( '    <comment>%s:</comment>', Container::underscore( substr( $bundle, 0, -6 ) ) ),
-                    $help,
+                    '    <comment>' . Container::underscore( substr( $bundle, 0, -6 ) ) . ':</comment>',
+                    '        <comment>resource: \"@' . $bundle . '/Resources/config/routing.yml\"</comment>\n',
                     ''
                 );
             }
@@ -928,7 +784,7 @@ class GenerateProjectCommand extends GeneratorCommand
         catch ( RuntimeException $e )
         {
             return array(
-                sprintf( 'Bundle <comment>%s</comment> is already imported.', $bundle ),
+                'There was an error importing bundle routes: ' . $e->getMessage(),
                 '',
             );
         }
@@ -937,16 +793,12 @@ class GenerateProjectCommand extends GeneratorCommand
     /**
      * Installs Symfony assets as relative symlinks
      *
-     * @param \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper $dialog
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
      * @return array
      */
-    protected function installAssets( DialogHelper $dialog, InputInterface $input, OutputInterface $output )
+    protected function installAssets()
     {
-        $output->writeln( '' );
-        $output->write( 'Installing assets using the <comment>symlink</comment> option... ' );
+        $this->output->writeln( '' );
+        $this->output->write( 'Installing assets using the <comment>symlink</comment> option... ' );
 
         try
         {

@@ -46,7 +46,7 @@ class DialogHelper extends BaseDialogHelper
     {
         $runner = function ( $err ) use ( $output, &$errors )
         {
-            if ( $err )
+            if ( !empty( $err ) )
             {
                 $output->writeln( '<fg=red>FAILED</>' );
                 $errors = array_merge( $errors, $err );
