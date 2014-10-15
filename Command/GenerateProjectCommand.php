@@ -398,8 +398,19 @@ class GenerateProjectCommand extends GeneratorCommand
         // Generate eZ 5 configuration
         $runner( $this->generateYamlConfiguration() );
 
+        $errorCount = count( $errors );
+
         // Import Netgen More database
         $runner( $this->importDatabase() );
+
+        // Move storage folder to proper location
+        $runner( $this->moveStorageFolder() );
+
+        if ( count( $errors ) == $errorCount )
+        {
+            // Deletes the data folder from legacy extension
+            $runner( $this->deleteDataFolder() );
+        }
 
         $this->dialog->writeGeneratorSummary( $this->output, $errors );
 
@@ -701,6 +712,92 @@ class GenerateProjectCommand extends GeneratorCommand
         {
             return array(
                 'There was an error importing Netgen More database: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Move storage folder to proper location
+     *
+     * @return array
+     */
+    protected function moveStorageFolder()
+    {
+        $storagePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
+                        $this->input->getOption( 'extension-name' ) . '/data/var/ezdemo_site/storage';
+
+        $finalStoragePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/var/ezdemo_site/storage';
+
+        $errorOutput = array(
+            '- Run the following command from your installation root to move the storage folder:',
+            '',
+            '    <comment>mv ' . $storagePath . ' ' . $finalStoragePath . '</comment>',
+            '',
+        );
+
+        $this->output->writeln( '' );
+        $doMove = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to move the storage folder to proper location', 'no', '?' ), false );
+
+        $this->output->writeln( '' );
+        $this->output->write( 'Moving the storage folder... ' );
+
+        try
+        {
+            if ( file_exists( $finalStoragePath ) || !$doMove )
+            {
+                return $errorOutput;
+            }
+
+            $fileSystem = $this->getContainer()->get( 'filesystem' );
+            $fileSystem->rename( $storagePath, $finalStoragePath );
+        }
+        catch ( Exception $e )
+        {
+            return array(
+                'There was an error moving the storage folder: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Deletes the data folder from legacy extension
+     *
+     * @return array
+     */
+    protected function deleteDataFolder()
+    {
+        $dataPath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
+                        $this->input->getOption( 'extension-name' ) . '/data';
+
+        $errorOutput = array(
+            '- Run the following command from your installation root to delete the data folder from legacy extension:',
+            '',
+            '    <comment>rm -r ' . $dataPath . '</comment>',
+            '',
+        );
+
+        $this->output->writeln( '' );
+        $doDelete = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to delete the data folder from legacy extension', 'no', '?' ), false );
+
+        $this->output->writeln( '' );
+        $this->output->write( 'Deleting the folder from legacy extension... ' );
+
+        try
+        {
+            if ( !$doDelete )
+            {
+                return $errorOutput;
+            }
+
+            $fileSystem = $this->getContainer()->get( 'filesystem' );
+            $fileSystem->remove( $dataPath );
+        }
+        catch ( Exception $e )
+        {
+            return array(
+                'There was an error deleting the data folder from legacy extension: ' . $e->getMessage(),
                 '',
             );
         }
