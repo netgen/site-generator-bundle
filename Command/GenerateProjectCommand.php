@@ -62,6 +62,26 @@ class GenerateProjectCommand extends GeneratorCommand
         $dialog = $this->getDialogHelper();
         $dialog->writeSection( $output, 'Welcome to the Netgen More project generator' );
 
+        while ( !$this->doInteract( $input, $output ) )
+        {
+            // We will always ask for siteaccesses
+            $input->setOption( 'site-access-list-string', null );
+            $input->setOption( 'site-access-list', null );
+        }
+    }
+
+    /**
+     * Collects all the project data interactively
+     *
+     * @param \Symfony\Component\Console\Input\InputInterface $input
+     * @param \Symfony\Component\Console\Output\OutputInterface $output
+     *
+     * @return bool
+     */
+    protected function doInteract( InputInterface $input, OutputInterface $output )
+    {
+        $dialog = $this->getDialogHelper();
+
         $output->writeln(
             array(
                 'Input the client and project names. These values will be used to generate',
@@ -314,7 +334,10 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'database-name', $databaseName );
 
-        $extensionName = "ez_" . $clientNormalized . "_" . $projectNormalized;
+        $extensionName = $input->getOption( 'extension-name' );
+        $extensionName = !empty( $extensionName ) ? $extensionName :
+            "ez_" . $clientNormalized . "_" . $projectNormalized;
+
         $extensionName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Extension name', $extensionName ),
@@ -325,7 +348,10 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'extension-name', $extensionName );
 
-        $designName = $projectNormalized;
+        $designName = $input->getOption( 'design-name' );
+        $designName = !empty( $designName ) ? $designName :
+            $projectNormalized;
+
         $designName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Design name', $designName ),
@@ -336,7 +362,10 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'design-name', $designName );
 
-        $bundleNamespace = $client . "\\Bundle\\" . $project . "Bundle";
+        $bundleNamespace = $input->getOption( 'bundle-namespace' );
+        $bundleNamespace = !empty( $bundleNamespace ) ? $bundleNamespace :
+            $client . "\\Bundle\\" . $project . "Bundle";
+
         $bundleNamespace = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Bundle namespace', $bundleNamespace ),
@@ -347,7 +376,10 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'bundle-namespace', $bundleNamespace );
 
-        $bundleName = $client . $project . "Bundle";
+        $bundleName = $input->getOption( 'bundle-name' );
+        $bundleName = !empty( $bundleName ) ? $bundleName :
+            $client . $project . "Bundle";
+
         $bundleName = $dialog->askAndValidate(
             $output,
             $dialog->getQuestion( 'Bundle name', $bundleName ),
@@ -367,6 +399,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 ''
             )
         );
+
+        if ( !$dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you confirm project generation (answering <comment>no</comment> will restart the process)', 'yes', '?' ), true ) )
+        {
+            $output->writeln( '' );
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -386,12 +426,6 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         $dialog = $this->getDialogHelper();
-        if ( !$dialog->askConfirmation( $output, $dialog->getQuestion( 'Do you confirm project generation', 'yes', '?' ), true ) )
-        {
-            $output->writeln( '<error>Command aborted</error>' );
-            return 1;
-        }
-
         $dialog->writeSection( $output, 'Project generation' );
 
         // Generate a project
