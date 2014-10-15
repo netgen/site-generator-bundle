@@ -107,32 +107,45 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        $siteName = $input->getOption( 'site-name' );
+        $siteName = !empty( $siteName ) ? $siteName :
+            ucfirst( str_replace( '_', ' ', $projectNormalized ) );
+
         $siteName = $dialog->askAndValidate(
             $output,
-            $dialog->getQuestion( 'Site name', $input->getOption( 'site-name' ) ),
+            $dialog->getQuestion( 'Site name', $siteName ),
             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
-            $input->getOption( 'site-name' )
+            $siteName
         );
 
         $input->setOption( 'site-name', $siteName );
 
+        $siteDomain = $input->getOption( 'site-domain' );
+        $siteDomain = !empty( $siteDomain ) ? $siteDomain :
+            str_replace( '_', '-', $projectNormalized ) . '.' .
+            trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' );
+
         $siteDomain = $dialog->askAndValidate(
             $output,
-            $dialog->getQuestion( 'Site domain', $input->getOption( 'site-domain' ) ),
+            $dialog->getQuestion( 'Site domain', $siteDomain ),
             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
-            $input->getOption( 'site-domain' )
+            $siteDomain
         );
 
         $input->setOption( 'site-domain', $siteDomain );
 
+        $adminSiteAccess = $input->getOption( 'admin-site-access-name' );
+        $adminSiteAccess = !empty( $adminSiteAccess ) ? $adminSiteAccess :
+            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.admin_siteaccess_name' );
+
         $adminSiteAccess = $dialog->askAndValidate(
             $output,
-            $dialog->getQuestion( 'Admin siteaccess name', $input->getOption( 'admin-site-access-name' ) ),
+            $dialog->getQuestion( 'Admin siteaccess name', $adminSiteAccess ),
             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateAdminSiteAccessName' ),
             false,
-            $input->getOption( 'admin-site-access-name' )
+            $adminSiteAccess
         );
 
         $input->setOption( 'admin-site-access-name', $adminSiteAccess );
@@ -247,12 +260,16 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
+        $databaseHost = $input->getOption( 'database-host' );
+        $databaseHost = !empty( $databaseHost ) ? $databaseHost :
+            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_host' );
+
         $databaseHost = $dialog->askAndValidate(
             $output,
-            $dialog->getQuestion( 'Database host', $input->getOption( 'database-host' ) ),
+            $dialog->getQuestion( 'Database host', $databaseHost ),
             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
-            $input->getOption( 'database-host' )
+            $databaseHost
         );
 
         $input->setOption( 'database-host', $databaseHost );
@@ -265,12 +282,16 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $input->setOption( 'database-port', $databasePort );
 
+        $databaseUser = $input->getOption( 'database-user' );
+        $databaseUser = !empty( $databaseUser ) ? $databaseUser :
+            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_user' );
+
         $databaseUser = $dialog->askAndValidate(
             $output,
-            $dialog->getQuestion( 'Database user', $input->getOption( 'database-user' ) ),
+            $dialog->getQuestion( 'Database user', $databaseUser ),
             array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateNotEmpty' ),
             false,
-            $input->getOption( 'database-user' )
+            $databaseUser
         );
 
         $input->setOption( 'database-user', $databaseUser );
