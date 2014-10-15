@@ -5,20 +5,20 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
 use InvalidArgumentException;
 use ReflectionObject;
 use RuntimeException;
+use Exception;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
-
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
      */
@@ -304,6 +304,16 @@ class GenerateProjectCommand extends GeneratorCommand
         return true;
     }
 
+    /**
+     * Asks a question that fills provided option while taking into account default values and validation
+     *
+     * @param string $optionIdentifier
+     * @param string $optionName
+     * @param string $defaultValue
+     * @param string $validator
+     *
+     * @return string
+     */
     protected function askForData( $optionIdentifier, $optionName, $defaultValue, $validator = null )
     {
         $optionValue = $this->input->getOption( $optionIdentifier );
@@ -352,9 +362,13 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $this->dialog->writeSection( $this->output, 'Project generation' );
 
-        // Generate a project
+        // Generate Netgen More project
         $projectGenerator = new ProjectGenerator( $this->getContainer() );
         $projectGenerator->generate( $this->input, $this->output );
+
+        // Generate Netgen More legacy project
+        $legacyProjectGenerator = new LegacyProjectGenerator( $this->getContainer() );
+        $legacyProjectGenerator->generate( $this->input, $this->output );
 
         // Generate siteaccesses
         $siteAccessGenerator = new SiteAccessGenerator( $this->getContainer() );
@@ -384,7 +398,7 @@ class GenerateProjectCommand extends GeneratorCommand
         // Generate eZ 5 configuration
         $runner( $this->generateYamlConfiguration() );
 
-        // Import MySQL database
+        // Import Netgen More database
         $runner( $this->importDatabase() );
 
         $this->dialog->writeGeneratorSummary( $this->output, $errors );
@@ -400,7 +414,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function installProjectSymlinks()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Installing ngmore project symlinks... ' );
+        $this->output->write( 'Installing Netgen More project symlinks... ' );
 
         try
         {
@@ -426,17 +440,17 @@ class GenerateProjectCommand extends GeneratorCommand
             if ( !$process->isSuccessful() )
             {
                 return array(
-                    '- Run the following command from your installation root to install ngmore project symlinks:',
+                    '- Run the following command from your installation root to install Netgen More project symlinks:',
                     '',
                     '    <comment>php ezpublish/console ngmore:symlink:project</comment>',
                     '',
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an error installing Netgen More project symlinks: ' . $e->getMessage(),
                 '',
             );
         }
@@ -450,7 +464,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function installLegacySymlinks()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Installing ngmore legacy symlinks... ' );
+        $this->output->write( 'Installing Netgen More legacy symlinks... ' );
 
         try
         {
@@ -476,17 +490,17 @@ class GenerateProjectCommand extends GeneratorCommand
             if ( !$process->isSuccessful() )
             {
                 return array(
-                    '- Run the following command from your installation root to install ngmore legacy symlinks:',
+                    '- Run the following command from your installation root to install Netgen More legacy symlinks:',
                     '',
                     '    <comment>php ezpublish/console ngmore:symlink:legacy</comment>',
                     '',
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an installing Netgen More legacy symlinks: ' . $e->getMessage(),
                 '',
             );
         }
@@ -538,12 +552,12 @@ class GenerateProjectCommand extends GeneratorCommand
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             chdir( $currentWorkingDirectory );
 
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an error generating legacy autoloads: ' . $e->getMessage(),
                 '',
             );
         }
@@ -598,10 +612,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an error generating Yaml configuration from legacy: ' . $e->getMessage(),
                 '',
             );
         }
@@ -614,7 +628,7 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function importDatabase()
     {
-        $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/../ezpublish_legacy/extension/' .
+        $databasePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
                         $this->input->getOption( 'extension-name' ) . '/data/dump.sql';
 
         $databaseHost = $this->input->getOption( 'database-host' );
@@ -624,7 +638,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $databaseName = $this->input->getOption( 'database-name' );
 
         $errorOutput = array(
-            '- Run the following command from your installation root to import the database:',
+            '- Run the following command from your installation root to import Netgen More database:',
             '',
             '    <comment>mysql -u ' . $databaseUser . ' -h ' . $databaseHost . ' -p ' . $databaseName . ' < ' . $databasePath . '</comment>',
             '',
@@ -634,7 +648,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $doImport = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
 
         $this->output->writeln( '' );
-        $this->output->write( 'Importing MySQL database... ' );
+        $this->output->write( 'Importing Netgen More database... ' );
 
         try
         {
@@ -683,10 +697,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 return $errorOutput;
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an error importing Netgen More database: ' . $e->getMessage(),
                 '',
             );
         }
@@ -724,10 +738,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error activating bundle inside the kernel: ' . $e->getMessage(),
+                'There was an error enabling bundle inside the kernel: ' . $e->getMessage(),
                 '',
             );
         }
@@ -759,10 +773,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error importing bundle routes: ' . $e->getMessage(),
+                'There was an error importing bundle routing resource: ' . $e->getMessage(),
                 '',
             );
         }
@@ -811,10 +825,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 );
             }
         }
-        catch ( RuntimeException $e )
+        catch ( Exception $e )
         {
             return array(
-                'There was an error running the command: ' . $e->getMessage(),
+                'There was an error installing assets: ' . $e->getMessage(),
                 '',
             );
         }
