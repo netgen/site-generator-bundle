@@ -5,7 +5,6 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
-use Netgen\Bundle\MoreGeneratorBundle\Helper\GitHelper;
 use Symfony\Component\DependencyInjection\Container;
 
 class ProjectGenerator extends Generator
@@ -25,16 +24,7 @@ class ProjectGenerator extends Generator
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
         $bundleNamespace = $input->getOption( 'bundle-namespace' );
         $bundleName = $input->getOption( 'bundle-name' );
-
         $finalBundleLocation = $bundleFolder . '/' . strtr( $bundleNamespace, '\\', '/' );
-
-        $output->writeln( 'Cloning the demo bundle into <comment>' . $finalBundleLocation . '</comment>' );
-
-        GitHelper::cloneRepo(
-            $this->container->getParameter( 'netgen_more.generator.demo_bundle_url' ),
-            $finalBundleLocation
-        );
-        $fileSystem->remove( $finalBundleLocation . '/.git/' );
 
         // Renaming the bundle namespace
 
@@ -43,6 +33,19 @@ class ProjectGenerator extends Generator
                 '',
                 'Renaming <comment>Netgen\Bundle\MoreDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>'
             )
+        );
+
+        $namespaceClientPart = explode( '/', strtr( $bundleNamespace, '\\', '/' ) );
+        $namespaceClientPart = $namespaceClientPart[0];
+
+        $fileSystem->rename(
+            $bundleFolder . '/Netgen',
+            $bundleFolder . '/' . $namespaceClientPart
+        );
+
+        $fileSystem->rename(
+            $bundleFolder . '/' . $namespaceClientPart . '/Bundle/MoreDemoBundle',
+            $finalBundleLocation
         );
 
         FileHelper::searchAndReplaceInFile(
