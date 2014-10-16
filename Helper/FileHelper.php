@@ -50,7 +50,7 @@ class FileHelper
 
         $allFiles = array();
 
-        foreach( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory ) ) as $subItem )
+        foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory ) ) as $subItem )
         {
             /** @var \SplFileInfo $subItem */
             if ( $subItem->isFile() && !$subItem->isLink() )

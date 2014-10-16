@@ -144,7 +144,7 @@ class GenerateProjectCommand extends GeneratorCommand
             'site-domain',
             'Site domain',
             str_replace( '_', '-', $projectNormalized ) . '.' .
-                trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' ),
+            trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' ),
             'validateNotEmpty'
         );
 
