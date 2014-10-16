@@ -92,7 +92,7 @@ class LegacyProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ez_netgen_ngmore_demo</comment> extension name with <comment>' . $extensionName . '</comment>'
+                'Renaming <comment>ez_netgen_ngmore_demo</comment> extension name into <comment>' . $extensionName . '</comment>'
             )
         );
 
@@ -109,7 +109,7 @@ class LegacyProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ngmore.netgen.biz</comment> domain with <comment>' . $siteDomain . '</comment>'
+                'Renaming <comment>ngmore.netgen.biz</comment> domain into <comment>' . $siteDomain . '</comment>'
             )
         );
 
@@ -124,7 +124,7 @@ class LegacyProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Replacing <comment>ngmore_bootstrap3</comment> design with <comment>' . $designName . '</comment>'
+                'Renaming <comment>ngmore_bootstrap3</comment> design into <comment>' . $designName . '</comment>'
             )
         );
 

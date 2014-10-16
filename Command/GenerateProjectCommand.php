@@ -811,7 +811,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateKernel()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Enabling the bundle inside the kernel: ' );
+        $this->output->write( 'Enabling the bundle inside the kernel... ' );
 
         $kernel = $this->getContainer()->get( 'kernel' );
 
@@ -852,7 +852,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateRouting()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Importing the bundle routing resource: ' );
+        $this->output->write( 'Importing the bundle routing resource... ' );
 
         $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
         try

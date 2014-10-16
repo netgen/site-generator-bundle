@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\GitHelper;
 use Symfony\Component\DependencyInjection\Container;
-use RuntimeException;
 
 class ProjectGenerator extends Generator
 {
