@@ -174,14 +174,10 @@ class Validators
 
         self::validateReservedKeywords( $namespace );
 
-        // Validate that the namespace is at least one level deep
-        if ( strpos( $namespace, '\\' ) === false )
+        $explodedNamespace = explode( '\\', $namespace );
+        if ( count( $explodedNamespace ) != 3 || $explodedNamespace[1] !== 'Bundle' )
         {
-            $msg = array();
-            $msg[] = sprintf( 'The namespace must contain a vendor namespace (e.g. "VendorName\%s" instead of simply "%s").', $namespace, $namespace );
-            $msg[] = 'If you\'ve specified a vendor namespace, did you forget to surround it with quotes (init:bundle "Acme\BlogBundle")?';
-
-            throw new InvalidArgumentException( implode( "\n\n", $msg ) );
+            throw new InvalidArgumentException( 'The namespace must be in format <Client>\Bundle\<Project>.' );
         }
 
         return $namespace;
