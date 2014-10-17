@@ -126,12 +126,6 @@ class SiteAccessGenerator extends Generator
 
         $siteName = $input->getOption( 'site-name' );
 
-        $databaseServer = $input->getOption( 'database-host' );
-        $databasePort = $input->getOption( 'database-port' );
-        $databaseUser = $input->getOption( 'database-user' );
-        $databasePassword = $input->getOption( 'database-password' );
-        $databaseName = $input->getOption( 'database-name' );
-
         $allSiteAccesses = array_keys( $validSiteAccesses );
         $allSiteAccesses[] = $adminSiteAccessName;
 
@@ -329,11 +323,11 @@ class SiteAccessGenerator extends Generator
                     'site.ini.append.php',
                     $finalExtensionLocation . '/root_' . $environment . '/settings/override/site.ini.append.php',
                     array(
-                        'databaseServer' => $databaseServer,
-                        'databasePort' => $databasePort,
-                        'databaseUser' => $databaseUser,
-                        'databasePassword' => $databasePassword,
-                        'databaseName' => $databaseName,
+                        'databaseServer' => '',
+                        'databasePort' => '',
+                        'databaseUser' => '',
+                        'databasePassword' => '',
+                        'databaseName' => '',
                         'extensionName' => $extensionName,
                         'defaultAccess' => $mainSiteAccess,
                         'siteList' => $allSiteAccesses,

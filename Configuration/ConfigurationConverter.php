@@ -45,6 +45,16 @@ class ConfigurationConverter
             array( 'resource' => '@' . $bundleName . '/Resources/config/ezpublish.yml' )
         );
 
+        // Database settings
+        $repositoryName = "{$projectName}_repository";
+        $settings['doctrine'] = array(
+            'dbal' => array(
+                'connections' => array(
+                    "{$repositoryName}_connection" => $this->getDoctrineSettings()
+                )
+            )
+        );
+
         $settings['ezpublish'] = array();
         $settings['ezpublish']['siteaccess'] = array();
         $defaultSiteAccess = $this->getParameter( 'SiteSettings', 'DefaultAccess' );
@@ -78,16 +88,6 @@ class ConfigurationConverter
             $settings['ezpublish']['system'][$siteAccess] = array();
         }
 
-        // Database settings
-        $databaseSettings = $this->getGroup( 'DatabaseSettings', 'site.ini', $defaultSiteAccess );
-        $repositoryName = "{$projectName}_repository";
-        $settings['doctrine'] = array(
-            'dbal' => array(
-                'connections' => array(
-                    "{$repositoryName}_connection" => $this->getDoctrineSettings( $databaseSettings )
-                )
-            )
-        );
         $settings['ezpublish']['repositories'] = array(
             $repositoryName => array( 'engine' => 'legacy', 'connection' => "{$repositoryName}_connection" )
         );
@@ -152,44 +152,19 @@ class ConfigurationConverter
     /**
      * Returns settings for Doctrine in respect to database settings coming from legacy.
      *
-     * @param array $databaseSettings
-     *
      * @return array
      */
-    protected function getDoctrineSettings( array $databaseSettings )
+    protected function getDoctrineSettings()
     {
-        $databaseMapping = array(
-            'ezmysqli' => 'pdo_mysql',
-            'eZMySQLiDB' => 'pdo_mysql',
-            'ezmysql' => 'pdo_mysql',
-            'eZMySQLDB' => 'pdo_mysql',
-            'ezpostgresql' => 'pdo_pgsql',
-            'eZPostgreSQL' => 'pdo_pgsql',
-            'postgresql' => 'pdo_pgsql',
-            'pgsql' => 'pdo_pgsql',
-            'oracle' => 'oci8',
-            'ezoracle' => 'oci8'
-        );
-
-        $databaseType = $databaseSettings['DatabaseImplementation'];
-        if ( isset( $databaseMapping[$databaseType] ) )
-            $databaseType = $databaseMapping[$databaseType];
-
-        $databasePassword = $databaseSettings['Password'] != '' ? $databaseSettings['Password'] : null;
-        $doctrineSettings = array(
-            'driver' => $databaseType,
-            'host' => $databaseSettings['Server'],
-            'user' => $databaseSettings['User'],
-            'password' => $databasePassword,
-            'dbname' => $databaseSettings['Database'],
+        return array(
+            'driver' => '%database_driver%',
+            'host' => '%database_host%',
+            'port' => '%database_port%',
+            'user' => '%database_user%',
+            'password' => '%database_password%',
+            'dbname' => '%database_name%',
             'charset' => 'UTF8'
         );
-        if ( isset( $databaseSettings['Port'] ) && !empty( $databaseSettings['Port'] ) )
-            $doctrineSettings['port'] = $databaseSettings['Port'];
-        if ( isset( $databaseSettings['Socket'] ) && $databaseSettings['Socket'] !== 'disabled' )
-            $doctrineSettings['unix_socket'] = $databaseSettings['Socket'];
-
-        return $doctrineSettings;
     }
 
     /**

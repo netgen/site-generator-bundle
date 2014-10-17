@@ -48,11 +48,6 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
                 new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
                 new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
-                new InputOption( 'database-host', '', InputOption::VALUE_REQUIRED, 'Database host' ),
-                new InputOption( 'database-port', '', InputOption::VALUE_OPTIONAL, 'Database port' ),
-                new InputOption( 'database-user', '', InputOption::VALUE_REQUIRED, 'Database user' ),
-                new InputOption( 'database-password', '', InputOption::VALUE_OPTIONAL, 'Database password' ),
-                new InputOption( 'database-name', '', InputOption::VALUE_REQUIRED, 'Database name' ),
                 new InputOption( 'bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace' ),
                 new InputOption( 'bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name' ),
                 new InputOption( 'extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name' ),
@@ -256,20 +251,6 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         $this->input->setOption( 'site-access-list', $siteAccessList );
-
-        $this->output->writeln(
-            array(
-                '',
-                'Input the database connection details.',
-                ''
-            )
-        );
-
-        $this->askForData( 'database-host', 'Database host', $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_host' ), 'validateNotEmpty' );
-        $this->askForData( 'database-port', 'Database port', '' );
-        $this->askForData( 'database-user', 'Database user', $this->getContainer()->getParameter( 'netgen_more.generator.defaults.database_user' ), 'validateNotEmpty' );
-        $this->askForData( 'database-password', 'Database password', '' );
-        $this->askForData( 'database-name', 'Database name', '', 'validateNotEmpty' );
 
         $this->output->writeln(
             array(
@@ -642,11 +623,11 @@ class GenerateProjectCommand extends GeneratorCommand
         $databasePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
                         $this->input->getOption( 'extension-name' ) . '/data/dump.sql';
 
-        $databaseHost = $this->input->getOption( 'database-host' );
-        $databasePort = $this->input->getOption( 'database-port' );
-        $databaseUser = $this->input->getOption( 'database-user' );
-        $databasePassword = $this->input->getOption( 'database-password' );
-        $databaseName = $this->input->getOption( 'database-name' );
+        $databaseHost = $this->getContainer()->getParameter( 'database_host' );
+        $databasePort = $this->getContainer()->getParameter( 'database_port' );
+        $databaseUser = $this->getContainer()->getParameter( 'database_user' );
+        $databasePassword = $this->getContainer()->getParameter( 'database_password' );
+        $databaseName = $this->getContainer()->getParameter( 'database_name' );
 
         $errorOutput = array(
             '- Run the following command from your installation root to import Netgen More database:',
