@@ -10,7 +10,6 @@ use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Manipulator\KernelManipulator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
 use InvalidArgumentException;
 use ReflectionObject;
@@ -121,7 +120,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 '',
-                'Input the site name, site domain and admin siteaccess name. Site name will be visible',
+                'Input the site name, and admin siteaccess name. Site name will be visible',
                 'as the title of the pages in eZ Publish, so you are free to input whatever you like here.',
                 ''
             )
@@ -785,18 +784,23 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln( '' );
         $this->output->write( 'Enabling the bundle inside the kernel... ' );
 
-        $kernel = $this->getContainer()->get( 'kernel' );
-
-        $manipulator = new KernelManipulator( $kernel );
         try
         {
             $bundleFQN = $this->input->getOption( 'bundle-namespace' ) . '\\' . $this->input->getOption( 'bundle-name' );
-            $updated = $manipulator->addBundle( $bundleFQN );
+
+            $reflected = new ReflectionObject( $this->getContainer()->get( 'kernel' ) );
+
+            $fileContent = file_get_contents( $reflected->getFileName() );
+            $fileContent = str_replace(
+                '$bundles[] = new \Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
+                '$bundles[] = new \\' . $bundleFQN . '();',
+                $fileContent
+            );
+
+            $updated = file_put_contents( $reflected->getFileName(), $fileContent );
 
             if ( !$updated )
             {
-                $reflected = new ReflectionObject( $kernel );
-
                 return array(
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
