@@ -782,7 +782,9 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateKernel()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Enabling the bundle inside the kernel... ' );
+        $this->output->write( 'Enabling the bundle inside the kernel and ezpublish.yml file... ' );
+
+        $errorArray = array();
 
         try
         {
@@ -801,7 +803,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if ( !$updated )
             {
-                return array(
+                $errorArray = array(
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, replacing the existing NetgenMoreDemoBundle:',
@@ -809,6 +811,36 @@ class GenerateProjectCommand extends GeneratorCommand
                     '    <comment>$bundles[] = new \\' . $bundleFQN . '();</comment>',
                     '',
                 );
+            }
+
+            $configFilePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/ezpublish.yml';
+            $fileContent = file_get_contents( $configFilePath );
+            $fileContent = str_replace(
+                "resource: '@NetgenMoreDemoBundle/Resources/config/ezpublish.yml'",
+                "resource: '@" . $this->input->getOption( 'bundle-name' ) . "/Resources/config/ezpublish.yml'",
+                $fileContent
+            );
+
+            $updated = file_put_contents( $configFilePath, $fileContent );
+
+            if ( !$updated )
+            {
+                $errorArray = array_merge(
+                    $errorArray,
+                    array(
+                        '- Edit <comment>' . $configFilePath . '</comment>',
+                        '  and add the following import at the top of the file replacing the existing',
+                        '  NetgenMoreDemoBundle import:',
+                        '',
+                        '    <comment>' . "resource: '@" . $this->input->getOption( 'bundle-name' ) . "/Resources/config/ezpublish.yml'" . '</comment>',
+                        '',
+                    )
+                );
+            }
+
+            if ( !empty( $errorArray ) )
+            {
+                return $errorArray;
             }
         }
         catch ( Exception $e )
