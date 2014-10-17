@@ -548,64 +548,6 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Generates eZ 5 configuration
-     *
-     *
-     * @return array
-     */
-    protected function generateYamlConfiguration()
-    {
-        $this->output->writeln( '' );
-        $this->output->write( 'Generating Yaml configuration from legacy... ' );
-
-        try
-        {
-            $project = $this->input->getOption( 'project' );
-            $adminSiteAccess = $this->input->getOption( 'admin-site-access-name' );
-            $bundleName = $this->input->getOption( 'bundle-name' );
-
-            $processBuilder = new ProcessBuilder(
-                array(
-                    'php',
-                    'ezpublish/console',
-                    'ngmore:generate:configuration',
-                    '--project=' . $project,
-                    '--admin-site-access-name=' . $adminSiteAccess,
-                    '--bundle-name=' . $bundleName,
-                    '--quiet'
-                )
-            );
-
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout( 3600 );
-            $process->run(
-                function ( $type, $buffer )
-                {
-                    echo $buffer;
-                }
-            );
-
-            if ( !$process->isSuccessful() )
-            {
-                return array(
-                    '- Run the following command from your installation root to generate Yaml configuration from legacy:',
-                    '',
-                    '    <comment>php ezpublish/console ngmore:generate:configuration --project=' . $project . ' --admin-site-access-name=' . $adminSiteAccess . ' --bundle-name=' . $bundleName . '</comment>',
-                    '',
-                );
-            }
-        }
-        catch ( Exception $e )
-        {
-            return array(
-                'There was an error generating Yaml configuration from legacy: ' . $e->getMessage(),
-                '',
-            );
-        }
-    }
-
-    /**
      * Imports MySQL database
      *
      * @return array
