@@ -104,7 +104,7 @@ class LegacyProjectGenerator extends Generator
 
         // Search and replace "ngmore.netgen.biz" with the site domain
 
-        $siteDomain = $this->container->getParameter( 'netgen_more.main_site_domain' );
+        $siteDomain = $input->getOption( 'site-domain' );
 
         $output->writeln(
             array(

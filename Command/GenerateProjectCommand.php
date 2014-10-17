@@ -44,6 +44,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption( 'client', '', InputOption::VALUE_REQUIRED, 'Client name' ),
                 new InputOption( 'project', '', InputOption::VALUE_REQUIRED, 'Project name' ),
                 new InputOption( 'site-name', '', InputOption::VALUE_REQUIRED, 'Site name' ),
+                new InputOption( 'site-domain', '', InputOption::VALUE_REQUIRED, 'Site domain' ),
                 new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
                 new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
                 new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
@@ -131,6 +132,14 @@ class GenerateProjectCommand extends GeneratorCommand
             'site-name',
             'Site name',
             ucfirst( str_replace( '_', ' ', $projectNormalized ) ),
+            'validateNotEmpty'
+        );
+
+        $this->askForData(
+            'site-domain',
+            'Site domain',
+            str_replace( '_', '-', $projectNormalized ) . '.' .
+            trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' ),
             'validateNotEmpty'
         );
 

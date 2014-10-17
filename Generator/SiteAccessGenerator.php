@@ -31,7 +31,7 @@ class SiteAccessGenerator extends Generator
         $legacyRootDir = $this->container->getParameter( 'ezpublish_legacy.root_dir' );
 
         $designName = $input->getOption( 'design-name' );
-        $siteDomain = $this->container->getParameter( 'netgen_more.main_site_domain' );
+        $siteDomain = $input->getOption( 'site-domain' );
 
         // Generating siteaccesses
 
