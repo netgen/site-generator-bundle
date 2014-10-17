@@ -804,7 +804,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
-                    '  method, just before <comment>return $bundles;</comment> line:',
+                    '  method, replacing the existing NetgenMoreDemoBundle:',
                     '',
                     '    <comment>$bundles[] = new \\' . $bundleFQN . '();</comment>',
                     '',
