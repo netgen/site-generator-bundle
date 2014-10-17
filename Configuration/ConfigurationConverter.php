@@ -121,8 +121,7 @@ class ConfigurationConverter
             $settings['ezpublish']['imagemagick']['enabled'] = true;
             $imageMagickExecutablePath = $this->getParameter( 'ImageMagick', 'ExecutablePath', 'image.ini', $defaultSiteAccess );
             $imageMagickExecutable = $this->getParameter( 'ImageMagick', 'Executable', 'image.ini', $defaultSiteAccess );
-            $settings['ezpublish']['imagemagick']['path'] = rtrim( $imageMagickExecutablePath, '/\\' ) . '/' . $imageMagickExecutable;
-            $settings['ezpublish']['imagemagick']['filters'] = $this->getImageMagickFilters( $defaultSiteAccess );
+            $settings['ezpublish']['imagemagick']['path'] = '%imagemagick_path%';
         }
         else
         {
