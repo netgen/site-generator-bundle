@@ -61,6 +61,6 @@ class GenerateConfigurationCommand extends GeneratorCommand
             $input->getOption( 'bundle-name' )
         );
 
-        $output->writeln( 'Generated <comment>ezpublish.yml</comment> and related environment config files!' );
+        $output->writeln( 'Generated <comment>ezpublish.yml</comment> config file!' );
     }
 }

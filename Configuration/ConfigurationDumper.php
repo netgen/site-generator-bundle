@@ -76,33 +76,7 @@ class ConfigurationDumper implements ConfigDumperInterface
             $this->backupConfigFile( $mainConfigFile );
         }
 
-        // We will transfer siteaccess match settings to environment specific files
-        $siteAccessMatchSettings = $configArray['ezpublish']['siteaccess']['match'];
-        unset( $configArray['ezpublish']['siteaccess']['match'] );
-
         file_put_contents( $mainConfigFile, Yaml::dump( $configArray, 7 ) );
-
-        // Now generates environment config files
-        foreach ( array_keys( $this->environments ) as $environment )
-        {
-            $configFile = "$configPath/{$environment}/ezpublish.yml";
-            // Add the import statement for the root YAML file
-            $envConfigArray = array(
-                'imports' => array(
-                    array( 'resource' => '../ezpublish.yml' )
-                )
-            );
-
-            $envConfigArray['ezpublish']['siteaccess']['match'] = $siteAccessMatchSettings;
-
-            // File already exists, handle possible options
-            if ( $this->fileSystem->exists( $configFile ) && $options & static::OPT_BACKUP_CONFIG )
-            {
-                $this->backupConfigFile( $configFile );
-            }
-
-            file_put_contents( $configFile, Yaml::dump( $envConfigArray, 14 ) );
-        }
 
         // Handling %secret%
         $this->sensioConfigurator->mergeParameters(
