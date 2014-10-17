@@ -782,7 +782,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateKernel()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Enabling the bundle inside the kernel and ezpublish.yml file... ' );
+        $this->output->write( 'Enabling the bundle inside the kernel and <comment>ezpublish.yml</comment> file... ' );
 
         $errorArray = array();
 
@@ -846,7 +846,7 @@ class GenerateProjectCommand extends GeneratorCommand
         catch ( Exception $e )
         {
             return array(
-                'There was an error enabling bundle inside the kernel: ' . $e->getMessage(),
+                'There was an error enabling bundle inside the kernel and <comment>ezpublish.yml</comment> file: ' . $e->getMessage(),
                 '',
             );
         }
