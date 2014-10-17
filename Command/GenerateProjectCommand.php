@@ -10,6 +10,7 @@ use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
 use InvalidArgumentException;
 use ReflectionObject;
@@ -345,6 +346,10 @@ class GenerateProjectCommand extends GeneratorCommand
         $siteAccessGenerator = new SiteAccessGenerator( $this->getContainer() );
         $siteAccessGenerator->generate( $this->input, $this->output );
 
+        // Generate configuration
+        $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
+        $configurationGenerator->generate( $this->input, $this->output );
+
         $errors = array();
         $runner = $this->dialog->getRunner( $this->output, $errors );
 
@@ -365,9 +370,6 @@ class GenerateProjectCommand extends GeneratorCommand
 
         // Generate legacy autoloads
         $runner( $this->generateLegacyAutoloads() );
-
-        // Generate eZ 5 configuration
-        $runner( $this->generateYamlConfiguration() );
 
         $errorCount = count( $errors );
 
@@ -782,9 +784,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function updateKernel()
     {
         $this->output->writeln( '' );
-        $this->output->write( 'Enabling the bundle inside the kernel and <comment>ezpublish.yml</comment> file... ' );
-
-        $errorArray = array();
+        $this->output->write( 'Enabling the bundle inside the kernel... ' );
 
         try
         {
@@ -803,7 +803,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if ( !$updated )
             {
-                $errorArray = array(
+                return array(
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, replacing the existing NetgenMoreDemoBundle:',
@@ -812,41 +812,11 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-
-            $configFilePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/ezpublish.yml';
-            $fileContent = file_get_contents( $configFilePath );
-            $fileContent = str_replace(
-                "resource: '@NetgenMoreDemoBundle/Resources/config/ezpublish.yml'",
-                "resource: '@" . $this->input->getOption( 'bundle-name' ) . "/Resources/config/ezpublish.yml'",
-                $fileContent
-            );
-
-            $updated = file_put_contents( $configFilePath, $fileContent );
-
-            if ( !$updated )
-            {
-                $errorArray = array_merge(
-                    $errorArray,
-                    array(
-                        '- Edit <comment>' . $configFilePath . '</comment>',
-                        '  and add the following import at the top of the file replacing the existing',
-                        '  NetgenMoreDemoBundle import:',
-                        '',
-                        '    <comment>' . "resource: '@" . $this->input->getOption( 'bundle-name' ) . "/Resources/config/ezpublish.yml'" . '</comment>',
-                        '',
-                    )
-                );
-            }
-
-            if ( !empty( $errorArray ) )
-            {
-                return $errorArray;
-            }
         }
         catch ( Exception $e )
         {
             return array(
-                'There was an error enabling bundle inside the kernel and <comment>ezpublish.yml</comment> file: ' . $e->getMessage(),
+                'There was an error enabling bundle inside the kernel: ' . $e->getMessage(),
                 '',
             );
         }
