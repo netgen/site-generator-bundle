@@ -529,7 +529,6 @@ class ConfigurationConverter
                 throw new InvalidArgumentException( "HostUriMatchMapItems", "Invalid value for legacy setting in site.ini" );
             }
 
-            $domain = $hostUriMatchMapItemArray[0];
             $uriPart = $hostUriMatchMapItemArray[1];
             $siteAccess = $hostUriMatchMapItemArray[2];
 
@@ -538,14 +537,14 @@ class ConfigurationConverter
                 $matchArray['Compound\LogicalAnd'][$siteAccess] = array(
                     'matchers' => array(
                         'Map\URI' => array( $uriPart => true ),
-                        'Map\Host' => array( $domain => true )
+                        'Map\Host' => array( '%netgen_more.main_site_domain%' => true )
                     ),
                     'match' => $siteAccess
                 );
             }
             else
             {
-                $matchArray['Map\Host'][$domain] = $siteAccess;
+                $matchArray['Map\Host']['%netgen_more.main_site_domain%'] = $siteAccess;
             }
         }
 
