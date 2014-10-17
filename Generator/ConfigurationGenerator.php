@@ -18,13 +18,6 @@ class ConfigurationGenerator extends Generator
      */
     public function generate( InputInterface $input, OutputInterface $output )
     {
-        $output->writeln(
-            array(
-                '',
-                'Generating siteaccesses...'
-            )
-        );
-
         $settings = array();
 
         // Resource imports

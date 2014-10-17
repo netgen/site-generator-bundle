@@ -35,13 +35,6 @@ class SiteAccessGenerator extends Generator
 
         // Generating siteaccesses
 
-        $output->writeln(
-            array(
-                '',
-                'Generating siteaccesses...'
-            )
-        );
-
         if ( !$fileSystem->exists( $finalExtensionLocation . '/settings/_skeleton_siteaccess' ) )
         {
             throw new RuntimeException( 'Siteaccess skeleton directory not found. Aborting...' );
