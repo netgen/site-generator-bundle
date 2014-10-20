@@ -43,7 +43,7 @@ class ConfigurationGenerator extends Generator
 
         // HTTP cache and ImageMagick settings
 
-        $settings['ezpublish']['http_cache']['purge_type'] = 'local';
+        $settings['ezpublish']['http_cache']['purge_type'] = '%http_cache.purge_type%';
         $settings['ezpublish']['imagemagick']['enabled'] = true;
         $settings['ezpublish']['imagemagick']['path'] = '%imagemagick_path%';
 
