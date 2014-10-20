@@ -88,8 +88,11 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['siteaccess']['match'] = array(
             'Compound\LogicalAnd' => array(),
-            'Map\Host' => array()
+            'Map\Host' => array(),
+            'URIElement' => '1'
         );
+
+        $siteDomain = $input->getOption( 'site-domain' );
 
         foreach ( $settings['ezpublish']['siteaccess']['list'] as $siteAccessName )
         {
@@ -98,14 +101,14 @@ class ConfigurationGenerator extends Generator
                 $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
                     'matchers' => array(
                         'Map\URI' => array( $siteAccessName => true ),
-                        'Map\Host' => array( '%netgen_more.main_site_domain%' => true )
+                        'Map\Host' => array( $siteDomain => true )
                     ),
                     'match' => $siteAccessName
                 );
             }
             else
             {
-                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%netgen_more.main_site_domain%'] = $siteAccessName;
+                $settings['ezpublish']['siteaccess']['match']['Map\Host'][$siteDomain] = $siteAccessName;
             }
         }
 
@@ -143,8 +146,7 @@ class ConfigurationGenerator extends Generator
         $webConfigurator->mergeParameters(
             array(
                 // Step #1 is SecretStep
-                'secret' => $webConfigurator->getStep( 1 )->secret,
-                'netgen_more.main_site_domain' => $input->getOption( 'site-domain' )
+                'secret' => $webConfigurator->getStep( 1 )->secret
             )
         );
         $webConfigurator->write();
