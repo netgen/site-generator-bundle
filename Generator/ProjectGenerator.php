@@ -122,9 +122,10 @@ class ProjectGenerator extends Generator
 
         // Renaming the siteaccess group names
 
-        $project = strtolower( $input->getOption( 'project' ) );
-        $frontendGroupName = $project . '_frontend_group';
-        $administrationGroupName = $project . '_administration_group';
+        $project = $input->getOption( 'project' );
+        $projectNormalized = Container::underscore( $project );
+        $frontendGroupName = $projectNormalized . '_frontend_group';
+        $administrationGroupName = $projectNormalized . '_administration_group';
 
         $output->writeln(
             array(
