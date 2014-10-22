@@ -6,7 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use RuntimeException;
 
-class SiteAccessGenerator extends Generator
+class LegacySiteAccessGenerator extends Generator
 {
     /**
      * Generates the siteaccesses

@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\SiteAccessGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacySiteAccessGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
 use InvalidArgumentException;
@@ -351,9 +351,9 @@ class GenerateProjectCommand extends GeneratorCommand
         $legacyProjectGenerator = new LegacyProjectGenerator( $this->getContainer() );
         $legacyProjectGenerator->generate( $this->input, $this->output );
 
-        // Generate siteaccesses
-        $siteAccessGenerator = new SiteAccessGenerator( $this->getContainer() );
-        $siteAccessGenerator->generate( $this->input, $this->output );
+        // Generate legacy siteaccesses
+        $legacySiteAccessGenerator = new LegacySiteAccessGenerator( $this->getContainer() );
+        $legacySiteAccessGenerator->generate( $this->input, $this->output );
 
         // Generate configuration
         $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
