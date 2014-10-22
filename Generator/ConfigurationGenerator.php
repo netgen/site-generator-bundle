@@ -194,6 +194,7 @@ class ConfigurationGenerator extends Generator
         }
 
         return array(
+            'tracking' => false,
             'caches' => array(
                 'default' => array(
                     'drivers' => $handlers,
