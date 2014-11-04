@@ -380,6 +380,9 @@ class GenerateProjectCommand extends GeneratorCommand
         // Generate legacy autoloads
         $runner( $this->generateLegacyAutoloads() );
 
+        // Various cleanups
+        $runner( $this->cleanup() );
+
         $errorCount = count( $errors );
 
         // Import Netgen More database
@@ -551,6 +554,34 @@ class GenerateProjectCommand extends GeneratorCommand
 
             return array(
                 'There was an error generating legacy autoloads: ' . $e->getMessage(),
+                '',
+            );
+        }
+    }
+
+    /**
+     * Cleans up various leftover files
+     *
+     * @return array
+     */
+    protected function cleanup()
+    {
+        $this->output->writeln( '' );
+        $this->output->write( 'Cleaning up... ' );
+
+        $kernelDir = $this->getContainer()->getParameter( 'kernel.root_dir' );
+        $legacyDir = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' );
+
+        try
+        {
+            $fileSystem = $this->getContainer()->get( 'filesystem' );
+            $fileSystem->remove( $kernelDir . '/../web/bundles/netgenmoredemo' );
+            $fileSystem->remove( $legacyDir . '/extension/ez_netgen_ngmore_demo' );
+        }
+        catch ( Exception $e )
+        {
+            return array(
+                'There was an error cleaning up: ' . $e->getMessage(),
                 '',
             );
         }
