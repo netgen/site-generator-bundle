@@ -126,6 +126,7 @@ class ProjectGenerator extends Generator
         $projectNormalized = Container::underscore( $project );
         $frontendGroupName = $projectNormalized . '_frontend_group';
         $administrationGroupName = $projectNormalized . '_administration_group';
+        $globalGroupName = $projectNormalized . '_group';
 
         $output->writeln(
             array(
@@ -149,8 +150,21 @@ class ProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_administration_group',
-            $administrationGroupName
+            'ngmore_group',
+            $globalGroupName
+        );
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>ngmore_group</comment> name into <comment>' . $globalGroupName . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'ngmore_group',
+            $globalGroupName
         );
     }
 }
