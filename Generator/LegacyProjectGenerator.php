@@ -5,7 +5,6 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
-use Netgen\Bundle\MoreGeneratorBundle\Helper\GitHelper;
 use RuntimeException;
 
 class LegacyProjectGenerator extends Generator
@@ -20,7 +19,7 @@ class LegacyProjectGenerator extends Generator
     {
         $fileSystem = $this->container->get( 'filesystem' );
 
-        // Cloning the legacy extension
+        // Renaming the legacy extension
 
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
         $bundleNamespace = $input->getOption( 'bundle-namespace' );
@@ -29,20 +28,17 @@ class LegacyProjectGenerator extends Generator
 
         $extensionFolder = $finalBundleLocation . '/ezpublish_legacy';
         $extensionName = $input->getOption( 'extension-name' );
+        $originalExtensionLocation = $extensionFolder . '/ez_netgen_ngmore_demo';
         $finalExtensionLocation = $extensionFolder . '/' . $extensionName;
 
         $output->writeln(
             array(
                 '',
-                'Cloning the demo extension into <comment>' . $finalExtensionLocation . '</comment>'
+                'Renaming the demo extension into <comment>' . $finalExtensionLocation . '</comment>'
             )
         );
 
-        GitHelper::cloneRepo(
-            $this->container->getParameter( 'netgen_more.generator.demo_extension_url' ),
-            $finalExtensionLocation
-        );
-        $fileSystem->remove( $finalExtensionLocation . '/.git/' );
+        $fileSystem->rename( $originalExtensionLocation, $finalExtensionLocation );
 
         // Symlinking the legacy extension to eZ Publish legacy extension folder
 
@@ -67,7 +63,7 @@ class LegacyProjectGenerator extends Generator
             $finalLegacyExtensionLocation
         );
 
-        // Renaming the design folder (and removing ngmore_bootstrap2 design)
+        // Renaming the design folder
 
         $designName = $input->getOption( 'design-name' );
         $finalDesignLocation = $finalExtensionLocation . '/design/' . $designName;
@@ -85,7 +81,6 @@ class LegacyProjectGenerator extends Generator
         }
 
         $fileSystem->rename( $finalExtensionLocation . '/design/ngmore_bootstrap3', $finalDesignLocation );
-        $fileSystem->remove( $finalExtensionLocation . '/design/ngmore_bootstrap2' );
 
         // Search and replace "ez_netgen_ngmore_demo" with the extension name
 
