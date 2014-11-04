@@ -390,7 +390,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
         if ( count( $errors ) == $errorCount )
         {
-            // Deletes the data folder from legacy extension
+            // Deletes the data folder
             $runner( $this->deleteDataFolder() );
         }
 
@@ -563,8 +563,7 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function importDatabase()
     {
-        $databasePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
-                        $this->input->getOption( 'extension-name' ) . '/data/dump.sql';
+        $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data/dump.sql';
 
         $databaseHost = $this->getContainer()->getParameter( 'database_host' );
         $databasePort = $this->getContainer()->getParameter( 'database_port' );
@@ -648,8 +647,7 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function moveStorageFolder()
     {
-        $storagePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
-                        $this->input->getOption( 'extension-name' ) . '/data/var/ezdemo_site';
+        $storagePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data/var/ezdemo_site';
 
         $finalStoragePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/var/ezdemo_site';
 
@@ -686,27 +684,26 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Deletes the data folder from legacy extension
+     * Deletes the data folder
      *
      * @return array
      */
     protected function deleteDataFolder()
     {
-        $dataPath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/extension/' .
-                        $this->input->getOption( 'extension-name' ) . '/data';
+        $dataPath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data';
 
         $errorOutput = array(
-            '- Run the following command from your installation root to delete the data folder from legacy extension:',
+            '- Run the following command from your installation root to delete the data folder:',
             '',
             '    <comment>rm -r ' . $dataPath . '</comment>',
             '',
         );
 
         $this->output->writeln( '' );
-        $doDelete = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to delete the data folder from legacy extension', 'no', '?' ), false );
+        $doDelete = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to delete the data folder', 'no', '?' ), false );
 
         $this->output->writeln( '' );
-        $this->output->write( 'Deleting the folder from legacy extension... ' );
+        $this->output->write( 'Deleting the folder... ' );
 
         try
         {
@@ -721,7 +718,7 @@ class GenerateProjectCommand extends GeneratorCommand
         catch ( Exception $e )
         {
             return array(
-                'There was an error deleting the data folder from legacy extension: ' . $e->getMessage(),
+                'There was an error deleting the data folder: ' . $e->getMessage(),
                 '',
             );
         }
