@@ -4,6 +4,7 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
+use DirectoryIterator;
 use RuntimeException;
 
 class LegacySiteAccessGenerator extends Generator
@@ -146,10 +147,35 @@ class LegacySiteAccessGenerator extends Generator
 
         foreach ( $validSiteAccesses as $siteAccessName => $siteAccessLanguages )
         {
-            $fileSystem->mirror(
-                $finalExtensionLocation . '/settings/_skeleton_siteaccess',
-                $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName
-            );
+            if ( $siteAccessName === $mainSiteAccess )
+            {
+                $fileSystem->mirror(
+                    $finalExtensionLocation . '/settings/_skeleton_siteaccess',
+                    $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName
+                );
+            }
+            else
+            {
+                $fileSystem->mkdir( $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName );
+                $fileSystem->copy(
+                    $finalExtensionLocation . '/settings/_skeleton_siteaccess/site.ini.append.php',
+                    $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php'
+                );
+
+                foreach ( new DirectoryIterator( $finalExtensionLocation . '/settings/_skeleton_siteaccess' ) as $item )
+                {
+                    if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                    {
+                        $fileSystem->symlink(
+                            $fileSystem->makePathRelative(
+                                $finalExtensionLocation . '/settings/siteaccess/' . $mainSiteAccess,
+                                $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName
+                            ) . $item->getBasename(),
+                            $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/' . $item->getBasename()
+                        );
+                    }
+                }
+            }
 
             $this->setSkeletonDirs( $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName );
 
@@ -168,10 +194,35 @@ class LegacySiteAccessGenerator extends Generator
 
             foreach ( $availableEnvironments as $environment )
             {
-                $fileSystem->mirror(
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
-                );
+                if ( $siteAccessName === $mainSiteAccess )
+                {
+                    $fileSystem->mirror(
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
+                    );
+                }
+                else
+                {
+                    $fileSystem->mkdir( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
+                    $fileSystem->copy(
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess/site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php'
+                    );
+
+                    foreach ( new DirectoryIterator( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess' ) as $item )
+                    {
+                        if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                        {
+                            $fileSystem->symlink(
+                                $fileSystem->makePathRelative(
+                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $mainSiteAccess,
+                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
+                                ) . $item->getBasename(),
+                                $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/' . $item->getBasename()
+                            );
+                        }
+                    }
+                }
 
                 $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
 
