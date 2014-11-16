@@ -139,14 +139,14 @@ class GenerateProjectCommand extends GeneratorCommand
             'site-domain',
             'Site domain',
             str_replace( '_', '-', $projectNormalized ) . '.' .
-            trim( $this->getContainer()->getParameter( 'netgen_more.generator.defaults.domain_suffix' ), '.' ),
+            trim( $this->getContainer()->getParameter( 'ngmore.generator.defaults.domain_suffix' ), '.' ),
             'validateNotEmpty'
         );
 
         $adminSiteAccess = $this->askForData(
             'admin-site-access-name',
             'Admin siteaccess name',
-            $this->getContainer()->getParameter( 'netgen_more.generator.defaults.admin_siteaccess_name' ),
+            $this->getContainer()->getParameter( 'ngmore.generator.defaults.admin_siteaccess_name' ),
             'validateAdminSiteAccessName'
         );
 
