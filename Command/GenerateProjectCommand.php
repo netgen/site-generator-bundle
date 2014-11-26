@@ -158,6 +158,7 @@ class GenerateProjectCommand extends GeneratorCommand
         if ( !empty( $siteAccessListString ) )
         {
             $siteAccessListStringArray = explode( '|', $siteAccessListString );
+            $siteAccesses = array();
             foreach ( $siteAccessListStringArray as $siteAccessListStringArrayItem )
             {
                 if ( empty( $siteAccessListStringArrayItem ) )
@@ -173,6 +174,8 @@ class GenerateProjectCommand extends GeneratorCommand
 
                 foreach ( $explodedSiteAccessItem as $index => $siteAccessOrLanguage )
                 {
+                    $siteAccessLanguages = array();
+
                     if ( empty( $siteAccessOrLanguage ) )
                     {
                         throw new RuntimeException( 'Invalid site-access-list-string option provided' );
@@ -185,12 +188,24 @@ class GenerateProjectCommand extends GeneratorCommand
                             throw new InvalidArgumentException( 'Regular siteaccess name cannot be equal to "' . $adminSiteAccess . '".' );
                         }
 
+                        if ( in_array( $siteAccessOrLanguage, $siteAccesses ) )
+                        {
+                            throw new InvalidArgumentException( 'Duplicate siteaccess name found: "' . $siteAccessOrLanguage . '".' );
+                        }
+
                         Validators::validateSiteAccessName( $siteAccessOrLanguage );
+                        $siteAccesses[] = $siteAccessOrLanguage;
                         continue;
+                    }
+
+                    if ( in_array( $siteAccessOrLanguage, $siteAccessLanguages ) )
+                    {
+                        throw new InvalidArgumentException( 'Duplicate language code found in ' . $explodedSiteAccessItem[0] . ' siteaccess: "' . $siteAccessOrLanguage . '".' );
                     }
 
                     Validators::validateLanguageCode( $siteAccessOrLanguage );
                     $siteAccessList[$explodedSiteAccessItem[0]][] = $siteAccessOrLanguage;
+                    $siteAccessLanguages[] = $siteAccessOrLanguage;
                 }
             }
         }
@@ -225,6 +240,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
                 if ( !empty( $siteAccess ) )
                 {
+                    if ( in_array( $siteAccess, array_keys( $siteAccessList ) ) )
+                    {
+                        $this->output->writeln( '<error> Siteaccess name already added </error>' );
+                        continue;
+                    }
+
                     $siteAccessList[$siteAccess] = array();
 
                     $languageList = array();
@@ -239,6 +260,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
                         if ( !empty( $language ) )
                         {
+                            if ( in_array( $language, $languageList ) )
+                            {
+                                $this->output->writeln( '<error> Language code already added </error>' );
+                                continue;
+                            }
+
                             $languageList[] = $language;
                         }
                     }
