@@ -38,10 +38,13 @@ class ProjectGenerator extends Generator
         $namespaceClientPart = explode( '/', strtr( $bundleNamespace, '\\', '/' ) );
         $namespaceClientPart = $namespaceClientPart[0];
 
-        $fileSystem->rename(
-            $bundleFolder . '/Netgen',
-            $bundleFolder . '/' . $namespaceClientPart
-        );
+        if ( strtolower( $namespaceClientPart ) !== 'netgen' )
+        {
+            $fileSystem->rename(
+                $bundleFolder . '/Netgen',
+                $bundleFolder . '/' . $namespaceClientPart
+            );
+        }
 
         $fileSystem->rename(
             $bundleFolder . '/' . $namespaceClientPart . '/Bundle/MoreDemoBundle',
