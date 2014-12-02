@@ -72,7 +72,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output = $output;
         $this->dialog = $this->getDialogHelper();
 
-        $this->dialog->writeSection( $this->output, 'Welcome to the Netgen More project generator' );
+        $this->writeSection( $this->output, 'Welcome to the Netgen More project generator' );
 
         while ( !$this->doInteract() )
         {
@@ -292,7 +292,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $bundleNamespace = $this->askForData( 'bundle-namespace', 'Bundle namespace', $client . "\\Bundle\\" . $project . 'Bundle', 'validateBundleNamespace' );
         $bundleName = $this->askForData( 'bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName' );
 
-        $this->dialog->writeSection( $this->output, 'Summary before generation' );
+        $this->writeSection( $this->output, 'Summary before generation' );
 
         // Summary
         $this->output->writeln(
@@ -368,7 +368,7 @@ class GenerateProjectCommand extends GeneratorCommand
             return 1;
         }
 
-        $this->dialog->writeSection( $this->output, 'Project generation' );
+        $this->writeSection( $this->output, 'Project generation' );
 
         // Generate Netgen More project
         $projectGenerator = new ProjectGenerator( $this->getContainer() );
@@ -387,7 +387,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $configurationGenerator->generate( $this->input, $this->output );
 
         $errors = array();
-        $runner = $this->dialog->getRunner( $this->output, $errors );
+        $runner = $this->getRunner( $this->output, $errors );
 
         // Register the bundle in the EzPublishKernel class
         $runner( $this->updateKernel() );
@@ -424,7 +424,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $runner( $this->deleteDataFolder() );
         }
 
-        $this->dialog->writeGeneratorSummary( $this->output, $errors );
+        $this->writeGeneratorSummary( $this->output, $errors );
 
         return 0;
     }
