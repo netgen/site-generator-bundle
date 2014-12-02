@@ -118,6 +118,9 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['system'][$groupName]['repository'] = $doctrineRepositoryName;
         $settings['ezpublish']['system'][$groupName]['var_dir'] = 'var/ezdemo_site';
+        $settings['ezpublish']['system'][$groupName]['http_cache'] = array(
+            'purge_servers' => '%http_cache.purge_servers%'
+        );
 
         $settings['ezpublish']['system'][$frontendGroupName]['translation_siteaccesses'] = $siteAccessNames;
 
