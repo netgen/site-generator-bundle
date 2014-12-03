@@ -55,7 +55,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
      * Instantiates and returns a question
      *
      * @param string $questionName
-     * @param bool $defaultValue
+     * @param string $defaultValue
      * @param string $validator
      *
      * @return \Symfony\Component\Console\Question\Question
