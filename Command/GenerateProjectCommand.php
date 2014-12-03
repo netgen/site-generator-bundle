@@ -642,7 +642,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $process->setTimeout( 3600 );
 
             $process->setEnv( array( "LANG" => "en_US.UTF-8" ) );
-            $process->setStdin( file_get_contents( $databasePath ) );
+            $process->setInput( file_get_contents( $databasePath ) );
 
             $process->run(
                 function ( $type, $buffer )
