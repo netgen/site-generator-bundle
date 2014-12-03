@@ -20,21 +20,6 @@ use Exception;
 class GenerateProjectCommand extends GeneratorCommand
 {
     /**
-     * @var \Symfony\Component\Console\Input\InputInterface
-     */
-    protected $input;
-
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $output;
-
-    /**
-     * @var \Netgen\Bundle\MoreGeneratorBundle\Command\Helper\DialogHelper
-     */
-    protected $dialog;
-
-    /**
      * Configures the command
      */
     protected function configure()
@@ -70,9 +55,9 @@ class GenerateProjectCommand extends GeneratorCommand
     {
         $this->input = $input;
         $this->output = $output;
-        $this->dialog = $this->getDialogHelper();
+        $this->questionHelper = $this->getHelper( 'question' );
 
-        $this->writeSection( $this->output, 'Welcome to the Netgen More project generator' );
+        $this->writeSection( 'Welcome to the Netgen More project generator' );
 
         while ( !$this->doInteract() )
         {
@@ -225,11 +210,14 @@ class GenerateProjectCommand extends GeneratorCommand
 
             do
             {
-                $siteAccess = $this->dialog->askAndValidate(
+                $siteAccess = $this->questionHelper->ask(
+                    $this->input,
                     $this->output,
-                    $this->dialog->getQuestion( 'Siteaccess name (use empty value to finish)', '' ),
-                    array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateSiteAccessName' ),
-                    false
+                    $this->getQuestion(
+                        'Siteaccess name (use empty value to finish)',
+                        '',
+                        'validateSiteAccessName'
+                    )
                 );
 
                 if ( $siteAccess === $adminSiteAccess )
@@ -251,11 +239,14 @@ class GenerateProjectCommand extends GeneratorCommand
                     $languageList = array();
                     do
                     {
-                        $language = $this->dialog->askAndValidate(
+                        $language = $this->questionHelper->ask(
+                            $this->input,
                             $this->output,
-                            $this->dialog->getQuestion( 'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)', '' ),
-                            array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', 'validateLanguageCode' ),
-                            false
+                            $this->getQuestion(
+                                'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)',
+                                '',
+                                'validateLanguageCode'
+                            )
                         );
 
                         if ( !empty( $language ) )
@@ -292,7 +283,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $bundleNamespace = $this->askForData( 'bundle-namespace', 'Bundle namespace', $client . "\\Bundle\\" . $project . 'Bundle', 'validateBundleNamespace' );
         $bundleName = $this->askForData( 'bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName' );
 
-        $this->writeSection( $this->output, 'Summary before generation' );
+        $this->writeSection( 'Summary before generation' );
 
         // Summary
         $this->output->writeln(
@@ -303,53 +294,22 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        if ( !$this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you confirm project generation (answering <comment>no</comment> will restart the process)', 'yes', '?' ), true ) )
+        if (
+            !$this->questionHelper->ask(
+                $this->input,
+                $this->output,
+                $this->getConfirmationQuestion(
+                    'Do you confirm project generation (answering <comment>no</comment> will restart the process)',
+                    true
+                )
+            )
+        )
         {
             $this->output->writeln( '' );
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Asks a question that fills provided option while taking into account default values and validation
-     *
-     * @param string $optionIdentifier
-     * @param string $optionName
-     * @param string $defaultValue
-     * @param string $validator
-     *
-     * @return string
-     */
-    protected function askForData( $optionIdentifier, $optionName, $defaultValue, $validator = null )
-    {
-        $optionValue = $this->input->getOption( $optionIdentifier );
-        $optionValue = !empty( $optionValue ) ? $optionValue :
-            $defaultValue;
-
-        if ( $validator !== null )
-        {
-            $optionValue = $this->dialog->askAndValidate(
-                $this->output,
-                $this->dialog->getQuestion( $optionName, $optionValue ),
-                array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator ),
-                false,
-                $optionValue
-            );
-        }
-        else
-        {
-            $optionValue = $this->dialog->ask(
-                $this->output,
-                $this->dialog->getQuestion( $optionName, $optionValue ),
-                $optionValue
-            );
-        }
-
-        $this->input->setOption( $optionIdentifier, $optionValue );
-
-        return $optionValue;
     }
 
     /**
@@ -368,7 +328,7 @@ class GenerateProjectCommand extends GeneratorCommand
             return 1;
         }
 
-        $this->writeSection( $this->output, 'Project generation' );
+        $this->writeSection( 'Project generation' );
 
         // Generate Netgen More project
         $projectGenerator = new ProjectGenerator( $this->getContainer() );
@@ -387,7 +347,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $configurationGenerator->generate( $this->input, $this->output );
 
         $errors = array();
-        $runner = $this->getRunner( $this->output, $errors );
+        $runner = $this->getRunner( $errors );
 
         // Register the bundle in the EzPublishKernel class
         $runner( $this->updateKernel() );
@@ -424,7 +384,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $runner( $this->deleteDataFolder() );
         }
 
-        $this->writeGeneratorSummary( $this->output, $errors );
+        $this->writeGeneratorSummary( $errors );
 
         return 0;
     }
@@ -637,7 +597,14 @@ class GenerateProjectCommand extends GeneratorCommand
         );
 
         $this->output->writeln( '' );
-        $doImport = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to import Netgen More database (this will destroy all existing data in the selected database)', 'no', '?' ), false );
+        $doImport = $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            $this->getConfirmationQuestion(
+                'Do you want to import Netgen More database (this will destroy all existing data in the selected database)',
+                false
+            )
+        );
 
         $this->output->writeln( '' );
         $this->output->write( 'Importing Netgen More database... ' );
@@ -717,7 +684,14 @@ class GenerateProjectCommand extends GeneratorCommand
         );
 
         $this->output->writeln( '' );
-        $doMove = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to move the storage folder to proper location', 'no', '?' ), false );
+        $doMove = $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            $this->getConfirmationQuestion(
+                'Do you want to move the storage folder to proper location',
+                false
+            )
+        );
 
         $this->output->writeln( '' );
         $this->output->write( 'Moving the storage folder... ' );
@@ -758,7 +732,14 @@ class GenerateProjectCommand extends GeneratorCommand
         );
 
         $this->output->writeln( '' );
-        $doDelete = $this->dialog->askConfirmation( $this->output, $this->dialog->getQuestion( 'Do you want to delete the data folder', 'no', '?' ), false );
+        $doDelete = $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            $this->getConfirmationQuestion(
+                'Do you want to delete the data folder',
+                false
+            )
+        );
 
         $this->output->writeln( '' );
         $this->output->write( 'Deleting the folder... ' );
