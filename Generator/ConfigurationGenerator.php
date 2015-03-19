@@ -132,8 +132,8 @@ class ConfigurationGenerator extends Generator
             );
         }
 
-        $settings['ezpublish']['system'][$adminSiteAccessName]['legacy_mode'] = true;
         $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+        $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
 
         // Stash settings
 
