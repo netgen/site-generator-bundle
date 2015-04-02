@@ -27,20 +27,6 @@ class ConfigurationGenerator extends Generator
             array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' )
         );
 
-        // Doctrine settings
-
-        $projectNormalized = Container::underscore( $input->getOption( 'project' ) );
-        $doctrineConnectionName = $projectNormalized . '_repository_connection';
-        $settings['doctrine']['dbal']['connections'][$doctrineConnectionName] = array(
-            'driver' => '%database_driver%',
-            'host' => '%database_host%',
-            'port' => '%database_port%',
-            'user' => '%database_user%',
-            'password' => '%database_password%',
-            'dbname' => '%database_name%',
-            'charset' => 'UTF8'
-        );
-
         // HTTP cache and ImageMagick settings
 
         $settings['ezpublish']['http_cache']['purge_type'] = '%http_cache.purge_type%';
@@ -51,7 +37,7 @@ class ConfigurationGenerator extends Generator
 
         $doctrineRepositoryName = $projectNormalized . '_repository';
         $settings['ezpublish']['repositories'][$doctrineRepositoryName]['engine'] = 'legacy';
-        $settings['ezpublish']['repositories'][$doctrineRepositoryName]['connection'] = $doctrineConnectionName;
+        $settings['ezpublish']['repositories'][$doctrineRepositoryName]['connection'] = 'default';
 
         // List of siteaccesses and groups
 
