@@ -35,6 +35,7 @@ class ConfigurationGenerator extends Generator
 
         // Repository definitions
 
+        $projectNormalized = Container::underscore( $input->getOption( 'project' ) );
         $doctrineRepositoryName = $projectNormalized . '_repository';
         $settings['ezpublish']['repositories'][$doctrineRepositoryName]['engine'] = 'legacy';
         $settings['ezpublish']['repositories'][$doctrineRepositoryName]['connection'] = 'default';
