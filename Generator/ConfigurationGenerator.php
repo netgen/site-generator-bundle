@@ -120,6 +120,11 @@ class ConfigurationGenerator extends Generator
         }
 
         $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+
+        $settings['ezpublish']['system']['default']['content']['view_cache'] = true;
+        $settings['ezpublish']['system']['default']['content']['ttl_cache'] = true;
+        $settings['ezpublish']['system']['default']['content']['default_ttl'] = 300;
+
         $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
 
         // Stash settings
