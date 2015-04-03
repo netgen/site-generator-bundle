@@ -24,6 +24,7 @@ class ConfigurationGenerator extends Generator
 
         $settings['imports'] = array(
             array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' ),
+            array( 'resource' => '@NetgenMoreLegacyBundle/Resources/config/ezpublish.yml' ),
             array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' )
         );
 
