@@ -122,52 +122,5 @@ class ProjectGenerator extends Generator
             '/netgenmoredemo/',
             '/' . $bundleAssetsPathPart . '/'
         );
-
-        // Renaming the siteaccess group names
-
-        $project = $input->getOption( 'project' );
-        $projectNormalized = Container::underscore( $project );
-        $frontendGroupName = $projectNormalized . '_frontend_group';
-        $administrationGroupName = $projectNormalized . '_administration_group';
-        $globalGroupName = $projectNormalized . '_group';
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_frontend_group</comment> name into <comment>' . $frontendGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_frontend_group',
-            $frontendGroupName
-        );
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_administration_group</comment> name into <comment>' . $administrationGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_group',
-            $globalGroupName
-        );
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_group</comment> name into <comment>' . $globalGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_group',
-            $globalGroupName
-        );
     }
 }
