@@ -144,16 +144,6 @@ class ConfigurationGenerator extends Generator
             Yaml::dump( $settings, 7 )
         );
 
-        // Handling various parameters
-        $webConfigurator = $this->container->get( 'ezpublish_legacy.webconfigurator' );
-        $webConfigurator->mergeParameters(
-            array(
-                // Step #1 is SecretStep
-                'secret' => $webConfigurator->getStep( 1 )->secret
-            )
-        );
-        $webConfigurator->write();
-
         $output->writeln(
             array(
                 '',
