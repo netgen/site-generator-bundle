@@ -4,7 +4,6 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Yaml\Yaml;
 use Stash\Driver\FileSystem;
 
@@ -86,7 +85,10 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['system'] = array();
 
-        $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
+        if ( count( $siteAccessNames ) > 1 )
+        {
+            $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
+        }
 
         foreach ( $siteAccessList as $siteAccessName => $siteAccessLanguages )
         {
@@ -97,7 +99,6 @@ class ConfigurationGenerator extends Generator
         }
 
         $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-
         $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
 
         file_put_contents(
