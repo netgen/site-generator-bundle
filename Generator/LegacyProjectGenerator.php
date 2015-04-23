@@ -97,23 +97,6 @@ class LegacyProjectGenerator extends Generator
             $extensionName
         );
 
-        // Search and replace "ngmore.netgen.biz" with the site domain
-
-        $siteDomain = $input->getOption( 'site-domain' );
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore.netgen.biz</comment> domain into <comment>' . $siteDomain . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalExtensionLocation ),
-            'ngmore.netgen.biz',
-            $siteDomain
-        );
-
         // Search and replace "ngmore_bootstrap3" with the name of site design
 
         $output->writeln(

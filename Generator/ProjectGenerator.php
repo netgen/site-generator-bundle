@@ -140,6 +140,23 @@ class ProjectGenerator extends Generator
             $siteName
         );
 
+        // Renaming the site domain
+
+        $siteDomain = $input->getOption( 'site-domain' );
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>ngmore.netgen.biz</comment> domain into <comment>' . $siteDomain . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'ngmore.netgen.biz',
+            $siteDomain
+        );
+
         // Renaming the siteaccess group names
 
         $project = $input->getOption( 'project' );
