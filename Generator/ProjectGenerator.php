@@ -123,6 +123,23 @@ class ProjectGenerator extends Generator
             '/' . $bundleAssetsPathPart . '/'
         );
 
+        // Renaming the site name
+
+        $siteName = $input->getOption( 'site-name' );
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>NG More</comment> site name into <comment>' . $siteName . '</comment>'
+            )
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'NG More',
+            $siteName
+        );
+
         // Renaming the siteaccess group names
 
         $project = $input->getOption( 'project' );
