@@ -32,7 +32,7 @@ class LegacySiteAccessGenerator extends Generator
         $legacyRootDir = $this->container->getParameter( 'ezpublish_legacy.root_dir' );
 
         $designName = $input->getOption( 'design-name' );
-        $siteDomain = $input->getOption( 'site-domain' );
+        $siteDomain = $this->container->getParameter( 'ngmore.site_domains.default' );
 
         // Generating siteaccesses
 
@@ -336,22 +336,6 @@ class LegacySiteAccessGenerator extends Generator
                 $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/override/' );
             }
 
-            // Variables for settings/override
-
-            $hostUriMatchMapItems = array();
-            foreach ( $allSiteAccesses as $siteAccessName )
-            {
-                if ( $siteAccessName != $mainSiteAccess )
-                {
-                    $hostUriMatchMapItems[] = $siteDomain . ';' . $siteAccessName . ';' . $siteAccessName;
-                }
-            }
-
-            if ( $mainSiteAccess != '' )
-            {
-                $hostUriMatchMapItems[] = $siteDomain . ';' . '' . ';' . $mainSiteAccess;
-            }
-
             // Generating settings/override folder
 
             foreach ( $availableEnvironments as $environment )
@@ -367,16 +351,7 @@ class LegacySiteAccessGenerator extends Generator
                     'site.ini.append.php',
                     $finalExtensionLocation . '/root_' . $environment . '/settings/override/site.ini.append.php',
                     array(
-                        'databaseServer' => '',
-                        'databasePort' => '',
-                        'databaseUser' => '',
-                        'databasePassword' => '',
-                        'databaseName' => '',
-                        'extensionName' => $extensionName,
-                        'defaultAccess' => $mainSiteAccess,
-                        'siteList' => $allSiteAccesses,
-                        'availableSiteAccessList' => $allSiteAccesses,
-                        'hostUriMatchMapItems' => $hostUriMatchMapItems
+                        'extensionName' => $extensionName
                     )
                 );
             }

@@ -1,4 +1,3 @@
 parameters:
     ngmore.generator.available_environments: [ dev, prod ]
     ngmore.generator.defaults.admin_siteaccess_name: administration
-    ngmore.generator.defaults.domain_suffix: netgen.biz

@@ -142,7 +142,7 @@ class ProjectGenerator extends Generator
 
         // Renaming the site domain
 
-        $siteDomain = $input->getOption( 'site-domain' );
+        $siteDomain = $this->container->getParameter( 'ngmore.site_domains.default' );
 
         $output->writeln(
             array(
