@@ -68,14 +68,14 @@ class ConfigurationGenerator extends Generator
                 $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
                     'matchers' => array(
                         'Map\URI' => array( $siteAccessName => true ),
-                        'Map\Host' => array( '%ngmore.site_domains.default%' => true )
+                        'Map\Host' => array( '%ngmore.default.site_domain%' => true )
                     ),
                     'match' => $siteAccessName
                 );
             }
             else
             {
-                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.site_domains.default%'] = $siteAccessName;
+                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.default.site_domain%'] = $siteAccessName;
             }
         }
 
