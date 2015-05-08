@@ -122,7 +122,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $adminSiteAccess = $this->askForData(
             'admin-site-access-name',
             'Admin siteaccess name',
-            $this->getContainer()->getParameter( 'ngmore.generator.defaults.admin_siteaccess_name' ),
+            $this->getContainer()->getParameter( 'ngmore_generator.admin_siteaccess_name' ),
             'validateAdminSiteAccessName'
         );
 
