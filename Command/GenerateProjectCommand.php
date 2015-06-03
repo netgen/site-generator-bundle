@@ -772,8 +772,8 @@ class GenerateProjectCommand extends GeneratorCommand
 
             $fileContent = file_get_contents( $reflected->getFileName() );
             $fileContent = str_replace(
-                '$bundles[] = new \Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
-                '$bundles[] = new \\' . $bundleFQN . '();',
+                '$bundles[] = new Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
+                '$bundles[] = new ' . $bundleFQN . '();',
                 $fileContent
             );
 
@@ -786,7 +786,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, replacing the existing NetgenMoreDemoBundle:',
                     '',
-                    '    <comment>$bundles[] = new \\' . $bundleFQN . '();</comment>',
+                    '    <comment>$bundles[] = new ' . $bundleFQN . '();</comment>',
                     '',
                 );
             }

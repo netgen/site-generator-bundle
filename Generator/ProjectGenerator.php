@@ -18,9 +18,6 @@ class ProjectGenerator extends Generator
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $fileSystem = $this->container->get( 'filesystem' );
-
-        // Cloning the bundle
-
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
         $bundleNamespace = $input->getOption( 'bundle-namespace' );
         $bundleName = $input->getOption( 'bundle-name' );
