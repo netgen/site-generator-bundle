@@ -92,7 +92,7 @@ class LegacyProjectGenerator extends Generator
         );
 
         FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalExtensionLocation ),
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
             'ez_netgen_ngmore_demo',
             $extensionName
         );
