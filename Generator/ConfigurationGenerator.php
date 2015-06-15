@@ -22,10 +22,8 @@ class ConfigurationGenerator extends Generator
         // Resource imports
 
         $settings['imports'] = array(
-            array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' ),
-            array( 'resource' => '@NetgenMoreLegacyBundle/Resources/config/ezpublish.yml' ),
-            array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' ),
             array( 'resource' => 'ezpublish_system.yml' ),
+            array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' ),
         );
 
         // List of siteaccesses and groups
