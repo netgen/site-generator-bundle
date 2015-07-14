@@ -129,7 +129,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $siteAccessList = array();
 
         // Try to parse the following format
-        // eng:eng-EU|cro:cro-HR:eng-EU
+        // eng:eng-GB|cro:cro-HR:eng-GB
         $siteAccessListString = $this->input->getOption( 'site-access-list-string' );
         if ( !empty( $siteAccessListString ) )
         {
@@ -215,6 +215,12 @@ class GenerateProjectCommand extends GeneratorCommand
                 {
                     $this->output->writeln( '<error> Siteaccess name cannot be equal to "' . $adminSiteAccess . '". </error>' );
                     continue;
+                }
+
+                if ( $siteAccess === 'eng-EU' )
+                {
+                    $this->output->writeln( '<error> Siteaccess name cannot be equal to "eng-EU". "eng-EU" is deprecated and "eng-GB" will be used instead. </error>' );
+                    $siteAccess = 'eng-GB';
                 }
 
                 if ( !empty( $siteAccess ) )
