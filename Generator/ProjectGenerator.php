@@ -187,6 +187,12 @@ class ProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            'ngmore_administration_group',
+            $administrationGroupName
+        );
+
+        FileHelper::searchAndReplaceInFile(
+            FileHelper::findFilesInDirectory( $finalBundleLocation ),
             'ngmore_group',
             $globalGroupName
         );
