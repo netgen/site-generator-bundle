@@ -29,9 +29,7 @@ class ConfigurationGenerator extends Generator
 
         // Doctrine settings
 
-        $projectNormalized = Container::underscore( $input->getOption( 'project' ) );
-        $doctrineConnectionName = $projectNormalized . '_repository_connection';
-        $settings['doctrine']['dbal']['connections'][$doctrineConnectionName] = array(
+        $settings['doctrine']['dbal']['connections']['default'] = array(
             'driver' => '%database_driver%',
             'host' => '%database_host%',
             'port' => '%database_port%',
@@ -49,9 +47,8 @@ class ConfigurationGenerator extends Generator
 
         // Repository definitions
 
-        $doctrineRepositoryName = $projectNormalized . '_repository';
-        $settings['ezpublish']['repositories'][$doctrineRepositoryName]['engine'] = 'legacy';
-        $settings['ezpublish']['repositories'][$doctrineRepositoryName]['connection'] = $doctrineConnectionName;
+        $settings['ezpublish']['repositories']['main']['engine'] = 'legacy';
+        $settings['ezpublish']['repositories']['main']['connection'] = 'default';
 
         // List of siteaccesses and groups
 
@@ -75,14 +72,8 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['siteaccess']['list'] = $siteAccessNames;
         $settings['ezpublish']['siteaccess']['list'][] = $adminSiteAccessName;
 
-        $groupName = $projectNormalized . '_group';
-        $settings['ezpublish']['siteaccess']['groups'][$groupName] = $settings['ezpublish']['siteaccess']['list'];
-
-        $frontendGroupName = $projectNormalized . '_frontend_group';
-        $settings['ezpublish']['siteaccess']['groups'][$frontendGroupName] = $siteAccessNames;
-
-        $administrationGroupName = $projectNormalized . '_administration_group';
-        $settings['ezpublish']['siteaccess']['groups'][$administrationGroupName] = array( $adminSiteAccessName );
+        $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
+        $settings['ezpublish']['siteaccess']['groups']['administration_group'] = array( $adminSiteAccessName );
 
         // Siteaccess match settings
 
@@ -116,13 +107,16 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['system'] = array();
 
-        $settings['ezpublish']['system'][$groupName]['repository'] = $doctrineRepositoryName;
-        $settings['ezpublish']['system'][$groupName]['var_dir'] = 'var/ezdemo_site';
-        $settings['ezpublish']['system'][$groupName]['http_cache'] = array(
+        $settings['ezpublish']['system']['global']['repository'] = 'main';
+        $settings['ezpublish']['system']['global']['var_dir'] = 'var/ezdemo_site';
+        $settings['ezpublish']['system']['global']['http_cache'] = array(
             'purge_servers' => '%http_cache.purge_servers%'
         );
 
-        $settings['ezpublish']['system'][$frontendGroupName]['translation_siteaccesses'] = $siteAccessNames;
+        if ( count( $siteAccessNames ) > 1 )
+        {
+            $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
+        }
 
         foreach ( $siteAccessList as $siteAccessName => $siteAccessLanguages )
         {

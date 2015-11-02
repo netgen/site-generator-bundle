@@ -124,14 +124,14 @@ class GenerateProjectCommand extends GeneratorCommand
             'site-domain',
             'Site domain',
             str_replace( '_', '-', $projectNormalized ) . '.' .
-            trim( $this->getContainer()->getParameter( 'ngmore.generator.defaults.domain_suffix' ), '.' ),
+            trim( $this->getContainer()->getParameter( 'ngmore_generator.domain_suffix' ), '.' ),
             'validateNotEmpty'
         );
 
         $adminSiteAccess = $this->askForData(
             'admin-site-access-name',
             'Admin siteaccess name',
-            $this->getContainer()->getParameter( 'ngmore.generator.defaults.admin_siteaccess_name' ),
+            $this->getContainer()->getParameter( 'ngmore_generator.admin_siteaccess_name' ),
             'validateAdminSiteAccessName'
         );
 
@@ -787,8 +787,8 @@ class GenerateProjectCommand extends GeneratorCommand
 
             $fileContent = file_get_contents( $reflected->getFileName() );
             $fileContent = str_replace(
-                '$bundles[] = new \Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
-                '$bundles[] = new \\' . $bundleFQN . '();',
+                '$bundles[] = new Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
+                '$bundles[] = new ' . $bundleFQN . '();',
                 $fileContent
             );
 
@@ -801,7 +801,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, replacing the existing NetgenMoreDemoBundle:',
                     '',
-                    '    <comment>$bundles[] = new \\' . $bundleFQN . '();</comment>',
+                    '    <comment>$bundles[] = new ' . $bundleFQN . '();</comment>',
                     '',
                 );
             }

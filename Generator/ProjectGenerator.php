@@ -18,9 +18,6 @@ class ProjectGenerator extends Generator
     public function generate( InputInterface $input, OutputInterface $output )
     {
         $fileSystem = $this->container->get( 'filesystem' );
-
-        // Cloning the bundle
-
         $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
         $bundleNamespace = $input->getOption( 'bundle-namespace' );
         $bundleName = $input->getOption( 'bundle-name' );
@@ -155,59 +152,6 @@ class ProjectGenerator extends Generator
             FileHelper::findFilesInDirectory( $finalBundleLocation ),
             'ngmore.netgen.biz',
             $siteDomain
-        );
-
-        // Renaming the siteaccess group names
-
-        $project = $input->getOption( 'project' );
-        $projectNormalized = Container::underscore( $project );
-        $frontendGroupName = $projectNormalized . '_frontend_group';
-        $administrationGroupName = $projectNormalized . '_administration_group';
-        $globalGroupName = $projectNormalized . '_group';
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_frontend_group</comment> name into <comment>' . $frontendGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_frontend_group',
-            $frontendGroupName
-        );
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_administration_group</comment> name into <comment>' . $administrationGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_administration_group',
-            $administrationGroupName
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_group',
-            $globalGroupName
-        );
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_group</comment> name into <comment>' . $globalGroupName . '</comment>'
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
-            'ngmore_group',
-            $globalGroupName
         );
     }
 }
