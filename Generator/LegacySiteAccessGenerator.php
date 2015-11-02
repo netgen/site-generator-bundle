@@ -41,14 +41,6 @@ class LegacySiteAccessGenerator extends Generator
             throw new RuntimeException( 'Siteaccess skeleton directory not found. Aborting...' );
         }
 
-        foreach ( $availableEnvironments as $environment )
-        {
-            if ( !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess' ) )
-            {
-                throw new RuntimeException( 'Siteaccess skeleton directory for "' . $environment . '" environment not found. Aborting...' );
-            }
-        }
-
         $siteAccessList = $input->getOption( 'site-access-list' );
         $validSiteAccesses = array();
 
@@ -93,14 +85,6 @@ class LegacySiteAccessGenerator extends Generator
         if ( $generateAdminSiteAccess && !$fileSystem->exists( $finalExtensionLocation . '/settings/_skeleton_admin' ) )
         {
             throw new RuntimeException( 'Admin siteaccess skeleton directory not found. Aborting...' );
-        }
-
-        foreach ( $availableEnvironments as $environment )
-        {
-            if ( $generateAdminSiteAccess && !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin' ) )
-            {
-                throw new RuntimeException( 'Admin siteaccess skeleton directory for "' . $environment . '" environment not found. Aborting...' );
-            }
         }
 
         // Cleanup before generation
@@ -194,46 +178,49 @@ class LegacySiteAccessGenerator extends Generator
 
             foreach ( $availableEnvironments as $environment )
             {
-                if ( $siteAccessName === $mainSiteAccess )
+                if ( $fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess/site.ini.append.php' ) )
                 {
-                    $fileSystem->mirror(
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess',
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
-                    );
-                }
-                else
-                {
-                    $fileSystem->mkdir( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
-                    $fileSystem->copy(
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess/site.ini.append.php',
-                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php'
-                    );
-
-                    foreach ( new DirectoryIterator( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess' ) as $item )
+                    if ( $siteAccessName === $mainSiteAccess )
                     {
-                        if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                        $fileSystem->mirror(
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess',
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
+                        );
+                    }
+                    else
+                    {
+                        $fileSystem->mkdir( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
+                        $fileSystem->copy(
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess/site.ini.append.php',
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php'
+                        );
+
+                        foreach ( new DirectoryIterator( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_siteaccess' ) as $item )
                         {
-                            $fileSystem->symlink(
-                                $fileSystem->makePathRelative(
-                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $mainSiteAccess,
-                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
-                                ) . $item->getBasename(),
-                                $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/' . $item->getBasename()
-                            );
+                            if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                            {
+                                $fileSystem->symlink(
+                                    $fileSystem->makePathRelative(
+                                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $mainSiteAccess,
+                                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName
+                                    ) . $item->getBasename(),
+                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/' . $item->getBasename()
+                                );
+                            }
                         }
                     }
+
+                    $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
+
+                    $this->renderFile(
+                        'site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php',
+                        array(
+                            'siteDomain' => $siteDomain,
+                            'siteAccessUriPart' => $siteAccessName !== $mainSiteAccess ? $siteAccessName : ''
+                        )
+                    );
                 }
-
-                $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName );
-
-                $this->renderFile(
-                    'site.ini.append.php',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php',
-                    array(
-                        'siteDomain' => $siteDomain,
-                        'siteAccessUriPart' => $siteAccessName !== $mainSiteAccess ? $siteAccessName : ''
-                    )
-                );
             }
 
             $output->writeln(
@@ -275,20 +262,23 @@ class LegacySiteAccessGenerator extends Generator
 
             foreach ( $availableEnvironments as $environment )
             {
-                $fileSystem->mirror(
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName
-                );
+                if ( $fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin/site.ini.append.php' ) )
+                {
+                    $fileSystem->mirror(
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName
+                    );
 
-                $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName );
+                    $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName );
 
-                $this->renderFile(
-                    'site.ini.append.php',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
-                    array(
-                        'siteDomain' => $siteDomain
-                    )
-                );
+                    $this->renderFile(
+                        'site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
+                        array(
+                            'siteDomain' => $siteDomain
+                        )
+                    );
+                }
             }
 
             $output->writeln(
@@ -319,18 +309,11 @@ class LegacySiteAccessGenerator extends Generator
             );
         }
 
-        foreach ( $availableEnvironments as $environment )
-        {
-            if ( $generateOverride && !$fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override' ) )
-            {
-                throw new RuntimeException( 'settings/override skeleton directory for "' . $environment . '" environment not found. Aborting...' );
-            }
-        }
-
         if ( $generateOverride )
         {
             // Cleanup before generation
 
+            $fileSystem->remove( $finalExtensionLocation . '/root/settings/override/' );
             foreach ( $availableEnvironments as $environment )
             {
                 $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/override/' );
@@ -354,18 +337,18 @@ class LegacySiteAccessGenerator extends Generator
 
             // Generating settings/override folder
 
-            foreach ( $availableEnvironments as $environment )
+            if ( $fileSystem->exists( $finalExtensionLocation . '/root/settings/_skeleton_override/site.ini.append.php' ) )
             {
                 $fileSystem->mirror(
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/override'
+                    $finalExtensionLocation . '/root/settings/_skeleton_override',
+                    $finalExtensionLocation . '/root/settings/override'
                 );
 
-                $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/override' );
+                $this->setSkeletonDirs( $finalExtensionLocation . '/root/settings/override' );
 
                 $this->renderFile(
                     'site.ini.append.php',
-                    $finalExtensionLocation . '/root_' . $environment . '/settings/override/site.ini.append.php',
+                    $finalExtensionLocation . '/root/settings/override/site.ini.append.php',
                     array(
                         'databaseServer' => '',
                         'databasePort' => '',
@@ -380,6 +363,38 @@ class LegacySiteAccessGenerator extends Generator
                     )
                 );
             }
+            else
+            {
+                foreach ( $availableEnvironments as $environment )
+                {
+                    if ( $fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override/site.ini.append.php' ) )
+                    {
+                        $fileSystem->mirror(
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override',
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/override'
+                        );
+
+                        $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/override' );
+
+                        $this->renderFile(
+                            'site.ini.append.php',
+                            $finalExtensionLocation . '/root_' . $environment . '/settings/override/site.ini.append.php',
+                            array(
+                                'databaseServer' => '',
+                                'databasePort' => '',
+                                'databaseUser' => '',
+                                'databasePassword' => '',
+                                'databaseName' => '',
+                                'extensionName' => $extensionName,
+                                'defaultAccess' => $mainSiteAccess,
+                                'siteList' => $allSiteAccesses,
+                                'availableSiteAccessList' => $allSiteAccesses,
+                                'hostUriMatchMapItems' => $hostUriMatchMapItems
+                            )
+                        );
+                    }
+                }
+            }
 
             $output->writeln(
                 array(
@@ -389,6 +404,7 @@ class LegacySiteAccessGenerator extends Generator
             );
         }
 
+        $fileSystem->remove( $finalExtensionLocation . '/root/settings/_skeleton_override/' );
         foreach ( $availableEnvironments as $environment )
         {
             $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_override/' );
