@@ -87,6 +87,24 @@ class LegacySiteAccessGenerator extends Generator
             throw new RuntimeException( 'Admin siteaccess skeleton directory not found. Aborting...' );
         }
 
+        // Validate generation of Netgen Admin UI siteaccess
+
+        if ( $fileSystem->exists( $legacyRootDir . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME ) )
+        {
+            $this->generateNgAdminUi = false;
+            $output->writeln(
+                array(
+                    '',
+                    'Netgen Admin UI siteaccess already exists. Will not generate...'
+                )
+            );
+        }
+
+        if ( $this->generateNgAdminUi && !$fileSystem->exists( $finalExtensionLocation . '/settings/_skeleton_ngadminui' ) )
+        {
+            throw new RuntimeException( 'Netgen Admin UI siteaccess skeleton directory not found. Aborting...' );
+        }
+
         // Cleanup before generation
 
         $fileSystem->remove( $finalExtensionLocation . '/settings/siteaccess/' );
@@ -106,6 +124,10 @@ class LegacySiteAccessGenerator extends Generator
 
         $allSiteAccesses = array_keys( $validSiteAccesses );
         $allSiteAccesses[] = $adminSiteAccessName;
+        if ( $this->generateNgAdminUi )
+        {
+            $allSiteAccesses[] = self::NGADMINUI_SITEACCESS_NAME;
+        }
 
         $mainSiteAccess = '';
         if ( $generateAdminSiteAccess )
@@ -293,6 +315,87 @@ class LegacySiteAccessGenerator extends Generator
         foreach ( $availableEnvironments as $environment )
         {
             $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_admin/' );
+        }
+
+        // Generate Netgen Admin UI siteaccess
+
+        if ( $generateAdminSiteAccess && $this->generateNgAdminUi )
+        {
+            $fileSystem->mkdir( $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME );
+            $fileSystem->copy(
+                $finalExtensionLocation . '/settings/_skeleton_ngadminui/site.ini.append.php',
+                $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php'
+            );
+
+            foreach ( new DirectoryIterator( $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName ) as $item )
+            {
+                if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                {
+                    $fileSystem->symlink(
+                        $fileSystem->makePathRelative(
+                            $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName,
+                            $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME
+                        ) . $item->getBasename(),
+                        $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/' . $item->getBasename()
+                    );
+                }
+            }
+
+            $this->setSkeletonDirs( $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME );
+
+            $this->renderFile(
+                'site.ini.append.php',
+                $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php',
+                array(
+                    'siteName' => $siteName,
+                    'relatedSiteAccessList' => $allSiteAccesses,
+                    'siteAccessLocale' => $allLanguages[0],
+                    'siteLanguageList' => $allLanguages,
+                    'translationList' => $translationList
+                )
+            );
+
+            foreach ( $availableEnvironments as $environment )
+            {
+                if ( $fileSystem->exists( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_ngadminui/site.ini.append.php' ) )
+                {
+                    $fileSystem->mkdir( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME );
+                    $fileSystem->copy(
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_ngadminui/site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php'
+                    );
+
+                    foreach ( new DirectoryIterator( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName ) as $item )
+                    {
+                        if ( !$item->isDot() && $item->getBasename() !== 'site.ini.append.php' )
+                        {
+                            $fileSystem->symlink(
+                                $fileSystem->makePathRelative(
+                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName,
+                                    $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME
+                                ) . $item->getBasename(),
+                                $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/' . $item->getBasename()
+                            );
+                        }
+                    }
+
+                    $this->setSkeletonDirs( $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME );
+
+                    $this->renderFile(
+                        'site.ini.append.php',
+                        $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php',
+                        array(
+                            'siteDomain' => $siteDomain
+                        )
+                    );
+                }
+            }
+        }
+
+        $fileSystem->remove( $finalExtensionLocation . '/settings/_skeleton_ngadminui/' );
+        foreach ( $availableEnvironments as $environment )
+        {
+            $fileSystem->remove( $finalExtensionLocation . '/root_' . $environment . '/settings/_skeleton_ngadminui/' );
         }
 
         // Validate generation of override folder

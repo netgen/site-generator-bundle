@@ -4,7 +4,6 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Yaml\Yaml;
 use Stash\Driver\FileSystem;
 
@@ -54,7 +53,11 @@ class ConfigurationGenerator extends Generator
 
         $siteAccessList = $input->getOption( 'site-access-list' );
         $siteAccessNames = array_keys( $siteAccessList );
-        $adminSiteAccessName = $input->getOption( 'admin-site-access-name' );
+        $adminSiteAccessNames = array( $input->getOption( 'admin-site-access-name' ) );
+        if ( $this->generateNgAdminUi )
+        {
+            $adminSiteAccessNames[] = self::NGADMINUI_SITEACCESS_NAME;
+        }
 
         $adminSiteAccessLanguages = array();
         foreach ( $siteAccessList as $siteAccessLanguages )
@@ -69,11 +72,12 @@ class ConfigurationGenerator extends Generator
         }
 
         $settings['ezpublish']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
-        $settings['ezpublish']['siteaccess']['list'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['list'][] = $adminSiteAccessName;
+        $settings['ezpublish']['siteaccess']['list'] = array_merge(
+            $siteAccessNames, $adminSiteAccessNames
+        );
 
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['groups']['administration_group'] = array( $adminSiteAccessName );
+        $settings['ezpublish']['siteaccess']['groups']['administration_group'] = $adminSiteAccessNames;
 
         // Siteaccess match settings
 
@@ -126,8 +130,11 @@ class ConfigurationGenerator extends Generator
             );
         }
 
-        $settings['ezpublish']['system'][$adminSiteAccessName]['legacy_mode'] = true;
-        $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+        foreach ( $adminSiteAccessNames as $adminSiteAccessName )
+        {
+            $settings['ezpublish']['system'][$adminSiteAccessName]['legacy_mode'] = $adminSiteAccessName !== self::NGADMINUI_SITEACCESS_NAME;
+            $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+        }
 
         // Stash settings
 
