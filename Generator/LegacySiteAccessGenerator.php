@@ -159,6 +159,10 @@ class LegacySiteAccessGenerator extends Generator
                     $finalExtensionLocation . '/settings/_skeleton_siteaccess',
                     $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName
                 );
+
+                $fileSystem->remove(
+                    $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/.keep'
+                );
             }
             else
             {
@@ -266,6 +270,10 @@ class LegacySiteAccessGenerator extends Generator
             $fileSystem->mirror(
                 $finalExtensionLocation . '/settings/_skeleton_admin',
                 $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName
+            );
+
+            $fileSystem->remove(
+                $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName . '/.keep'
             );
 
             $this->setSkeletonDirs( $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName );
@@ -390,6 +398,13 @@ class LegacySiteAccessGenerator extends Generator
                     );
                 }
             }
+
+            $output->writeln(
+                array(
+                    '',
+                    'Generated <comment>Netgen Admin UI</comment> siteaccess!'
+                )
+            );
         }
 
         $fileSystem->remove( $finalExtensionLocation . '/settings/_skeleton_ngadminui/' );
