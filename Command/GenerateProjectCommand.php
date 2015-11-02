@@ -226,12 +226,6 @@ class GenerateProjectCommand extends GeneratorCommand
                     continue;
                 }
 
-                if ( $siteAccess === 'eng-EU' )
-                {
-                    $this->output->writeln( '<error> Siteaccess name cannot be equal to "eng-EU". "eng-EU" is deprecated and "eng-GB" will be used instead. </error>' );
-                    $siteAccess = 'eng-GB';
-                }
-
                 if ( !empty( $siteAccess ) )
                 {
                     if ( in_array( $siteAccess, array_keys( $siteAccessList ) ) )
@@ -254,6 +248,12 @@ class GenerateProjectCommand extends GeneratorCommand
                                 'validateLanguageCode'
                             )
                         );
+
+                        if ( $language === 'eng-EU' )
+                        {   
+                            $this->output->writeln( '<error> Language name cannot be equal to "eng-EU". "eng-EU" is deprecated and "eng-GB" will be used instead. </error>' );
+                            $language = 'eng-GB';
+                        }
 
                         if ( !empty( $language ) )
                         {
