@@ -8,10 +8,17 @@ use Twig_Environment;
 
 abstract class Generator
 {
+    const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
+
     /**
      * @var array
      */
     protected $skeletonDirs;
+
+    /**
+     * @var bool
+     */
+    protected $generateNgAdminUi;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
@@ -26,6 +33,10 @@ abstract class Generator
     public function __construct( ContainerInterface $container )
     {
         $this->container = $container;
+
+        $this->generateNgAdminUi = (bool)$this->container->getParameter(
+            'ngmore_generator.generate_ngadminui'
+        );
     }
 
     /**
