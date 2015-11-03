@@ -5,7 +5,6 @@ namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Yaml\Yaml;
-use Stash\Driver\FileSystem;
 
 class ConfigurationGenerator extends Generator
 {
@@ -25,18 +24,6 @@ class ConfigurationGenerator extends Generator
             array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' ),
             array( 'resource' => '@NetgenMoreAdminUIBundle/Resources/config/ezpublish.yml' ),
             array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' )
-        );
-
-        // Doctrine settings
-
-        $settings['doctrine']['dbal']['connections']['default'] = array(
-            'driver' => '%database_driver%',
-            'host' => '%database_host%',
-            'port' => '%database_port%',
-            'user' => '%database_user%',
-            'password' => '%database_password%',
-            'dbname' => '%database_name%',
-            'charset' => 'UTF8'
         );
 
         // HTTP cache and ImageMagick settings
@@ -144,10 +131,6 @@ class ConfigurationGenerator extends Generator
             );
         }
 
-        // Stash settings
-
-        $settings['stash'] = $this->getStashCacheSettings();
-
         file_put_contents(
             $this->container->getParameter( 'kernel.root_dir' ) . '/config/ezpublish.yml',
             Yaml::dump( $settings, 7 )
@@ -157,53 +140,6 @@ class ConfigurationGenerator extends Generator
             array(
                 '',
                 'Generated <comment>ezpublish.yml</comment> configuration file!'
-            )
-        );
-    }
-
-    /**
-     * Returns cache settings based on which cache functionality is available on the current server
-     *
-     * Order of preference:
-     * - FileSystem
-     * - APC
-     * - Memcache  [DISABLED, SEE INLINE]
-     * - Xcache  [DISABLED, SEE INLINE]
-     * - variable instance cache  [DISABLED, SEE INLINE]
-     *
-     * @return array
-     */
-    protected function getStashCacheSettings()
-    {
-        // Should only contain one out of the box
-        $handlers = array();
-        $handlerSetting = array();
-        if ( FileSystem::isAvailable() )
-        {
-            $handlers[] = 'FileSystem';
-            // If running on Windows, use "crc32" keyHashFunction
-            if ( stripos( php_uname(), 'win' ) === 0 )
-            {
-                $handlerSetting['FileSystem'] = array(
-                    'keyHashFunction' => 'crc32'
-                );
-            }
-        }
-        else
-        {
-            // '/dev/null' fallback driver, no cache at all
-            $handlers[] = 'BlackHole';
-        }
-
-        return array(
-            'tracking' => false,
-            'caches' => array(
-                'default' => array(
-                    'drivers' => $handlers,
-                    // inMemory will enable/disable "Ephemeral", not allowed as separate handler in stash-bundle
-                    'inMemory' => true,
-                    'registerDoctrineAdapter' => false
-                ) + $handlerSetting
             )
         );
     }
