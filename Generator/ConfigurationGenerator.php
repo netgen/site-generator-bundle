@@ -102,6 +102,10 @@ class ConfigurationGenerator extends Generator
         foreach ( $adminSiteAccessNames as $adminSiteAccessName )
         {
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
+                'name' => 'eZSESSID'
+            );
+
             if ( $adminSiteAccessName !== self::NGADMINUI_SITEACCESS_NAME )
             {
                 $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
