@@ -139,6 +139,9 @@ class ConfigurationGenerator extends Generator
             }
 
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
+                'name' => 'eZSESSID'
+            );
         }
 
         // Stash settings
