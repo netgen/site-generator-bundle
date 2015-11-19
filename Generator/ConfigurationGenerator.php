@@ -21,8 +21,8 @@ class ConfigurationGenerator extends Generator
         // Resource imports
 
         $settings['imports'] = array(
-            array( 'resource' => 'ezpublish_system.yml' ),
-            array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' ),
+            array( 'resource' => 'ezplatform_system.yml' ),
+            array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezplatform.yml' ),
         );
 
         // List of siteaccesses and groups
@@ -112,14 +112,14 @@ class ConfigurationGenerator extends Generator
         }
 
         file_put_contents(
-            $this->container->getParameter( 'kernel.root_dir' ) . '/config/ezpublish.yml',
+            $this->container->getParameter( 'kernel.root_dir' ) . '/config/ezplatform.yml',
             Yaml::dump( $settings, 7 )
         );
 
         $output->writeln(
             array(
                 '',
-                'Generated <comment>ezpublish.yml</comment> configuration file!'
+                'Generated <comment>ezplatform.yml</comment> configuration file!'
             )
         );
     }
