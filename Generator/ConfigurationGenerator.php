@@ -34,8 +34,8 @@ class ConfigurationGenerator extends Generator
 
         // Repository definitions
 
-        $settings['ezpublish']['repositories']['main']['engine'] = 'legacy';
-        $settings['ezpublish']['repositories']['main']['connection'] = 'default';
+        $settings['ezpublish']['repositories']['default']['engine'] = 'legacy';
+        $settings['ezpublish']['repositories']['default']['connection'] = 'default';
 
         // List of siteaccesses and groups
 
@@ -99,7 +99,7 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['system'] = array();
 
-        $settings['ezpublish']['system']['global']['repository'] = 'main';
+        $settings['ezpublish']['system']['global']['repository'] = 'default';
         $settings['ezpublish']['system']['global']['var_dir'] = 'var/ezdemo_site';
         $settings['ezpublish']['system']['global']['http_cache'] = array(
             'purge_servers' => '%http_cache.purge_servers%'
