@@ -346,7 +346,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $errors = array();
         $runner = $this->getRunner( $errors );
 
-        // Register the bundle in the EzPublishKernel class
+        // Register the bundle in the AppKernel class
         $runner( $this->updateKernel() );
 
         // Install Symfony assets as relative symlinks
@@ -401,7 +401,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
-                    'ezpublish/console',
+                    'app/console',
                     'ngmore:symlink:project',
                     '--quiet'
                 )
@@ -422,7 +422,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Run the following command from your installation root to install Netgen More project symlinks:',
                     '',
-                    '    <comment>php ezpublish/console ngmore:symlink:project</comment>',
+                    '    <comment>php app/console ngmore:symlink:project</comment>',
                     '',
                 );
             }
@@ -451,7 +451,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
-                    'ezpublish/console',
+                    'app/console',
                     'ngmore:symlink:legacy',
                     '--quiet'
                 )
@@ -472,7 +472,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Run the following command from your installation root to install Netgen More legacy symlinks:',
                     '',
-                    '    <comment>php ezpublish/console ngmore:symlink:legacy</comment>',
+                    '    <comment>php app/console ngmore:symlink:legacy</comment>',
                     '',
                 );
             }
@@ -856,7 +856,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
-                    'ezpublish/console',
+                    'app/console',
                     'assets:install',
                     '--symlink',
                     '--relative',
@@ -879,7 +879,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return array(
                     '- Run the following command from your installation root to install assets:',
                     '',
-                    '    <comment>php ezpublish/console assets:install --symlink --relative</comment>',
+                    '    <comment>php app/console assets:install --symlink --relative</comment>',
                     '',
                 );
             }

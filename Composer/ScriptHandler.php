@@ -8,7 +8,7 @@ use Composer\Script\CommandEvent;
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Debug\Debug;
-use EzPublishKernel;
+use AppKernel;
 
 class ScriptHandler extends DistributionBundleScriptHandler
 {
@@ -19,8 +19,8 @@ class ScriptHandler extends DistributionBundleScriptHandler
      */
     public static function generateNetgenMoreProject( CommandEvent $event )
     {
-        require_once getcwd() . '/ezpublish/autoload.php';
-        require_once getcwd() . '/ezpublish/EzPublishKernel.php';
+        require_once getcwd() . '/app/autoload.php';
+        require_once getcwd() . '/app/AppKernel.php';
 
         $input = new ArrayInput(
             array(
@@ -35,7 +35,7 @@ class ScriptHandler extends DistributionBundleScriptHandler
             Debug::enable();
         }
 
-        $application = new Application( new EzPublishKernel( $env, $debug ) );
+        $application = new Application( new AppKernel( $env, $debug ) );
         $application->run( $input );
     }
 }
