@@ -26,11 +26,11 @@ abstract class Generator
     protected $container;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
      */
-    public function __construct( ContainerInterface $container )
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
@@ -40,29 +40,29 @@ abstract class Generator
     }
 
     /**
-     * Sets an array of directories to look for templates
+     * Sets an array of directories to look for templates.
      *
      * The directories must be sorted from the most specific to the least specific directory
      *
      * @param array $skeletonDirs An array of skeleton dirs
      */
-    public function setSkeletonDirs( $skeletonDirs )
+    public function setSkeletonDirs($skeletonDirs)
     {
-        $this->skeletonDirs = is_array( $skeletonDirs ) ? $skeletonDirs : array( $skeletonDirs );
+        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : array($skeletonDirs);
     }
 
     /**
-     * Renders the template
+     * Renders the template.
      *
      * @param string $template
      * @param array $parameters
      *
      * @return string
      */
-    protected function render( $template, $parameters )
+    protected function render($template, $parameters)
     {
         $twig = new Twig_Environment(
-            new Twig_Loader_Filesystem( $this->skeletonDirs ),
+            new Twig_Loader_Filesystem($this->skeletonDirs),
             array(
                 'debug' => true,
                 'cache' => false,
@@ -71,11 +71,11 @@ abstract class Generator
             )
         );
 
-        return $twig->render( $template, $parameters );
+        return $twig->render($template, $parameters);
     }
 
     /**
-     * Renders the template to a file
+     * Renders the template to a file.
      *
      * @param string $template
      * @param string $target
@@ -83,13 +83,12 @@ abstract class Generator
      *
      * @return int
      */
-    protected function renderFile( $template, $target, $parameters )
+    protected function renderFile($template, $target, $parameters)
     {
-        if ( !is_dir( dirname( $target ) ) )
-        {
-            mkdir( dirname( $target ), 0777, true );
+        if (!is_dir(dirname($target))) {
+            mkdir(dirname($target), 0777, true);
         }
 
-        return file_put_contents( $target, $this->render( $template, $parameters ) );
+        return file_put_contents($target, $this->render($template, $parameters));
     }
 }

@@ -10,33 +10,32 @@ use Symfony\Component\DependencyInjection\Container;
 class ProjectGenerator extends Generator
 {
     /**
-     * Generates the project
+     * Generates the project.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function generate( InputInterface $input, OutputInterface $output )
+    public function generate(InputInterface $input, OutputInterface $output)
     {
-        $fileSystem = $this->container->get( 'filesystem' );
-        $bundleFolder = $this->container->getParameter( 'kernel.root_dir' ) . '/../src';
-        $bundleNamespace = $input->getOption( 'bundle-namespace' );
-        $bundleName = $input->getOption( 'bundle-name' );
-        $finalBundleLocation = $bundleFolder . '/' . strtr( $bundleNamespace, '\\', '/' );
+        $fileSystem = $this->container->get('filesystem');
+        $bundleFolder = $this->container->getParameter('kernel.root_dir') . '/../src';
+        $bundleNamespace = $input->getOption('bundle-namespace');
+        $bundleName = $input->getOption('bundle-name');
+        $finalBundleLocation = $bundleFolder . '/' . strtr($bundleNamespace, '\\', '/');
 
         // Renaming the bundle namespace
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>Netgen\Bundle\MoreDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>'
+                'Renaming <comment>Netgen\Bundle\MoreDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>',
             )
         );
 
-        $namespaceClientPart = explode( '/', strtr( $bundleNamespace, '\\', '/' ) );
+        $namespaceClientPart = explode('/', strtr($bundleNamespace, '\\', '/'));
         $namespaceClientPart = $namespaceClientPart[0];
 
-        if ( strtolower( $namespaceClientPart ) !== 'netgen' )
-        {
+        if (strtolower($namespaceClientPart) !== 'netgen') {
             $fileSystem->rename(
                 $bundleFolder . '/Netgen',
                 $bundleFolder . '/' . $namespaceClientPart
@@ -49,7 +48,7 @@ class ProjectGenerator extends Generator
         );
 
         FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            FileHelper::findFilesInDirectory($finalBundleLocation),
             'Netgen\Bundle\MoreDemoBundle',
             $bundleNamespace
         );
@@ -59,12 +58,12 @@ class ProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>NetgenMoreDemoBundle</comment> bundle name into <comment>' . $bundleName . '</comment>'
+                'Renaming <comment>NetgenMoreDemoBundle</comment> bundle name into <comment>' . $bundleName . '</comment>',
             )
         );
 
         FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            FileHelper::findFilesInDirectory($finalBundleLocation),
             'NetgenMoreDemoBundle',
             $bundleName
         );
@@ -76,13 +75,13 @@ class ProjectGenerator extends Generator
 
         // Renaming the bundle extension & configuration
 
-        $bundleBaseName = substr( $bundleName, 0, -6 );
+        $bundleBaseName = substr($bundleName, 0, -6);
         $bundleExtensionName = $bundleBaseName . 'Extension';
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>NetgenMoreDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>'
+                'Renaming <comment>NetgenMoreDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>',
             )
         );
 
@@ -100,39 +99,39 @@ class ProjectGenerator extends Generator
         FileHelper::searchAndReplaceInFile(
             $finalBundleLocation . '/DependencyInjection/Configuration.php',
             'netgen_more_demo',
-            Container::underscore( $bundleBaseName )
+            Container::underscore($bundleBaseName)
         );
 
         // Renaming the bundle assets path
 
-        $bundleAssetsPathPart = preg_replace( '/bundle$/', '', strtolower( $bundleName ) );
+        $bundleAssetsPathPart = preg_replace('/bundle$/', '', strtolower($bundleName));
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>netgenmoredemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>'
+                'Renaming <comment>netgenmoredemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>',
             )
         );
 
         FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            FileHelper::findFilesInDirectory($finalBundleLocation),
             '/netgenmoredemo/',
             '/' . $bundleAssetsPathPart . '/'
         );
 
         // Renaming the site name
 
-        $siteName = $input->getOption( 'site-name' );
+        $siteName = $input->getOption('site-name');
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>NG More</comment> site name into <comment>' . $siteName . '</comment>'
+                'Renaming <comment>NG More</comment> site name into <comment>' . $siteName . '</comment>',
             )
         );
 
         FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory( $finalBundleLocation ),
+            FileHelper::findFilesInDirectory($finalBundleLocation),
             'NG More',
             $siteName
         );

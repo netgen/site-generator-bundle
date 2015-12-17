@@ -13,50 +13,45 @@ class RoutingManipulator extends Manipulator
     private $file;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $file The YAML routing file path
      */
-    public function __construct( $file )
+    public function __construct($file)
     {
         $this->file = $file;
     }
 
     /**
-     * Adds a routing resource at the top of the existing ones
+     * Adds a routing resource at the top of the existing ones.
      *
      * @param string $bundle
      * @param string $prefix
      * @param string $path
      *
-     * @return boolean true if it worked, false otherwise
+     * @return bool true if it worked, false otherwise
      *
      * @throws \RuntimeException If bundle is already imported
      */
-    public function addResource( $bundle, $prefix = '/', $path = 'routing' )
+    public function addResource($bundle, $prefix = '/', $path = 'routing')
     {
         $current = '';
-        if ( file_exists( $this->file ) )
-        {
-            $current = file_get_contents( $this->file );
+        if (file_exists($this->file)) {
+            $current = file_get_contents($this->file);
 
             // Don't add same bundle twice
-            if ( strpos( $current, $bundle ) !== false )
-            {
-                throw new RuntimeException( sprintf( 'Bundle "%s" is already imported.', $bundle ) );
+            if (strpos($current, $bundle) !== false) {
+                throw new RuntimeException(sprintf('Bundle "%s" is already imported.', $bundle));
             }
-        }
-        else if ( !is_dir( $dir = dirname( $this->file ) ) )
-        {
-            mkdir( $dir, 0777, true );
+        } elseif (!is_dir($dir = dirname($this->file))) {
+            mkdir($dir, 0777, true);
         }
 
-        $code = "\n" . sprintf( "%s:\n", Container::underscore( substr( $bundle, 0, -6 ) ) . ( '/' !== $prefix ? '_' . str_replace( '/', '_', substr( $prefix, 1 ) ) : '' ) );
-        $code .= sprintf( "    resource: \"@%s/Resources/config/%s.yml\"\n", $bundle, $path );
+        $code = "\n" . sprintf("%s:\n", Container::underscore(substr($bundle, 0, -6)) . ('/' !== $prefix ? '_' . str_replace('/', '_', substr($prefix, 1)) : ''));
+        $code .= sprintf("    resource: \"@%s/Resources/config/%s.yml\"\n", $bundle, $path);
         $code = $current . $code;
 
-        if ( file_put_contents( $this->file, $code ) === false )
-        {
+        if (file_put_contents($this->file, $code) === false) {
             return false;
         }
 
