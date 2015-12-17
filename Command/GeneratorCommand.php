@@ -24,7 +24,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     protected $questionHelper;
 
     /**
-     * Asks a question that fills provided option
+     * Asks a question that fills provided option.
      *
      * @param string $optionIdentifier
      * @param string $optionName
@@ -33,26 +33,26 @@ abstract class GeneratorCommand extends ContainerAwareCommand
      *
      * @return string
      */
-    protected function askForData( $optionIdentifier, $optionName, $defaultValue, $validator = null )
+    protected function askForData($optionIdentifier, $optionName, $defaultValue, $validator = null)
     {
-        $optionValue = $this->input->getOption( $optionIdentifier );
-        $optionValue = !empty( $optionValue ) ? $optionValue :
+        $optionValue = $this->input->getOption($optionIdentifier);
+        $optionValue = !empty($optionValue) ? $optionValue :
             $defaultValue;
 
-        $question = $this->getQuestion( $optionName, $optionValue, $validator );
+        $question = $this->getQuestion($optionName, $optionValue, $validator);
         $optionValue = $this->questionHelper->ask(
             $this->input,
             $this->output,
             $question
         );
 
-        $this->input->setOption( $optionIdentifier, $optionValue );
+        $this->input->setOption($optionIdentifier, $optionValue);
 
         return $optionValue;
     }
 
     /**
-     * Instantiates and returns a question
+     * Instantiates and returns a question.
      *
      * @param string $questionName
      * @param string $defaultValue
@@ -60,30 +60,29 @@ abstract class GeneratorCommand extends ContainerAwareCommand
      *
      * @return \Symfony\Component\Console\Question\Question
      */
-    protected function getQuestion( $questionName, $defaultValue = null, $validator = null )
+    protected function getQuestion($questionName, $defaultValue = null, $validator = null)
     {
         $questionName = $defaultValue
             ? '<info>' . $questionName . '</info> [<comment>' . $defaultValue . '</comment>]: '
             : '<info>' . $questionName . '</info>: ';
 
-        $question = new Question( $questionName, $defaultValue );
-        if ( $validator !== null )
-        {
-            $question->setValidator( array( 'Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator ) );
+        $question = new Question($questionName, $defaultValue);
+        if ($validator !== null) {
+            $question->setValidator(array('Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator));
         }
 
         return $question;
     }
 
     /**
-     * Instantiates and returns the confirmation question
+     * Instantiates and returns the confirmation question.
      *
      * @param string $questionName
      * @param bool $defaultValue
      *
      * @return \Symfony\Component\Console\Question\ConfirmationQuestion
      */
-    protected function getConfirmationQuestion( $questionName, $defaultValue = false )
+    protected function getConfirmationQuestion($questionName, $defaultValue = false)
     {
         return new ConfirmationQuestion(
             sprintf(
@@ -96,18 +95,15 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     }
 
     /**
-     * Writes generator summary
+     * Writes generator summary.
      *
      * @param array $errors
      */
-    protected function writeGeneratorSummary( $errors )
+    protected function writeGeneratorSummary($errors)
     {
-        if ( !$errors )
-        {
-            $this->writeSection( 'You can now start using the generated code!' );
-        }
-        else
-        {
+        if (!$errors) {
+            $this->writeSection('You can now start using the generated code!');
+        } else {
             $this->writeSection(
                 array(
                     'The command was not able to configure everything automatically.',
@@ -116,47 +112,43 @@ abstract class GeneratorCommand extends ContainerAwareCommand
                 'error'
             );
 
-            $this->output->writeln( $errors );
+            $this->output->writeln($errors);
         }
     }
 
     /**
-     * Writes a section of text to the output
+     * Writes a section of text to the output.
      *
      * @param string $text
      * @param string $style
      */
-    protected function writeSection( $text, $style = 'bg=blue;fg=white' )
+    protected function writeSection($text, $style = 'bg=blue;fg=white')
     {
         $this->output->writeln(
             array(
                 '',
-                $this->getHelper( 'formatter' )->formatBlock( $text, $style, true ),
+                $this->getHelper('formatter')->formatBlock($text, $style, true),
                 '',
             )
         );
     }
 
     /**
-     * Returns the runner
+     * Returns the runner.
      *
      * @param array $errors
      *
      * @return callable
      */
-    protected function getRunner( &$errors )
+    protected function getRunner(&$errors)
     {
         $output = $this->output;
-        $runner = function ( $err ) use ( $output, &$errors )
-        {
-            if ( !empty( $err ) )
-            {
-                $output->writeln( '<fg=red>FAILED</>' );
-                $errors = array_merge( $errors, $err );
-            }
-            else
-            {
-                $output->writeln( '<info>OK</info>' );
+        $runner = function ($err) use ($output, &$errors) {
+            if (!empty($err)) {
+                $output->writeln('<fg=red>FAILED</>');
+                $errors = array_merge($errors, $err);
+            } else {
+                $output->writeln('<info>OK</info>');
             }
         };
 

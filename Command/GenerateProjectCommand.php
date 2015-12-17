@@ -20,55 +20,54 @@ use Exception;
 class GenerateProjectCommand extends GeneratorCommand
 {
     /**
-     * Configures the command
+     * Configures the command.
      */
     protected function configure()
     {
         $this->setDefinition(
             array(
-                new InputOption( 'client', '', InputOption::VALUE_REQUIRED, 'Client name' ),
-                new InputOption( 'project', '', InputOption::VALUE_REQUIRED, 'Project name' ),
-                new InputOption( 'site-name', '', InputOption::VALUE_REQUIRED, 'Site name' ),
-                new InputOption( 'site-domain', '', InputOption::VALUE_REQUIRED, 'Site domain' ),
-                new InputOption( 'admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name' ),
-                new InputOption( 'site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list' ),
-                new InputOption( 'site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list' ),
-                new InputOption( 'bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace' ),
-                new InputOption( 'bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name' ),
-                new InputOption( 'extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name' ),
-                new InputOption( 'design-name', '', InputOption::VALUE_REQUIRED, 'Design name' )
+                new InputOption('client', '', InputOption::VALUE_REQUIRED, 'Client name'),
+                new InputOption('project', '', InputOption::VALUE_REQUIRED, 'Project name'),
+                new InputOption('site-name', '', InputOption::VALUE_REQUIRED, 'Site name'),
+                new InputOption('site-domain', '', InputOption::VALUE_REQUIRED, 'Site domain'),
+                new InputOption('admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name'),
+                new InputOption('site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list'),
+                new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
+                new InputOption('bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace'),
+                new InputOption('bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name'),
+                new InputOption('extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name'),
+                new InputOption('design-name', '', InputOption::VALUE_REQUIRED, 'Design name'),
             )
         );
-        $this->setDescription( 'Generates Netgen More project' );
-        $this->setName( 'ngmore:generate:project' );
+        $this->setDescription('Generates Netgen More project');
+        $this->setName('ngmore:generate:project');
     }
 
     /**
-     * Runs the command interactively
+     * Runs the command interactively.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return int
      */
-    protected function interact( InputInterface $input, OutputInterface $output )
+    protected function interact(InputInterface $input, OutputInterface $output)
     {
         $this->input = $input;
         $this->output = $output;
-        $this->questionHelper = $this->getHelper( 'question' );
+        $this->questionHelper = $this->getHelper('question');
 
-        $this->writeSection( 'Welcome to the Netgen More project generator' );
+        $this->writeSection('Welcome to the Netgen More project generator');
 
-        while ( !$this->doInteract() )
-        {
+        while (!$this->doInteract()) {
             // We will always ask for siteaccesses
-            $this->input->setOption( 'site-access-list-string', null );
-            $this->input->setOption( 'site-access-list', null );
+            $this->input->setOption('site-access-list-string', null);
+            $this->input->setOption('site-access-list', null);
         }
     }
 
     /**
-     * Collects all the project data interactively
+     * Collects all the project data interactively.
      *
      * @return bool
      */
@@ -80,7 +79,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 'bundle name, as well as legacy extension name and legacy design name.',
                 '<comment>First letter</comment> of the names must be <comment>uppercased</comment>, and it is recommended',
                 'to use <comment>CamelCasing</comment> for the rest of the names.',
-                ''
+                '',
             )
         );
 
@@ -92,7 +91,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 'validateCamelCaseName'
             )
         );
-        $clientNormalized = Container::underscore( $client );
+        $clientNormalized = Container::underscore($client);
 
         $project = ucfirst(
             $this->askForData(
@@ -102,36 +101,36 @@ class GenerateProjectCommand extends GeneratorCommand
                 'validateCamelCaseName'
             )
         );
-        $projectNormalized = Container::underscore( $project );
+        $projectNormalized = Container::underscore($project);
 
         $this->output->writeln(
             array(
                 '',
                 'Input the site name, and admin siteaccess name. Site name will be visible',
                 'as the title of the pages in eZ Publish, so you are free to input whatever you like here.',
-                ''
+                '',
             )
         );
 
         $this->askForData(
             'site-name',
             'Site name',
-            ucfirst( str_replace( '_', ' ', $projectNormalized ) ),
+            ucfirst(str_replace('_', ' ', $projectNormalized)),
             'validateNotEmpty'
         );
 
         $this->askForData(
             'site-domain',
             'Site domain',
-            str_replace( '_', '-', $projectNormalized ) . '.' .
-            trim( $this->getContainer()->getParameter( 'ngmore_generator.domain_suffix' ), '.' ),
+            str_replace('_', '-', $projectNormalized) . '.' .
+            trim($this->getContainer()->getParameter('ngmore_generator.domain_suffix'), '.'),
             'validateNotEmpty'
         );
 
         $adminSiteAccess = $this->askForData(
             'admin-site-access-name',
             'Admin siteaccess name',
-            $this->getContainer()->getParameter( 'ngmore_generator.admin_siteaccess_name' ),
+            $this->getContainer()->getParameter('ngmore_generator.admin_siteaccess_name'),
             'validateAdminSiteAccessName'
         );
 
@@ -139,64 +138,53 @@ class GenerateProjectCommand extends GeneratorCommand
 
         // Try to parse the following format
         // eng:eng-GB|cro:cro-HR:eng-GB
-        $siteAccessListString = $this->input->getOption( 'site-access-list-string' );
-        if ( !empty( $siteAccessListString ) )
-        {
-            $siteAccessListStringArray = explode( '|', $siteAccessListString );
+        $siteAccessListString = $this->input->getOption('site-access-list-string');
+        if (!empty($siteAccessListString)) {
+            $siteAccessListStringArray = explode('|', $siteAccessListString);
             $siteAccesses = array();
-            foreach ( $siteAccessListStringArray as $siteAccessListStringArrayItem )
-            {
-                if ( empty( $siteAccessListStringArrayItem ) )
-                {
-                    throw new RuntimeException( 'Invalid site-access-list-string option provided' );
+            foreach ($siteAccessListStringArray as $siteAccessListStringArrayItem) {
+                if (empty($siteAccessListStringArrayItem)) {
+                    throw new RuntimeException('Invalid site-access-list-string option provided');
                 }
 
-                $explodedSiteAccessItem = explode( ':', $siteAccessListStringArrayItem );
-                if ( count( $explodedSiteAccessItem ) < 2 )
-                {
-                    throw new RuntimeException( 'Invalid site-access-list-string option provided' );
+                $explodedSiteAccessItem = explode(':', $siteAccessListStringArrayItem);
+                if (count($explodedSiteAccessItem) < 2) {
+                    throw new RuntimeException('Invalid site-access-list-string option provided');
                 }
 
-                foreach ( $explodedSiteAccessItem as $index => $siteAccessOrLanguage )
-                {
+                foreach ($explodedSiteAccessItem as $index => $siteAccessOrLanguage) {
                     $siteAccessLanguages = array();
 
-                    if ( empty( $siteAccessOrLanguage ) )
-                    {
-                        throw new RuntimeException( 'Invalid site-access-list-string option provided' );
+                    if (empty($siteAccessOrLanguage)) {
+                        throw new RuntimeException('Invalid site-access-list-string option provided');
                     }
 
-                    if ( $index == 0 )
-                    {
-                        if ( $siteAccessOrLanguage === $adminSiteAccess )
-                        {
-                            throw new InvalidArgumentException( 'Regular siteaccess name cannot be equal to "' . $adminSiteAccess . '".' );
+                    if ($index == 0) {
+                        if ($siteAccessOrLanguage === $adminSiteAccess) {
+                            throw new InvalidArgumentException('Regular siteaccess name cannot be equal to "' . $adminSiteAccess . '".');
                         }
 
-                        if ( in_array( $siteAccessOrLanguage, $siteAccesses ) )
-                        {
-                            throw new InvalidArgumentException( 'Duplicate siteaccess name found: "' . $siteAccessOrLanguage . '".' );
+                        if (in_array($siteAccessOrLanguage, $siteAccesses)) {
+                            throw new InvalidArgumentException('Duplicate siteaccess name found: "' . $siteAccessOrLanguage . '".');
                         }
 
-                        Validators::validateSiteAccessName( $siteAccessOrLanguage );
+                        Validators::validateSiteAccessName($siteAccessOrLanguage);
                         $siteAccesses[] = $siteAccessOrLanguage;
                         continue;
                     }
 
-                    if ( in_array( $siteAccessOrLanguage, $siteAccessLanguages ) )
-                    {
-                        throw new InvalidArgumentException( 'Duplicate language code found in ' . $explodedSiteAccessItem[0] . ' siteaccess: "' . $siteAccessOrLanguage . '".' );
+                    if (in_array($siteAccessOrLanguage, $siteAccessLanguages)) {
+                        throw new InvalidArgumentException('Duplicate language code found in ' . $explodedSiteAccessItem[0] . ' siteaccess: "' . $siteAccessOrLanguage . '".');
                     }
 
-                    Validators::validateLanguageCode( $siteAccessOrLanguage );
+                    Validators::validateLanguageCode($siteAccessOrLanguage);
                     $siteAccessList[$explodedSiteAccessItem[0]][] = $siteAccessOrLanguage;
                     $siteAccessLanguages[] = $siteAccessOrLanguage;
                 }
             }
         }
 
-        if ( empty( $siteAccessList ) )
-        {
+        if (empty($siteAccessList)) {
             $this->output->writeln(
                 array(
                     '',
@@ -204,12 +192,11 @@ class GenerateProjectCommand extends GeneratorCommand
                     'The first siteaccess you specify will become the default siteaccess.',
                     'Admin siteaccess (<comment>' . $adminSiteAccess . '</comment>) will be generated automatically.',
                     'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
-                    ''
+                    '',
                 )
             );
 
-            do
-            {
+            do {
                 $siteAccess = $this->questionHelper->ask(
                     $this->input,
                     $this->output,
@@ -220,25 +207,21 @@ class GenerateProjectCommand extends GeneratorCommand
                     )
                 );
 
-                if ( $siteAccess === $adminSiteAccess )
-                {
-                    $this->output->writeln( '<error> Siteaccess name cannot be equal to "' . $adminSiteAccess . '". </error>' );
+                if ($siteAccess === $adminSiteAccess) {
+                    $this->output->writeln('<error> Siteaccess name cannot be equal to "' . $adminSiteAccess . '". </error>');
                     continue;
                 }
 
-                if ( !empty( $siteAccess ) )
-                {
-                    if ( in_array( $siteAccess, array_keys( $siteAccessList ) ) )
-                    {
-                        $this->output->writeln( '<error> Siteaccess name already added </error>' );
+                if (!empty($siteAccess)) {
+                    if (in_array($siteAccess, array_keys($siteAccessList))) {
+                        $this->output->writeln('<error> Siteaccess name already added </error>');
                         continue;
                     }
 
                     $siteAccessList[$siteAccess] = array();
 
                     $languageList = array();
-                    do
-                    {
+                    do {
                         $language = $this->questionHelper->ask(
                             $this->input,
                             $this->output,
@@ -249,54 +232,49 @@ class GenerateProjectCommand extends GeneratorCommand
                             )
                         );
 
-                        if ( $language === 'eng-EU' )
-                        {   
-                            $this->output->writeln( '<error> Language name cannot be equal to "eng-EU". "eng-EU" is deprecated and "eng-GB" will be used instead. </error>' );
+                        if ($language === 'eng-EU') {
+                            $this->output->writeln('<error> Language name cannot be equal to "eng-EU". "eng-EU" is deprecated and "eng-GB" will be used instead. </error>');
                             $language = 'eng-GB';
                         }
 
-                        if ( !empty( $language ) )
-                        {
-                            if ( in_array( $language, $languageList ) )
-                            {
-                                $this->output->writeln( '<error> Language code already added </error>' );
+                        if (!empty($language)) {
+                            if (in_array($language, $languageList)) {
+                                $this->output->writeln('<error> Language code already added </error>');
                                 continue;
                             }
 
                             $languageList[] = $language;
                         }
-                    }
-                    while ( !empty( $language ) || empty( $languageList ) );
+                    } while (!empty($language) || empty($languageList));
 
                     $siteAccessList[$siteAccess] = $languageList;
                 }
-            }
-            while ( !empty( $siteAccess ) || empty( $siteAccessList ) );
+            } while (!empty($siteAccess) || empty($siteAccessList));
         }
 
-        $this->input->setOption( 'site-access-list', $siteAccessList );
+        $this->input->setOption('site-access-list', $siteAccessList);
 
         $this->output->writeln(
             array(
                 '',
                 'Input the legacy extension and bundle details.',
-                ''
+                '',
             )
         );
 
-        $extensionName = $this->askForData( 'extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName' );
-        $designName = $this->askForData( 'design-name', 'Design name', $projectNormalized, 'validateLowerCaseName' );
-        $bundleNamespace = $this->askForData( 'bundle-namespace', 'Bundle namespace', $client . "\\Bundle\\" . $project . 'Bundle', 'validateBundleNamespace' );
-        $bundleName = $this->askForData( 'bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName' );
+        $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
+        $designName = $this->askForData('design-name', 'Design name', $projectNormalized, 'validateLowerCaseName');
+        $bundleNamespace = $this->askForData('bundle-namespace', 'Bundle namespace', $client . '\\Bundle\\' . $project . 'Bundle', 'validateBundleNamespace');
+        $bundleName = $this->askForData('bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName');
 
-        $this->writeSection( 'Summary before generation' );
+        $this->writeSection('Summary before generation');
 
         // Summary
         $this->output->writeln(
             array(
                 'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle',
                 'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $designName . '</info> legacy design.',
-                ''
+                '',
             )
         );
 
@@ -309,9 +287,9 @@ class GenerateProjectCommand extends GeneratorCommand
                     true
                 )
             )
-        )
-        {
-            $this->output->writeln( '' );
+        ) {
+            $this->output->writeln('');
+
             return false;
         }
 
@@ -319,115 +297,111 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Runs the command
+     * Runs the command.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      *
      * @return int
      */
-    protected function execute( InputInterface $input, OutputInterface $output )
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if ( !$input->isInteractive() )
-        {
-            $output->writeln( '<error>This command only supports interactive execution</error>' );
+        if (!$input->isInteractive()) {
+            $output->writeln('<error>This command only supports interactive execution</error>');
+
             return 1;
         }
 
-        $this->writeSection( 'Project generation' );
+        $this->writeSection('Project generation');
 
         // Generate Netgen More project
-        $projectGenerator = new ProjectGenerator( $this->getContainer() );
-        $projectGenerator->generate( $this->input, $this->output );
+        $projectGenerator = new ProjectGenerator($this->getContainer());
+        $projectGenerator->generate($this->input, $this->output);
 
         // Generate Netgen More legacy project
-        $legacyProjectGenerator = new LegacyProjectGenerator( $this->getContainer() );
-        $legacyProjectGenerator->generate( $this->input, $this->output );
+        $legacyProjectGenerator = new LegacyProjectGenerator($this->getContainer());
+        $legacyProjectGenerator->generate($this->input, $this->output);
 
         // Generate legacy siteaccesses
-        $legacySiteAccessGenerator = new LegacySiteAccessGenerator( $this->getContainer() );
-        $legacySiteAccessGenerator->generate( $this->input, $this->output );
+        $legacySiteAccessGenerator = new LegacySiteAccessGenerator($this->getContainer());
+        $legacySiteAccessGenerator->generate($this->input, $this->output);
 
         // Generate configuration
-        $configurationGenerator = new ConfigurationGenerator( $this->getContainer() );
-        $configurationGenerator->generate( $this->input, $this->output );
+        $configurationGenerator = new ConfigurationGenerator($this->getContainer());
+        $configurationGenerator->generate($this->input, $this->output);
 
         $errors = array();
-        $runner = $this->getRunner( $errors );
+        $runner = $this->getRunner($errors);
 
         // Register the bundle in the EzPublishKernel class
-        $runner( $this->updateKernel() );
+        $runner($this->updateKernel());
 
         // Install Symfony assets as relative symlinks
-        $runner( $this->installAssets() );
+        $runner($this->installAssets());
 
         // Set up routing
-        $runner( $this->updateRouting() );
+        $runner($this->updateRouting());
 
         // Install Netgen More project symlinks
-        $runner( $this->installProjectSymlinks() );
+        $runner($this->installProjectSymlinks());
 
         // Install Netgen More legacy symlinks
-        $runner( $this->installLegacySymlinks() );
+        $runner($this->installLegacySymlinks());
 
         // Generate legacy autoloads
-        $runner( $this->generateLegacyAutoloads() );
+        $runner($this->generateLegacyAutoloads());
 
         // Various cleanups
-        $runner( $this->cleanup() );
+        $runner($this->cleanup());
 
-        $errorCount = count( $errors );
+        $errorCount = count($errors);
 
         // Import Netgen More database
-        $runner( $this->importDatabase() );
+        $runner($this->importDatabase());
 
         // Move storage folder to proper location
-        $runner( $this->moveStorageFolder() );
+        $runner($this->moveStorageFolder());
 
-        if ( count( $errors ) == $errorCount )
-        {
+        if (count($errors) == $errorCount) {
             // Deletes the data folder
-            $runner( $this->deleteDataFolder() );
+            $runner($this->deleteDataFolder());
         }
 
-        $this->writeGeneratorSummary( $errors );
+        $this->writeGeneratorSummary($errors);
 
         return 0;
     }
 
     /**
-     * Installs Netgen More project symlinks
+     * Installs Netgen More project symlinks.
      *
      * @return array
      */
     protected function installProjectSymlinks()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Installing Netgen More project symlinks... ' );
+        $this->output->writeln('');
+        $this->output->write('Installing Netgen More project symlinks... ');
 
-        try
-        {
+        try {
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
                     'ezpublish/console',
                     'ngmore:symlink:project',
-                    '--quiet'
+                    '--quiet',
                 )
             );
 
             $process = $processBuilder->getProcess();
 
-            $process->setTimeout( 3600 );
+            $process->setTimeout(3600);
             $process->run(
-                function ( $type, $buffer )
-                {
+                function ($type, $buffer) {
                     echo $buffer;
                 }
             );
 
-            if ( !$process->isSuccessful() )
-            {
+            if (!$process->isSuccessful()) {
                 return array(
                     '- Run the following command from your installation root to install Netgen More project symlinks:',
                     '',
@@ -435,9 +409,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an error installing Netgen More project symlinks: ' . $e->getMessage(),
                 '',
@@ -446,38 +418,35 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Installs Netgen More legacy symlinks
+     * Installs Netgen More legacy symlinks.
      *
      * @return array
      */
     protected function installLegacySymlinks()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Installing Netgen More legacy symlinks... ' );
+        $this->output->writeln('');
+        $this->output->write('Installing Netgen More legacy symlinks... ');
 
-        try
-        {
+        try {
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
                     'ezpublish/console',
                     'ngmore:symlink:legacy',
-                    '--quiet'
+                    '--quiet',
                 )
             );
 
             $process = $processBuilder->getProcess();
 
-            $process->setTimeout( 3600 );
+            $process->setTimeout(3600);
             $process->run(
-                function ( $type, $buffer )
-                {
+                function ($type, $buffer) {
                     echo $buffer;
                 }
             );
 
-            if ( !$process->isSuccessful() )
-            {
+            if (!$process->isSuccessful()) {
                 return array(
                     '- Run the following command from your installation root to install Netgen More legacy symlinks:',
                     '',
@@ -485,9 +454,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an installing Netgen More legacy symlinks: ' . $e->getMessage(),
                 '',
@@ -496,43 +463,40 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Generates legacy autoloads
+     * Generates legacy autoloads.
      *
      * @return array
      */
     protected function generateLegacyAutoloads()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Generating legacy autoloads... ' );
+        $this->output->writeln('');
+        $this->output->write('Generating legacy autoloads... ');
 
         $currentWorkingDirectory = getcwd();
 
-        try
-        {
-            chdir( $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) );
+        try {
+            chdir($this->getContainer()->getParameter('ezpublish_legacy.root_dir'));
 
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
                     'bin/php/ezpgenerateautoloads.php',
-                    '--quiet'
+                    '--quiet',
                 )
             );
 
             $process = $processBuilder->getProcess();
 
-            $process->setTimeout( 3600 );
+            $process->setTimeout(3600);
             $process->run(
-                function ( $type, $buffer )
-                {
+                function ($type, $buffer) {
                     echo $buffer;
                 }
             );
 
-            chdir( $currentWorkingDirectory );
+            chdir($currentWorkingDirectory);
 
-            if ( !$process->isSuccessful() )
-            {
+            if (!$process->isSuccessful()) {
                 return array(
                     '- Run the following command from your ezpublish_legacy root to generate legacy autoloads:',
                     '',
@@ -540,10 +504,8 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
-            chdir( $currentWorkingDirectory );
+        } catch (Exception $e) {
+            chdir($currentWorkingDirectory);
 
             return array(
                 'There was an error generating legacy autoloads: ' . $e->getMessage(),
@@ -553,26 +515,23 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Cleans up various leftover files
+     * Cleans up various leftover files.
      *
      * @return array
      */
     protected function cleanup()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Cleaning up... ' );
+        $this->output->writeln('');
+        $this->output->write('Cleaning up... ');
 
-        $kernelDir = $this->getContainer()->getParameter( 'kernel.root_dir' );
-        $legacyDir = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' );
+        $kernelDir = $this->getContainer()->getParameter('kernel.root_dir');
+        $legacyDir = $this->getContainer()->getParameter('ezpublish_legacy.root_dir');
 
-        try
-        {
-            $fileSystem = $this->getContainer()->get( 'filesystem' );
-            $fileSystem->remove( $kernelDir . '/../web/bundles/netgenmoredemo' );
-            $fileSystem->remove( $legacyDir . '/extension/ez_netgen_ngmore_demo' );
-        }
-        catch ( Exception $e )
-        {
+        try {
+            $fileSystem = $this->getContainer()->get('filesystem');
+            $fileSystem->remove($kernelDir . '/../web/bundles/netgenmoredemo');
+            $fileSystem->remove($legacyDir . '/extension/ez_netgen_ngmore_demo');
+        } catch (Exception $e) {
             return array(
                 'There was an error cleaning up: ' . $e->getMessage(),
                 '',
@@ -581,19 +540,19 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Imports MySQL database
+     * Imports MySQL database.
      *
      * @return array
      */
     protected function importDatabase()
     {
-        $databasePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data/dump.sql';
+        $databasePath = $this->getContainer()->getParameter('kernel.root_dir') . '/data/dump.sql';
 
-        $databaseHost = $this->getContainer()->getParameter( 'database_host' );
-        $databasePort = $this->getContainer()->getParameter( 'database_port' );
-        $databaseUser = $this->getContainer()->getParameter( 'database_user' );
-        $databasePassword = $this->getContainer()->getParameter( 'database_password' );
-        $databaseName = $this->getContainer()->getParameter( 'database_name' );
+        $databaseHost = $this->getContainer()->getParameter('database_host');
+        $databasePort = $this->getContainer()->getParameter('database_port');
+        $databaseUser = $this->getContainer()->getParameter('database_user');
+        $databasePassword = $this->getContainer()->getParameter('database_password');
+        $databaseName = $this->getContainer()->getParameter('database_name');
 
         $errorOutput = array(
             '- Run the following command from your installation root to import Netgen More database:',
@@ -602,7 +561,7 @@ class GenerateProjectCommand extends GeneratorCommand
             '',
         );
 
-        $this->output->writeln( '' );
+        $this->output->writeln('');
         $doImport = $this->questionHelper->ask(
             $this->input,
             $this->output,
@@ -612,13 +571,11 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        $this->output->writeln( '' );
-        $this->output->write( 'Importing Netgen More database... ' );
+        $this->output->writeln('');
+        $this->output->write('Importing Netgen More database... ');
 
-        try
-        {
-            if ( !file_exists( $databasePath ) || !$doImport )
-            {
+        try {
+            if (!file_exists($databasePath) || !$doImport) {
                 return $errorOutput;
             }
 
@@ -627,43 +584,37 @@ class GenerateProjectCommand extends GeneratorCommand
                 '-u',
                 $databaseUser,
                 '-h',
-                $databaseHost
+                $databaseHost,
             );
 
-            if ( !empty( $databasePassword ) )
-            {
+            if (!empty($databasePassword)) {
                 $processParams[] = '-p' . $databasePassword;
             }
 
-            if ( !empty( $databasePort ) )
-            {
+            if (!empty($databasePort)) {
                 $processParams[] = '-P';
                 $processParams[] = $databasePort;
             }
 
             $processParams[] = $databaseName;
 
-            $processBuilder = new ProcessBuilder( $processParams );
+            $processBuilder = new ProcessBuilder($processParams);
             $process = $processBuilder->getProcess();
-            $process->setTimeout( 3600 );
+            $process->setTimeout(3600);
 
-            $process->setEnv( array( "LANG" => "en_US.UTF-8" ) );
-            $process->setInput( file_get_contents( $databasePath ) );
+            $process->setEnv(array('LANG' => 'en_US.UTF-8'));
+            $process->setInput(file_get_contents($databasePath));
 
             $process->run(
-                function ( $type, $buffer )
-                {
+                function ($type, $buffer) {
                     echo $buffer;
                 }
             );
 
-            if ( !$process->isSuccessful() )
-            {
+            if (!$process->isSuccessful()) {
                 return $errorOutput;
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an error importing Netgen More database: ' . $e->getMessage(),
                 '',
@@ -672,15 +623,15 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Move storage folder to proper location
+     * Move storage folder to proper location.
      *
      * @return array
      */
     protected function moveStorageFolder()
     {
-        $storagePath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data/var/ezdemo_site';
+        $storagePath = $this->getContainer()->getParameter('kernel.root_dir') . '/data/var/ezdemo_site';
 
-        $finalStoragePath = $this->getContainer()->getParameter( 'ezpublish_legacy.root_dir' ) . '/var/ezdemo_site';
+        $finalStoragePath = $this->getContainer()->getParameter('ezpublish_legacy.root_dir') . '/var/ezdemo_site';
 
         $errorOutput = array(
             '- Run the following command from your installation root to move the storage folder:',
@@ -689,7 +640,7 @@ class GenerateProjectCommand extends GeneratorCommand
             '',
         );
 
-        $this->output->writeln( '' );
+        $this->output->writeln('');
         $doMove = $this->questionHelper->ask(
             $this->input,
             $this->output,
@@ -699,21 +650,17 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        $this->output->writeln( '' );
-        $this->output->write( 'Moving the storage folder... ' );
+        $this->output->writeln('');
+        $this->output->write('Moving the storage folder... ');
 
-        try
-        {
-            if ( file_exists( $finalStoragePath ) || !$doMove )
-            {
+        try {
+            if (file_exists($finalStoragePath) || !$doMove) {
                 return $errorOutput;
             }
 
-            $fileSystem = $this->getContainer()->get( 'filesystem' );
-            $fileSystem->rename( $storagePath, $finalStoragePath );
-        }
-        catch ( Exception $e )
-        {
+            $fileSystem = $this->getContainer()->get('filesystem');
+            $fileSystem->rename($storagePath, $finalStoragePath);
+        } catch (Exception $e) {
             return array(
                 'There was an error moving the storage folder: ' . $e->getMessage(),
                 '',
@@ -722,13 +669,13 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Deletes the data folder
+     * Deletes the data folder.
      *
      * @return array
      */
     protected function deleteDataFolder()
     {
-        $dataPath = $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/data';
+        $dataPath = $this->getContainer()->getParameter('kernel.root_dir') . '/data';
 
         $errorOutput = array(
             '- Run the following command from your installation root to delete the data folder:',
@@ -737,7 +684,7 @@ class GenerateProjectCommand extends GeneratorCommand
             '',
         );
 
-        $this->output->writeln( '' );
+        $this->output->writeln('');
         $doDelete = $this->questionHelper->ask(
             $this->input,
             $this->output,
@@ -747,21 +694,17 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         );
 
-        $this->output->writeln( '' );
-        $this->output->write( 'Deleting the folder... ' );
+        $this->output->writeln('');
+        $this->output->write('Deleting the folder... ');
 
-        try
-        {
-            if ( !$doDelete )
-            {
+        try {
+            if (!$doDelete) {
                 return $errorOutput;
             }
 
-            $fileSystem = $this->getContainer()->get( 'filesystem' );
-            $fileSystem->remove( $dataPath );
-        }
-        catch ( Exception $e )
-        {
+            $fileSystem = $this->getContainer()->get('filesystem');
+            $fileSystem->remove($dataPath);
+        } catch (Exception $e) {
             return array(
                 'There was an error deleting the data folder: ' . $e->getMessage(),
                 '',
@@ -770,32 +713,30 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Adds the bundle to the kernel file
+     * Adds the bundle to the kernel file.
      *
      * @return array
      */
     protected function updateKernel()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Enabling the bundle inside the kernel... ' );
+        $this->output->writeln('');
+        $this->output->write('Enabling the bundle inside the kernel... ');
 
-        try
-        {
-            $bundleFQN = $this->input->getOption( 'bundle-namespace' ) . '\\' . $this->input->getOption( 'bundle-name' );
+        try {
+            $bundleFQN = $this->input->getOption('bundle-namespace') . '\\' . $this->input->getOption('bundle-name');
 
-            $reflected = new ReflectionObject( $this->getContainer()->get( 'kernel' ) );
+            $reflected = new ReflectionObject($this->getContainer()->get('kernel'));
 
-            $fileContent = file_get_contents( $reflected->getFileName() );
+            $fileContent = file_get_contents($reflected->getFileName());
             $fileContent = str_replace(
                 '$bundles[] = new Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
                 '$bundles[] = new ' . $bundleFQN . '();',
                 $fileContent
             );
 
-            $updated = file_put_contents( $reflected->getFileName(), $fileContent );
+            $updated = file_put_contents($reflected->getFileName(), $fileContent);
 
-            if ( !$updated )
-            {
+            if (!$updated) {
                 return array(
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
@@ -805,9 +746,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an error enabling bundle inside the kernel: ' . $e->getMessage(),
                 '',
@@ -816,33 +755,29 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Updates the routing file
+     * Updates the routing file.
      *
      * @return array
      */
     protected function updateRouting()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Importing the bundle routing resource... ' );
+        $this->output->writeln('');
+        $this->output->write('Importing the bundle routing resource... ');
 
-        $routing = new RoutingManipulator( $this->getContainer()->getParameter( 'kernel.root_dir' ) . '/config/routing.yml' );
-        try
-        {
-            $bundleName = $this->input->getOption( 'bundle-name' );
-            $updated = $routing->addResource( $bundleName );
-            if ( !$updated )
-            {
+        $routing = new RoutingManipulator($this->getContainer()->getParameter('kernel.root_dir') . '/config/routing.yml');
+        try {
+            $bundleName = $this->input->getOption('bundle-name');
+            $updated = $routing->addResource($bundleName);
+            if (!$updated) {
                 return array(
                     '- Import the bundle\'s routing resource in the main routing file:',
                     '',
-                    '    <comment>' . Container::underscore( substr( $bundleName, 0, -6 ) ) . ':</comment>',
+                    '    <comment>' . Container::underscore(substr($bundleName, 0, -6)) . ':</comment>',
                     '        <comment>resource: \"@' . $bundleName . '/Resources/config/routing.yml\"</comment>\n',
-                    ''
+                    '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an error importing bundle routing resource: ' . $e->getMessage(),
                 '',
@@ -851,17 +786,16 @@ class GenerateProjectCommand extends GeneratorCommand
     }
 
     /**
-     * Installs Symfony assets as relative symlinks
+     * Installs Symfony assets as relative symlinks.
      *
      * @return array
      */
     protected function installAssets()
     {
-        $this->output->writeln( '' );
-        $this->output->write( 'Installing assets using the <comment>symlink</comment> option... ' );
+        $this->output->writeln('');
+        $this->output->write('Installing assets using the <comment>symlink</comment> option... ');
 
-        try
-        {
+        try {
             $processBuilder = new ProcessBuilder(
                 array(
                     'php',
@@ -869,22 +803,20 @@ class GenerateProjectCommand extends GeneratorCommand
                     'assets:install',
                     '--symlink',
                     '--relative',
-                    '--quiet'
+                    '--quiet',
                 )
             );
 
             $process = $processBuilder->getProcess();
 
-            $process->setTimeout( 3600 );
+            $process->setTimeout(3600);
             $process->run(
-                function ( $type, $buffer )
-                {
+                function ($type, $buffer) {
                     echo $buffer;
                 }
             );
 
-            if ( !$process->isSuccessful() )
-            {
+            if (!$process->isSuccessful()) {
                 return array(
                     '- Run the following command from your installation root to install assets:',
                     '',
@@ -892,9 +824,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                 );
             }
-        }
-        catch ( Exception $e )
-        {
+        } catch (Exception $e) {
             return array(
                 'There was an error installing assets: ' . $e->getMessage(),
                 '',

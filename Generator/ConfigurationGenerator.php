@@ -9,21 +9,21 @@ use Symfony\Component\Yaml\Yaml;
 class ConfigurationGenerator extends Generator
 {
     /**
-     * Generates the main configuration
+     * Generates the main configuration.
      *
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function generate( InputInterface $input, OutputInterface $output )
+    public function generate(InputInterface $input, OutputInterface $output)
     {
         $settings = array();
 
         // Resource imports
 
         $settings['imports'] = array(
-            array( 'resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml' ),
-            array( 'resource' => '@NetgenMoreAdminUIBundle/Resources/config/ezpublish.yml' ),
-            array( 'resource' => '@' . $input->getOption( 'bundle-name' ) . '/Resources/config/ezpublish.yml' )
+            array('resource' => '@NetgenMoreBundle/Resources/config/ezpublish.yml'),
+            array('resource' => '@NetgenMoreAdminUIBundle/Resources/config/ezpublish.yml'),
+            array('resource' => '@' . $input->getOption('bundle-name') . '/Resources/config/ezpublish.yml'),
         );
 
         // HTTP cache and ImageMagick settings
@@ -39,21 +39,17 @@ class ConfigurationGenerator extends Generator
 
         // List of siteaccesses and groups
 
-        $siteAccessList = $input->getOption( 'site-access-list' );
-        $siteAccessNames = array_keys( $siteAccessList );
-        $adminSiteAccessNames = array( $input->getOption( 'admin-site-access-name' ) );
-        if ( $this->generateNgAdminUi )
-        {
+        $siteAccessList = $input->getOption('site-access-list');
+        $siteAccessNames = array_keys($siteAccessList);
+        $adminSiteAccessNames = array($input->getOption('admin-site-access-name'));
+        if ($this->generateNgAdminUi) {
             $adminSiteAccessNames[] = self::NGADMINUI_SITEACCESS_NAME;
         }
 
         $adminSiteAccessLanguages = array();
-        foreach ( $siteAccessList as $siteAccessLanguages )
-        {
-            foreach ( $siteAccessLanguages as $siteAccessLanguage )
-            {
-                if ( !in_array( $siteAccessLanguage, $adminSiteAccessLanguages ) )
-                {
+        foreach ($siteAccessList as $siteAccessLanguages) {
+            foreach ($siteAccessLanguages as $siteAccessLanguage) {
+                if (!in_array($siteAccessLanguage, $adminSiteAccessLanguages)) {
                     $adminSiteAccessLanguages[] = $siteAccessLanguage;
                 }
             }
@@ -72,25 +68,21 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['siteaccess']['match'] = array(
             'Compound\LogicalAnd' => array(),
             'Map\Host' => array(),
-            'URIElement' => '1'
+            'URIElement' => '1',
         );
 
-        $siteDomain = $input->getOption( 'site-domain' );
+        $siteDomain = $input->getOption('site-domain');
 
-        foreach ( $settings['ezpublish']['siteaccess']['list'] as $siteAccessName )
-        {
-            if ( $siteAccessName !== $siteAccessNames[0] )
-            {
+        foreach ($settings['ezpublish']['siteaccess']['list'] as $siteAccessName) {
+            if ($siteAccessName !== $siteAccessNames[0]) {
                 $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
                     'matchers' => array(
-                        'Map\URI' => array( $siteAccessName => true ),
-                        'Map\Host' => array( $siteDomain => true )
+                        'Map\URI' => array($siteAccessName => true),
+                        'Map\Host' => array($siteDomain => true),
                     ),
-                    'match' => $siteAccessName
+                    'match' => $siteAccessName,
                 );
-            }
-            else
-            {
+            } else {
                 $settings['ezpublish']['siteaccess']['match']['Map\Host'][$siteDomain] = $siteAccessName;
             }
         }
@@ -102,44 +94,40 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['system']['global']['repository'] = 'default';
         $settings['ezpublish']['system']['global']['var_dir'] = 'var/ezdemo_site';
         $settings['ezpublish']['system']['global']['http_cache'] = array(
-            'purge_servers' => '%http_cache.purge_servers%'
+            'purge_servers' => '%http_cache.purge_servers%',
         );
 
-        if ( count( $siteAccessNames ) > 1 )
-        {
+        if (count($siteAccessNames) > 1) {
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
-        foreach ( $siteAccessList as $siteAccessName => $siteAccessLanguages )
-        {
+        foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ezpublish']['system'][$siteAccessName]['session'] = array(
-                'name' => 'eZSESSID'
+                'name' => 'eZSESSID',
             );
         }
 
-        foreach ( $adminSiteAccessNames as $adminSiteAccessName )
-        {
-            if ( $adminSiteAccessName !== self::NGADMINUI_SITEACCESS_NAME )
-            {
+        foreach ($adminSiteAccessNames as $adminSiteAccessName) {
+            if ($adminSiteAccessName !== self::NGADMINUI_SITEACCESS_NAME) {
                 $settings['ezpublish']['system'][$adminSiteAccessName]['legacy_mode'] = true;
             }
 
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
             $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
-                'name' => 'eZSESSID'
+                'name' => 'eZSESSID',
             );
         }
 
         file_put_contents(
-            $this->container->getParameter( 'kernel.root_dir' ) . '/config/ezpublish.yml',
-            Yaml::dump( $settings, 7 )
+            $this->container->getParameter('kernel.root_dir') . '/config/ezpublish.yml',
+            Yaml::dump($settings, 7)
         );
 
         $output->writeln(
             array(
                 '',
-                'Generated <comment>ezpublish.yml</comment> configuration file!'
+                'Generated <comment>ezpublish.yml</comment> configuration file!',
             )
         );
     }
