@@ -71,19 +71,17 @@ class ConfigurationGenerator extends Generator
             'URIElement' => '1',
         );
 
-        $siteDomain = $input->getOption('site-domain');
-
         foreach ($settings['ezpublish']['siteaccess']['list'] as $siteAccessName) {
             if ($siteAccessName !== $siteAccessNames[0]) {
                 $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
                     'matchers' => array(
                         'Map\URI' => array($siteAccessName => true),
-                        'Map\Host' => array($siteDomain => true),
+                        'Map\Host' => array('%ngmore.default.site_domain%' => true),
                     ),
                     'match' => $siteAccessName,
                 );
             } else {
-                $settings['ezpublish']['siteaccess']['match']['Map\Host'][$siteDomain] = $siteAccessName;
+                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.default.site_domain%'] = $siteAccessName;
             }
         }
 

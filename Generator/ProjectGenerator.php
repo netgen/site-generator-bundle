@@ -135,22 +135,5 @@ class ProjectGenerator extends Generator
             'NG More',
             $siteName
         );
-
-        // Renaming the site domain
-
-        $siteDomain = $input->getOption('site-domain');
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore.netgen.biz</comment> domain into <comment>' . $siteDomain . '</comment>',
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory($finalBundleLocation),
-            'ngmore.netgen.biz',
-            $siteDomain
-        );
     }
 }
