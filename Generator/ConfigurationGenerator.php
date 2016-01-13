@@ -90,7 +90,7 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['system'] = array();
 
         $settings['ezpublish']['system']['global']['repository'] = 'default';
-        $settings['ezpublish']['system']['global']['var_dir'] = 'var/ezdemo_site';
+        $settings['ezpublish']['system']['global']['var_dir'] = 'var/site';
         $settings['ezpublish']['system']['global']['http_cache'] = array(
             'purge_servers' => '%http_cache.purge_servers%',
         );

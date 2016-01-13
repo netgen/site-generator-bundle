@@ -620,9 +620,9 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function moveStorageFolder()
     {
-        $storagePath = $this->getContainer()->getParameter('kernel.root_dir') . '/data/var/ezdemo_site';
+        $storagePath = $this->getContainer()->getParameter('kernel.root_dir') . '/data/var/site';
 
-        $finalStoragePath = $this->getContainer()->getParameter('ezpublish_legacy.root_dir') . '/var/ezdemo_site';
+        $finalStoragePath = $this->getContainer()->getParameter('ezpublish_legacy.root_dir') . '/var/site';
 
         $errorOutput = array(
             '- Run the following command from your installation root to move the storage folder:',
