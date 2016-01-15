@@ -41,10 +41,12 @@ class ConfigurationGenerator extends Generator
 
         $siteAccessList = $input->getOption('site-access-list');
         $siteAccessNames = array_keys($siteAccessList);
-        $adminSiteAccessNames = array($input->getOption('admin-site-access-name'));
+        $adminSiteAccessNames = array();
         if ($this->generateNgAdminUi) {
             $adminSiteAccessNames[] = self::NGADMINUI_SITEACCESS_NAME;
         }
+
+        $adminSiteAccessNames[] = $input->getOption('admin-site-access-name');
 
         $adminSiteAccessLanguages = array();
         foreach ($siteAccessList as $siteAccessLanguages) {
@@ -112,9 +114,11 @@ class ConfigurationGenerator extends Generator
             }
 
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
-                'name' => 'eZSESSID',
-            );
+            if ($adminSiteAccessName === self::NGADMINUI_SITEACCESS_NAME) {
+                $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
+                    'name' => 'eZSESSID',
+                );
+            }
         }
 
         file_put_contents(
