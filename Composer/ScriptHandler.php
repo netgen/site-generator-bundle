@@ -3,7 +3,7 @@
 namespace Netgen\Bundle\MoreGeneratorBundle\Composer;
 
 use Sensio\Bundle\DistributionBundle\Composer\ScriptHandler as DistributionBundleScriptHandler;
-use Composer\Script\CommandEvent;
+use Composer\Script\Event;
 use eZ\Bundle\EzPublishCoreBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Debug\Debug;
@@ -14,9 +14,9 @@ class ScriptHandler extends DistributionBundleScriptHandler
     /**
      * Runs the Symfony console command that generates new Netgen More project.
      *
-     * @param \Composer\Script\CommandEvent $event
+     * @param \Composer\Script\Event $event
      */
-    public static function generateNetgenMoreProject(CommandEvent $event)
+    public static function generateNetgenMoreProject(Event $event)
     {
         require_once getcwd() . '/app/autoload.php';
         require_once getcwd() . '/app/AppKernel.php';
