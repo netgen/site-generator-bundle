@@ -53,28 +53,6 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
         $settings['ezpublish']['siteaccess']['groups']['administration_group'] = $adminSiteAccessNames;
 
-        // Siteaccess match settings
-
-        $settings['ezpublish']['siteaccess']['match'] = array(
-            'Compound\LogicalAnd' => array(),
-            'Map\Host' => array(),
-            'URIElement' => '1',
-        );
-
-        foreach ($settings['ezpublish']['siteaccess']['list'] as $siteAccessName) {
-            if ($siteAccessName !== $siteAccessNames[0]) {
-                $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
-                    'matchers' => array(
-                        'Map\URI' => array($siteAccessName => true),
-                        'Map\Host' => array('%ngmore.default.site_domain%' => true),
-                    ),
-                    'match' => $siteAccessName,
-                );
-            } else {
-                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.default.site_domain%'] = $siteAccessName;
-            }
-        }
-
         // List of siteaccess languages
 
         $settings['ezpublish']['system'] = array();
@@ -108,11 +86,71 @@ class ConfigurationGenerator extends Generator
             Yaml::dump($settings, 7)
         );
 
+        $this->generateServerConfig($settings, $siteAccessNames);
+
         $output->writeln(
             array(
                 '',
                 'Generated <comment>ezplatform.yml</comment> configuration file!',
             )
+        );
+    }
+
+    /**
+     * Generates settings that are specific to server.
+     *
+     * @param array $baseSettings
+     * @param array $siteAccessNames
+     */
+    protected function generateServerConfig(array $baseSettings, array $siteAccessNames)
+    {
+        $settings = array();
+
+        // Siteaccess match settings
+
+        $settings['ezpublish']['siteaccess']['match'] = array(
+            'Compound\LogicalAnd' => array(),
+            'Map\Host' => array(),
+            'URIElement' => '1',
+        );
+
+        foreach ($baseSettings['ezpublish']['siteaccess']['list'] as $siteAccessName) {
+            if ($siteAccessName !== $siteAccessNames[0]) {
+                $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
+                    'matchers' => array(
+                        'Map\URI' => array($siteAccessName => true),
+                        'Map\Host' => array('%ngmore.default.site_domain%' => true),
+                    ),
+                    'match' => $siteAccessName,
+                );
+            } else {
+                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.default.site_domain%'] = $siteAccessName;
+            }
+        }
+
+        // Config specific files
+
+        $kernelDir = $this->container->getParameter('kernel.root_dir');
+        $serverEnv = $this->container->getParameter('server_environment');
+
+        file_put_contents(
+            $kernelDir . '/config/server/' . $serverEnv . '/ezplatform.yml',
+            Yaml::dump($settings, 7)
+        );
+
+        // Root settings file
+
+        $rootSettings = array(
+            'imports' => array(
+                array(
+                    'resource' => $serverEnv . '/ezplatform.yml',
+                ),
+            ),
+        );
+
+        file_put_contents(
+            $kernelDir . '/config/server/' . $serverEnv . '.yml',
+            Yaml::dump($rootSettings, 7)
         );
     }
 }
