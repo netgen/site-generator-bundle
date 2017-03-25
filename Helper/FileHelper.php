@@ -21,7 +21,7 @@ class FileHelper
         }
 
         foreach ($files as $file) {
-            if (!is_file($file) || !is_readable($file) || !is_writeable($file) || is_link($file)) {
+            if (!is_file($file) || !is_readable($file) || !is_writable($file) || is_link($file)) {
                 continue;
             }
 
