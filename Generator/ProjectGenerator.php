@@ -55,17 +55,19 @@ class ProjectGenerator extends Generator
 
         // Renaming the bundle name
 
+        $bundleBaseName = substr($bundleName, 0, -6);
+
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>NetgenMoreDemoBundle</comment> bundle name into <comment>' . $bundleName . '</comment>',
+                'Renaming <comment>NetgenMoreDemo</comment> bundle name into <comment>' . $bundleBaseName . '</comment>',
             )
         );
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            'NetgenMoreDemoBundle',
-            $bundleName
+            'NetgenMoreDemo',
+            $bundleBaseName
         );
 
         $fileSystem->rename(
@@ -75,7 +77,6 @@ class ProjectGenerator extends Generator
 
         // Renaming the bundle extension & configuration
 
-        $bundleBaseName = substr($bundleName, 0, -6);
         $bundleExtensionName = $bundleBaseName . 'Extension';
 
         $output->writeln(
@@ -83,12 +84,6 @@ class ProjectGenerator extends Generator
                 '',
                 'Renaming <comment>NetgenMoreDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>',
             )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            $finalBundleLocation . '/DependencyInjection/NetgenMoreDemoExtension.php',
-            'NetgenMoreDemoExtension',
-            $bundleExtensionName
         );
 
         $fileSystem->rename(
