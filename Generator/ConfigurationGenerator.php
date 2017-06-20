@@ -72,6 +72,10 @@ class ConfigurationGenerator extends Generator
         }
 
         foreach ($adminSiteAccessNames as $adminSiteAccessName) {
+            if ($adminSiteAccessName === self::NGADMINUI_SITEACCESS_NAME) {
+                $settings['ezpublish']['system'][$adminSiteAccessName]['design'] = $adminSiteAccessName;
+            }
+
             if ($adminSiteAccessName !== self::NGADMINUI_SITEACCESS_NAME) {
                 $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
             }
@@ -85,6 +89,10 @@ class ConfigurationGenerator extends Generator
         }
 
         $settings['ezdesign']['design_list'][$designName] = array($designName);
+        $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
+            self::NGADMINUI_SITEACCESS_NAME,
+            $designName,
+        );
 
         file_put_contents(
             $this->container->getParameter('kernel.root_dir') . '/config/ezplatform.yml',
