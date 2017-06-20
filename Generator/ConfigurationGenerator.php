@@ -63,6 +63,12 @@ class ConfigurationGenerator extends Generator
 
         $designName = $input->getOption('design-name');
 
+        $settings['ezdesign']['design_list'][$designName] = array($designName);
+        $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
+            self::NGADMINUI_SITEACCESS_NAME,
+            $designName,
+        );
+
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
             $settings['ezpublish']['system'][$siteAccessName]['design'] = $designName;
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
@@ -87,12 +93,6 @@ class ConfigurationGenerator extends Generator
                 );
             }
         }
-
-        $settings['ezdesign']['design_list'][$designName] = array($designName);
-        $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
-            self::NGADMINUI_SITEACCESS_NAME,
-            $designName,
-        );
 
         file_put_contents(
             $this->container->getParameter('kernel.root_dir') . '/config/ezplatform.yml',
