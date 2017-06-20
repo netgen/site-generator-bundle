@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
 use Symfony\Component\DependencyInjection\Container;
+use RuntimeException;
 
 class ProjectGenerator extends Generator
 {
@@ -130,5 +131,23 @@ class ProjectGenerator extends Generator
             'NG More',
             $siteName
         );
+
+        // Renaming the design folder
+
+        $designName = $input->getOption('design-name');
+        $finalThemeLocation = $finalBundleLocation . '/Resources/views/themes/' . $designName;
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>demo</comment> theme into <comment>' . $designName . '</comment>',
+            )
+        );
+
+        if ($fileSystem->exists($finalThemeLocation)) {
+            throw new RuntimeException('The folder "' . $finalThemeLocation . '" already exists. Aborting...');
+        }
+
+        $fileSystem->rename($finalBundleLocation . '/Resources/views/themes/demo', $finalThemeLocation);
     }
 }

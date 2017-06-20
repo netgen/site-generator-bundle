@@ -75,7 +75,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 'Input the client and project names. These values will be used to generate',
-                'bundle name, as well as legacy extension name and legacy design name.',
+                'bundle name, design name and legacy extension name.',
                 '<comment>First letter</comment> of the names must be <comment>uppercased</comment>, and it is recommended',
                 'to use <comment>CamelCasing</comment> for the rest of the names.',
                 '',
@@ -264,7 +264,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle',
-                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $designName . '</info> legacy design.',
+                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $designName . '</info> designs.',
                 '',
             )
         );

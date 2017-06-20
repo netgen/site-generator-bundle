@@ -61,7 +61,10 @@ class ConfigurationGenerator extends Generator
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
+        $designName = $input->getOption('design-name');
+
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
+            $settings['ezpublish']['system'][$siteAccessName]['design'] = $designName;
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ezpublish']['system'][$siteAccessName]['session'] = array(
                 'name' => 'eZSESSID',
@@ -80,6 +83,8 @@ class ConfigurationGenerator extends Generator
                 );
             }
         }
+
+        $settings['ezdesign']['design_list'][$designName] = array($designName);
 
         file_put_contents(
             $this->container->getParameter('kernel.root_dir') . '/config/ezplatform.yml',
