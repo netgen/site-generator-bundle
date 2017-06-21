@@ -63,10 +63,10 @@ class ConfigurationGenerator extends Generator
 
         $designName = $input->getOption('design-name');
 
-        $settings['ezdesign']['design_list'][$designName] = array($designName);
+        $settings['ezdesign']['design_list'][$designName] = array($designName, 'common');
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
             self::NGADMINUI_SITEACCESS_NAME,
-            $designName,
+            'common',
         );
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
