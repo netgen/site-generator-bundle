@@ -135,7 +135,6 @@ class ProjectGenerator extends Generator
         // Renaming the design folder
 
         $designName = $input->getOption('design-name');
-        $finalThemeLocation = $finalBundleLocation . '/Resources/views/themes/' . $designName;
 
         $output->writeln(
             array(
@@ -144,10 +143,17 @@ class ProjectGenerator extends Generator
             )
         );
 
-        if ($fileSystem->exists($finalThemeLocation)) {
-            throw new RuntimeException('The folder "' . $finalThemeLocation . '" already exists. Aborting...');
-        }
+        $themeFolders = array(
+            $finalBundleLocation . '/Resources/views/themes/demo' => $finalBundleLocation . '/Resources/views/themes/' . $designName,
+            $finalBundleLocation . '/Resources/views/ngbm/themes/demo' => $finalBundleLocation . '/Resources/views/ngbm/themes/' . $designName,
+        );
 
-        $fileSystem->rename($finalBundleLocation . '/Resources/views/themes/demo', $finalThemeLocation);
+        foreach ($themeFolders as $sourceThemeFolder => $destThemeFolder) {
+            if ($fileSystem->exists($destThemeFolder)) {
+                throw new RuntimeException('The folder "' . $destThemeFolder . '" already exists. Aborting...');
+            }
+
+            $fileSystem->rename($sourceThemeFolder, $destThemeFolder);
+        }
     }
 }

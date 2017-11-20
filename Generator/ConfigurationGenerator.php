@@ -63,6 +63,9 @@ class ConfigurationGenerator extends Generator
 
         $designName = $input->getOption('design-name');
 
+        $settings['netgen_block_manager']['design_list'][$designName] = array($designName, 'standard');
+        $settings['netgen_block_manager']['system']['frontend_group']['design'] = $designName;
+
         $settings['ezdesign']['design_list'][$designName] = array($designName, 'common');
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
             self::NGADMINUI_SITEACCESS_NAME,
