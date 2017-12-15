@@ -2,6 +2,7 @@
 
 namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
+use Netgen\Bundle\MoreGeneratorBundle\Generator\Generator;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -29,7 +30,6 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption('client', '', InputOption::VALUE_REQUIRED, 'Client name'),
                 new InputOption('project', '', InputOption::VALUE_REQUIRED, 'Project name'),
                 new InputOption('site-name', '', InputOption::VALUE_REQUIRED, 'Site name'),
-                new InputOption('admin-site-access-name', '', InputOption::VALUE_REQUIRED, 'Admin siteaccess name'),
                 new InputOption('site-access-list-string', '', InputOption::VALUE_OPTIONAL, 'String definition of siteaccess list'),
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
                 new InputOption('bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace'),
@@ -118,13 +118,6 @@ class GenerateProjectCommand extends GeneratorCommand
             'validateNotEmpty'
         );
 
-        $adminSiteAccess = $this->askForData(
-            'admin-site-access-name',
-            'Admin siteaccess name',
-            $this->getContainer()->getParameter('ngmore_generator.admin_siteaccess_name'),
-            'validateAdminSiteAccessName'
-        );
-
         $siteAccessList = array();
 
         // Try to parse the following format
@@ -151,8 +144,8 @@ class GenerateProjectCommand extends GeneratorCommand
                     }
 
                     if ($index == 0) {
-                        if ($siteAccessOrLanguage === $adminSiteAccess) {
-                            throw new InvalidArgumentException('Regular siteaccess name cannot be equal to "' . $adminSiteAccess . '".');
+                        if ($siteAccessOrLanguage === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
+                            throw new InvalidArgumentException('Regular siteaccess name cannot be equal to "' . Generator::LEGACY_ADMIN_SITEACCESS_NAME . '".');
                         }
 
                         if (in_array($siteAccessOrLanguage, $siteAccesses)) {
@@ -181,7 +174,6 @@ class GenerateProjectCommand extends GeneratorCommand
                     '',
                     'Input the name of every siteaccess you wish to create.',
                     'The first siteaccess you specify will become the default siteaccess.',
-                    'Admin siteaccess (<comment>' . $adminSiteAccess . '</comment>) will be generated automatically.',
                     'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
                     '',
                 )
@@ -198,8 +190,8 @@ class GenerateProjectCommand extends GeneratorCommand
                     )
                 );
 
-                if ($siteAccess === $adminSiteAccess) {
-                    $this->output->writeln('<error> Siteaccess name cannot be equal to "' . $adminSiteAccess . '". </error>');
+                if ($siteAccess === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
+                    $this->output->writeln('<error> Siteaccess name cannot be equal to "' . Generator::LEGACY_ADMIN_SITEACCESS_NAME . '". </error>');
                     continue;
                 }
 

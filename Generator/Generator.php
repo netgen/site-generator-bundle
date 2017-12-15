@@ -9,6 +9,7 @@ use Twig_Environment;
 abstract class Generator
 {
     const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
+    const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
 
     /**
      * @var array
@@ -33,10 +34,7 @@ abstract class Generator
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-
-        $this->generateNgAdminUi = (bool)$this->container->getParameter(
-            'ngmore_generator.generate_ngadminui'
-        );
+        $this->generateNgAdminUi = true;
     }
 
     /**

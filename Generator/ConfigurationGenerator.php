@@ -30,14 +30,7 @@ class ConfigurationGenerator extends Generator
         $siteAccessList = $input->getOption('site-access-list');
         $siteAccessNames = array_keys($siteAccessList);
 
-        // Default eZ Platform Admin UI v2 siteaccess name
-        $adminSiteAccessNames = array('admin');
-
-        if ($this->generateNgAdminUi) {
-            $adminSiteAccessNames[] = self::NGADMINUI_SITEACCESS_NAME;
-        }
-
-        $adminSiteAccessNames[] = $input->getOption('admin-site-access-name');
+        $adminSiteAccessNames = array('admin', self::NGADMINUI_SITEACCESS_NAME, self::LEGACY_ADMIN_SITEACCESS_NAME);
 
         $adminSiteAccessLanguages = array();
         foreach ($siteAccessList as $siteAccessLanguages) {
@@ -88,12 +81,12 @@ class ConfigurationGenerator extends Generator
                 $settings['ezpublish']['system'][$adminSiteAccessName]['design'] = $adminSiteAccessName;
             }
 
-            if ($adminSiteAccessName === $input->getOption('admin-site-access-name')) {
+            if ($adminSiteAccessName === self::LEGACY_ADMIN_SITEACCESS_NAME) {
                 $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
             }
 
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-            if ($adminSiteAccessName !== $input->getOption('admin-site-access-name')) {
+            if ($adminSiteAccessName !== self::LEGACY_ADMIN_SITEACCESS_NAME) {
                 $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = array(
                     'name' => 'eZSESSID',
                 );
