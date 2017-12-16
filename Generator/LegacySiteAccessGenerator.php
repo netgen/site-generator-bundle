@@ -143,10 +143,6 @@ class LegacySiteAccessGenerator extends Generator
                     $finalExtensionLocation . '/settings/_skeleton_siteaccess',
                     $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName
                 );
-
-                $fileSystem->remove(
-                    $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/.keep'
-                );
             } else {
                 $fileSystem->mkdir($finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName);
                 $fileSystem->copy(
@@ -166,6 +162,10 @@ class LegacySiteAccessGenerator extends Generator
                     }
                 }
             }
+
+            $fileSystem->remove(
+                $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/.keep'
+            );
 
             $this->setSkeletonDirs($finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName);
 
