@@ -21,7 +21,7 @@ class LegacyProjectGenerator extends Generator
 
         // Renaming the legacy extension
 
-        $bundleFolder = $this->container->getParameter('kernel.root_dir') . '/../src';
+        $bundleFolder = $this->container->getParameter('kernel.project_dir') . '/src';
         $bundleNamespace = $input->getOption('bundle-namespace');
 
         $finalBundleLocation = $bundleFolder . '/' . strtr($bundleNamespace, '\\', '/');

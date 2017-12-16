@@ -94,7 +94,7 @@ class ConfigurationGenerator extends Generator
         }
 
         file_put_contents(
-            $this->container->getParameter('kernel.root_dir') . '/config/ezplatform.yml',
+            $this->container->getParameter('kernel.project_dir') . '/' . $this->container->getParameter('kernel.name') . '/config/ezplatform.yml',
             Yaml::dump($settings, 7)
         );
 
@@ -142,7 +142,7 @@ class ConfigurationGenerator extends Generator
 
         // Config specific files
 
-        $kernelDir = $this->container->getParameter('kernel.root_dir');
+        $kernelDir = $this->container->getParameter('kernel.project_dir') . '/' . $this->container->getParameter('kernel.name');
         $serverEnv = $this->container->getParameter('server_environment');
 
         file_put_contents(

@@ -21,7 +21,7 @@ class LegacySiteAccessGenerator extends Generator
         $availableEnvironments = $this->container->getParameter('ngmore_generator.available_environments');
         $adminSiteAccessName = self::LEGACY_ADMIN_SITEACCESS_NAME;
 
-        $bundleFolder = $this->container->getParameter('kernel.root_dir') . '/../src';
+        $bundleFolder = $this->container->getParameter('kernel.project_dir') . '/src';
         $bundleNamespace = $input->getOption('bundle-namespace');
 
         $finalBundleLocation = $bundleFolder . '/' . strtr($bundleNamespace, '\\', '/');

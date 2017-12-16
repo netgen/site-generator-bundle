@@ -496,12 +496,12 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln('');
         $this->output->write('Cleaning up... ');
 
-        $kernelDir = $this->getContainer()->getParameter('kernel.root_dir');
+        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
         $legacyDir = $this->getContainer()->getParameter('ezpublish_legacy.root_dir');
 
         try {
             $fileSystem = $this->getContainer()->get('filesystem');
-            $fileSystem->remove($kernelDir . '/../web/bundles/netgenmoredemo');
+            $fileSystem->remove($projectDir . '/web/bundles/netgenmoredemo');
             $fileSystem->remove($legacyDir . '/extension/ez_netgen_ngmore_demo');
         } catch (Exception $e) {
             return array(
@@ -563,7 +563,10 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln('');
         $this->output->write('Importing the bundle routing resource... ');
 
-        $routing = new RoutingManipulator($this->getContainer()->getParameter('kernel.root_dir') . '/config/routing.yml');
+        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+        $kernelName = $this->getContainer()->getParameter('kernel.name');
+
+        $routing = new RoutingManipulator($projectDir . '/' . $kernelName . '/config/routing.yml');
         try {
             $bundleName = $this->input->getOption('bundle-name');
             $updated = $routing->addResource($bundleName);
@@ -638,9 +641,7 @@ class GenerateProjectCommand extends GeneratorCommand
      */
     protected function getConsolePath()
     {
-        $kernelDir = $this->getContainer()->getParameter('kernel.root_dir');
-
-        if (file_exists(dirname($kernelDir) . '/bin/console')) {
+        if (file_exists($this->getContainer()->getParameter('kernel.project_dir') . '/bin/console')) {
             return 'bin/console';
         }
 
