@@ -30,7 +30,7 @@ class ConfigurationGenerator extends Generator
         $siteAccessList = $input->getOption('site-access-list');
         $siteAccessNames = array_keys($siteAccessList);
 
-        $adminSiteAccessNames = array('admin', self::NGADMINUI_SITEACCESS_NAME, self::LEGACY_ADMIN_SITEACCESS_NAME);
+        $adminSiteAccessNames = array(self::NGADMINUI_SITEACCESS_NAME, 'admin', self::LEGACY_ADMIN_SITEACCESS_NAME);
 
         $adminSiteAccessLanguages = array();
         foreach ($siteAccessList as $siteAccessLanguages) {
@@ -47,7 +47,8 @@ class ConfigurationGenerator extends Generator
         );
 
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['groups']['admin_group'] = $adminSiteAccessNames;
+        $settings['ezpublish']['siteaccess']['groups']['ngadmin_group'] = array(self::NGADMINUI_SITEACCESS_NAME, self::LEGACY_ADMIN_SITEACCESS_NAME);
+        $settings['ezpublish']['siteaccess']['groups']['admin_group'] = array('admin');
 
         // List of siteaccess languages
 
