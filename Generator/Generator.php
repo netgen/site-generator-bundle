@@ -3,8 +3,8 @@
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Twig_Loader_Filesystem;
-use Twig_Environment;
+use Twig\Loader\FilesystemLoader;
+use Twig\Environment;
 
 abstract class Generator
 {
@@ -59,8 +59,8 @@ abstract class Generator
      */
     protected function render($template, $parameters)
     {
-        $twig = new Twig_Environment(
-            new Twig_Loader_Filesystem($this->skeletonDirs),
+        $twig = new Environment(
+            new FilesystemLoader($this->skeletonDirs),
             array(
                 'debug' => true,
                 'cache' => false,

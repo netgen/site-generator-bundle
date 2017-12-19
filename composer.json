@@ -8,11 +8,14 @@
         }
     ],
     "require": {
+        "twig/twig": "^1.35|^2.4.4",
         "symfony/framework-bundle": "^3.4|^4.0",
         "symfony/console": "^3.4|^4.0"
     },
     "autoload": {
-        "psr-4": { "Netgen\\Bundle\\MoreGeneratorBundle\\": "" }
+        "psr-4": {
+            "Netgen\\Bundle\\MoreGeneratorBundle\\": ""
+        }
     },
     "extra": {
         "branch-alias": {
