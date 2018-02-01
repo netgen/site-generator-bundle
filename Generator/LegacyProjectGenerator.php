@@ -70,7 +70,7 @@ class LegacyProjectGenerator extends Generator
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>ngmore_bootstrap3</comment> design into <comment>' . $designName . '</comment>',
+                'Renaming <comment>ngmore_demo</comment> design into <comment>' . $designName . '</comment>',
             )
         );
 
@@ -78,7 +78,7 @@ class LegacyProjectGenerator extends Generator
             throw new RuntimeException('The folder "' . $finalDesignLocation . '" already exists. Aborting...');
         }
 
-        $fileSystem->rename($finalExtensionLocation . '/design/ngmore_bootstrap3', $finalDesignLocation);
+        $fileSystem->rename($finalExtensionLocation . '/design/ngmore_demo', $finalDesignLocation);
 
         // Search and replace "ez_netgen_ngmore_demo" with the extension name
 
@@ -95,18 +95,18 @@ class LegacyProjectGenerator extends Generator
             $extensionName
         );
 
-        // Search and replace "ngmore_bootstrap3" with the name of site design
+        // Search and replace "ngmore_demo" with the name of site design
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>ngmore_bootstrap3</comment> design into <comment>' . $designName . '</comment>',
+                'Renaming <comment>ngmore_demo</comment> design into <comment>' . $designName . '</comment>',
             )
         );
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalExtensionLocation),
-            'ngmore_bootstrap3',
+            'ngmore_demo',
             $designName
         );
     }
