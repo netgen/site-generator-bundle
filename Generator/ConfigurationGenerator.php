@@ -121,25 +121,7 @@ class ConfigurationGenerator extends Generator
 
         // Siteaccess match settings
 
-        $settings['ezpublish']['siteaccess']['match'] = array(
-            'Compound\LogicalAnd' => array(),
-            'Map\Host' => array(),
-            'URIElement' => '1',
-        );
-
-        foreach ($baseSettings['ezpublish']['siteaccess']['list'] as $siteAccessName) {
-            if ($siteAccessName !== $siteAccessNames[0]) {
-                $settings['ezpublish']['siteaccess']['match']['Compound\LogicalAnd'][$siteAccessName] = array(
-                    'matchers' => array(
-                        'Map\URI' => array($siteAccessName => true),
-                        'Map\Host' => array('%ngmore.default.site_domain%' => true),
-                    ),
-                    'match' => $siteAccessName,
-                );
-            } else {
-                $settings['ezpublish']['siteaccess']['match']['Map\Host']['%ngmore.default.site_domain%'] = $siteAccessName;
-            }
-        }
+        $settings['ezpublish']['siteaccess']['match']['URIElement'] = '1';
 
         // Config specific files
 
