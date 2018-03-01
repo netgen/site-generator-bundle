@@ -18,7 +18,7 @@ class ScriptHandler extends DistributionBundleScriptHandler
      */
     public static function generateNetgenMoreProject(Event $event)
     {
-        require_once getcwd() . '/app/autoload.php';
+        require_once getcwd() . '/vendor/autoload.php';
         require_once getcwd() . '/app/AppKernel.php';
 
         $input = new ArrayInput(
