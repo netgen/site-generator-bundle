@@ -503,6 +503,19 @@ class GenerateProjectCommand extends GeneratorCommand
             $fileSystem = $this->getContainer()->get('filesystem');
             $fileSystem->remove($projectDir . '/web/bundles/netgenmoredemo');
             $fileSystem->remove($legacyDir . '/extension/ez_netgen_ngmore_demo');
+
+            if (
+                $this->questionHelper->ask(
+                    $this->input,
+                    $this->output,
+                    $this->getConfirmationQuestion(
+                        'Do you want to delete the <comment>.git</comment> folder?',
+                        true
+                    )
+                )
+            ) {
+                $fileSystem->remove($projectDir . '/.git');
+            }
         } catch (Exception $e) {
             return array(
                 'There was an error cleaning up: ' . $e->getMessage(),
