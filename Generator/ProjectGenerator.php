@@ -19,10 +19,11 @@ class ProjectGenerator extends Generator
     public function generate(InputInterface $input, OutputInterface $output)
     {
         $fileSystem = $this->container->get('filesystem');
-        $bundleFolder = $this->container->getParameter('kernel.project_dir') . '/src';
+        $srcFolder = $this->container->getParameter('kernel.project_dir') . '/src';
         $bundleNamespace = $input->getOption('bundle-namespace');
+        $bundleFolder = strtr($bundleNamespace, '\\', '/');
         $bundleName = $input->getOption('bundle-name');
-        $finalBundleLocation = $bundleFolder . '/' . strtr($bundleNamespace, '\\', '/');
+        $finalBundleLocation = $srcFolder . '/' . $bundleFolder;
 
         // Renaming the bundle namespace
 
@@ -38,13 +39,13 @@ class ProjectGenerator extends Generator
 
         if (strtolower($namespaceClientPart) !== 'netgen') {
             $fileSystem->rename(
-                $bundleFolder . '/Netgen',
-                $bundleFolder . '/' . $namespaceClientPart
+                $srcFolder . '/Netgen',
+                $srcFolder . '/' . $namespaceClientPart
             );
         }
 
         $fileSystem->rename(
-            $bundleFolder . '/' . $namespaceClientPart . '/Bundle/MoreDemoBundle',
+            $srcFolder . '/' . $namespaceClientPart . '/Bundle/MoreDemoBundle',
             $finalBundleLocation
         );
 
@@ -53,6 +54,23 @@ class ProjectGenerator extends Generator
             'Netgen\Bundle\MoreDemoBundle',
             $bundleNamespace
         );
+
+        // Renaming the bundle folder
+
+        $output->writeln(
+            array(
+                '',
+                'Renaming <comment>src/Netgen/Bundle/MoreDemoBundle</comment> bundle folder into <comment>src/' . $bundleFolder . '</comment>',
+            )
+        );
+
+        if (file_exists($this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js')) {
+            FileHelper::searchAndReplaceInFile(
+                $this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js',
+                'Netgen/Bundle/MoreDemoBundle',
+                $bundleFolder
+            );
+        }
 
         // Renaming the bundle name
 
