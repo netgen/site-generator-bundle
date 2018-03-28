@@ -495,6 +495,8 @@ class GenerateProjectCommand extends GeneratorCommand
     {
         $this->output->writeln('');
         $this->output->write('Cleaning up... ');
+        $this->output->writeln('');
+        $this->output->writeln('');
 
         $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
         $legacyDir = $this->getContainer()->getParameter('ezpublish_legacy.root_dir');
