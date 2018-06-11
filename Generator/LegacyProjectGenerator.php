@@ -62,24 +62,6 @@ class LegacyProjectGenerator extends Generator
             $finalLegacyExtensionLocation
         );
 
-        // Renaming the design folder
-
-        $designName = $input->getOption('design-name');
-        $finalDesignLocation = $finalExtensionLocation . '/design/' . $designName;
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_demo</comment> design into <comment>' . $designName . '</comment>',
-            )
-        );
-
-        if ($fileSystem->exists($finalDesignLocation)) {
-            throw new RuntimeException('The folder "' . $finalDesignLocation . '" already exists. Aborting...');
-        }
-
-        $fileSystem->rename($finalExtensionLocation . '/design/ngmore_demo', $finalDesignLocation);
-
         // Search and replace "ez_netgen_ngmore_demo" with the extension name
 
         $output->writeln(
@@ -93,21 +75,6 @@ class LegacyProjectGenerator extends Generator
             FileHelper::findFilesInDirectory($finalBundleLocation),
             'ez_netgen_ngmore_demo',
             $extensionName
-        );
-
-        // Search and replace "ngmore_demo" with the name of site design
-
-        $output->writeln(
-            array(
-                '',
-                'Renaming <comment>ngmore_demo</comment> design into <comment>' . $designName . '</comment>',
-            )
-        );
-
-        FileHelper::searchAndReplaceInFile(
-            FileHelper::findFilesInDirectory($finalExtensionLocation),
-            'ngmore_demo',
-            $designName
         );
     }
 }

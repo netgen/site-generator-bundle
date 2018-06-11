@@ -58,19 +58,19 @@ class ConfigurationGenerator extends Generator
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
-        $designName = $input->getOption('design-name');
+        $themeName = $input->getOption('theme-name');
 
-        $settings['netgen_block_manager']['design_list'][$designName] = array($designName);
-        $settings['netgen_block_manager']['system']['frontend_group']['design'] = $designName;
+        $settings['netgen_block_manager']['design_list'][$themeName] = array($themeName);
+        $settings['netgen_block_manager']['system']['frontend_group']['design'] = $themeName;
 
-        $settings['ezdesign']['design_list'][$designName] = array($designName, 'common');
+        $settings['ezdesign']['design_list'][$themeName] = array($themeName, 'common');
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = array(
             self::NGADMINUI_SITEACCESS_NAME,
             'common',
         );
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
-            $settings['ezpublish']['system'][$siteAccessName]['design'] = $designName;
+            $settings['ezpublish']['system'][$siteAccessName]['design'] = $themeName;
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ezpublish']['system'][$siteAccessName]['session'] = array(
                 'name' => 'eZSESSID',

@@ -34,8 +34,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
                 new InputOption('bundle-namespace', '', InputOption::VALUE_REQUIRED, 'Bundle namespace'),
                 new InputOption('bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name'),
+                new InputOption('theme-name', '', InputOption::VALUE_REQUIRED, 'Theme name'),
                 new InputOption('extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name'),
-                new InputOption('design-name', '', InputOption::VALUE_REQUIRED, 'Design name'),
             )
         );
         $this->setDescription('Generates Netgen More project');
@@ -75,7 +75,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 'Input the client and project names. These values will be used to generate',
-                'bundle name, design name and legacy extension name.',
+                'bundle name, theme name and legacy extension name.',
                 '<comment>First letter</comment> of the names must be <comment>uppercased</comment>, and it is recommended',
                 'to use <comment>CamelCasing</comment> for the rest of the names.',
                 '',
@@ -246,7 +246,7 @@ class GenerateProjectCommand extends GeneratorCommand
         );
 
         $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
-        $designName = $this->askForData('design-name', 'Design name', $projectNormalized, 'validateLowerCaseName');
+        $themeName = $this->askForData('theme-name', 'Theme name', $projectNormalized, 'validateLowerCaseName');
         $bundleNamespace = $this->askForData('bundle-namespace', 'Bundle namespace', $client . '\\Bundle\\' . $project . 'Bundle', 'validateBundleNamespace');
         $bundleName = $this->askForData('bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName');
 
@@ -256,7 +256,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle',
-                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $designName . '</info> designs.',
+                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $themeName . '</info> theme.',
                 '',
             )
         );

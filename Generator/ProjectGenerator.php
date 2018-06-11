@@ -150,20 +150,20 @@ class ProjectGenerator extends Generator
             $siteName
         );
 
-        // Renaming the design folder
+        // Renaming the theme folder
 
-        $designName = $input->getOption('design-name');
+        $themeName = $input->getOption('theme-name');
 
         $output->writeln(
             array(
                 '',
-                'Renaming <comment>demo</comment> theme into <comment>' . $designName . '</comment>',
+                'Renaming <comment>demo</comment> theme into <comment>' . $themeName . '</comment>',
             )
         );
 
         $themeFolders = array(
-            $finalBundleLocation . '/Resources/views/themes/demo' => $finalBundleLocation . '/Resources/views/themes/' . $designName,
-            $finalBundleLocation . '/Resources/views/ngbm/themes/demo' => $finalBundleLocation . '/Resources/views/ngbm/themes/' . $designName,
+            $finalBundleLocation . '/Resources/views/themes/demo' => $finalBundleLocation . '/Resources/views/themes/' . $themeName,
+            $finalBundleLocation . '/Resources/views/ngbm/themes/demo' => $finalBundleLocation . '/Resources/views/ngbm/themes/' . $themeName,
         );
 
         foreach ($themeFolders as $sourceThemeFolder => $destThemeFolder) {

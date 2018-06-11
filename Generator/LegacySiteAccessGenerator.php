@@ -31,7 +31,6 @@ class LegacySiteAccessGenerator extends Generator
         $finalExtensionLocation = $extensionFolder . '/' . $extensionName;
         $legacyRootDir = $this->container->getParameter('ezpublish_legacy.root_dir');
 
-        $designName = $input->getOption('design-name');
         $siteDomain = $this->container->getParameter('ngmore.default.site_domain');
 
         // Generating siteaccesses
@@ -175,7 +174,6 @@ class LegacySiteAccessGenerator extends Generator
                 array(
                     'siteName' => $siteName,
                     'relatedSiteAccessList' => $allSiteAccesses,
-                    'designName' => $designName,
                     'siteAccessLocale' => $siteAccessLanguages[0],
                     'siteLanguageList' => $siteAccessLanguages,
                     'translationList' => $translationList,
