@@ -240,23 +240,32 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln(
             array(
                 '',
-                'Input the legacy extension and bundle details.',
+                'Input the bundle and theme details.',
+                '',
+            )
+        );
+
+        $bundleNamespace = $this->askForData('bundle-namespace', 'Bundle namespace', $client . '\\Bundle\\' . $project . 'Bundle', 'validateBundleNamespace');
+        $bundleName = $this->askForData('bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName');
+        $themeName = $this->askForData('theme-name', 'Theme name', $projectNormalized, 'validateLowerCaseName');
+
+        $this->output->writeln(
+            array(
+                '',
+                'Input the legacy extension details.',
                 '',
             )
         );
 
         $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
-        $themeName = $this->askForData('theme-name', 'Theme name', $projectNormalized, 'validateLowerCaseName');
-        $bundleNamespace = $this->askForData('bundle-namespace', 'Bundle namespace', $client . '\\Bundle\\' . $project . 'Bundle', 'validateBundleNamespace');
-        $bundleName = $this->askForData('bundle-name', 'Bundle name', $client . $project . 'Bundle', 'validateBundleName');
 
         $this->writeSection('Summary before generation');
 
         // Summary
         $this->output->writeln(
             array(
-                'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle',
-                'and <info>' . $extensionName . '</info> legacy extension using the <info>' . $themeName . '</info> theme.',
+                'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle using the <info>' . $themeName . '</info> theme',
+                'and <info>' . $extensionName . '</info> legacy extension',
                 '',
             )
         );
