@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use InvalidArgumentException;
@@ -163,7 +165,7 @@ class Validators
         self::validateReservedKeywords($namespace);
 
         $explodedNamespace = explode('\\', $namespace);
-        if (count($explodedNamespace) != 3 || $explodedNamespace[1] !== 'Bundle') {
+        if (count($explodedNamespace) !== 3 || $explodedNamespace[1] !== 'Bundle') {
             throw new InvalidArgumentException('The namespace must be in format <Client>\Bundle\<Project>.');
         }
 
@@ -202,7 +204,7 @@ class Validators
     public static function validateReservedKeywords($value)
     {
         $reserved = self::getReservedWords();
-        if (in_array(strtolower($value), $reserved)) {
+        if (in_array(strtolower($value), $reserved, true)) {
             throw new InvalidArgumentException(sprintf('The value cannot contain PHP reserved words ("%s").', $value));
         }
     }
@@ -214,7 +216,7 @@ class Validators
      */
     public static function getReservedWords()
     {
-        return array(
+        return [
             'abstract',
             'and',
             'array',
@@ -283,6 +285,6 @@ class Validators
             'return',
             'print',
             'unset',
-        );
+        ];
     }
 }

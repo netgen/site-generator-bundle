@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Manipulator;
 
-use Symfony\Component\DependencyInjection\Container;
 use RuntimeException;
+use Symfony\Component\DependencyInjection\Container;
 
 class RoutingManipulator extends Manipulator
 {
@@ -29,9 +31,9 @@ class RoutingManipulator extends Manipulator
      * @param string $prefix
      * @param string $path
      *
-     * @return bool true if it worked, false otherwise
-     *
      * @throws \RuntimeException If bundle is already imported
+     *
+     * @return bool true if it worked, false otherwise
      */
     public function addResource($bundle, $prefix = '/', $path = 'routing')
     {

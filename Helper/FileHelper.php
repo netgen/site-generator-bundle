@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Helper;
 
 use RecursiveDirectoryIterator;
@@ -17,7 +19,7 @@ class FileHelper
     public static function searchAndReplaceInFile($files, $search, $replace)
     {
         if (is_string($files)) {
-            $files = array($files);
+            $files = [$files];
         }
 
         foreach ($files as $file) {
@@ -41,10 +43,10 @@ class FileHelper
     public static function findFilesInDirectory($directory)
     {
         if (!is_dir($directory) || is_link($directory)) {
-            return array();
+            return [];
         }
 
-        $allFiles = array();
+        $allFiles = [];
 
         foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory)) as $subItem) {
             /** @var \SplFileInfo $subItem */

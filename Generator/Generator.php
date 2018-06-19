@@ -1,15 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
 
 abstract class Generator
 {
-    const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
-    const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
+    public const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
+    public const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
 
     /**
      * @var array
@@ -46,7 +48,7 @@ abstract class Generator
      */
     public function setSkeletonDirs($skeletonDirs)
     {
-        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : array($skeletonDirs);
+        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : [$skeletonDirs];
     }
 
     /**
@@ -61,12 +63,12 @@ abstract class Generator
     {
         $twig = new Environment(
             new FilesystemLoader($this->skeletonDirs),
-            array(
+            [
                 'debug' => true,
                 'cache' => false,
                 'strict_variables' => true,
                 'autoescape' => false,
-            )
+            ]
         );
 
         return $twig->render($template, $parameters);

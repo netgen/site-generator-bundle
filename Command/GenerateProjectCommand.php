@@ -1,22 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
+use Exception;
+use InvalidArgumentException;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\MoreGeneratorBundle\Generator\Generator;
-use Symfony\Component\Console\Input\InputOption;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacySiteAccessGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
+use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
+use ReflectionObject;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Process\ProcessBuilder;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacySiteAccessGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
-use InvalidArgumentException;
-use ReflectionObject;
-use RuntimeException;
-use Exception;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
@@ -26,7 +28,7 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function configure()
     {
         $this->setDefinition(
-            array(
+            [
                 new InputOption('client', '', InputOption::VALUE_REQUIRED, 'Client name'),
                 new InputOption('project', '', InputOption::VALUE_REQUIRED, 'Project name'),
                 new InputOption('site-name', '', InputOption::VALUE_REQUIRED, 'Site name'),
@@ -36,7 +38,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption('bundle-name', '', InputOption::VALUE_REQUIRED, 'Bundle name'),
                 new InputOption('theme-name', '', InputOption::VALUE_REQUIRED, 'Theme name'),
                 new InputOption('extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name'),
-            )
+            ]
         );
         $this->setDescription('Generates Netgen More project');
         $this->setName('ngmore:generate:project');
@@ -73,13 +75,13 @@ class GenerateProjectCommand extends GeneratorCommand
     protected function doInteract()
     {
         $this->output->writeln(
-            array(
+            [
                 'Input the client and project names. These values will be used to generate',
                 'bundle name, theme name and legacy extension name.',
                 '<comment>First letter</comment> of the names must be <comment>uppercased</comment>, and it is recommended',
                 'to use <comment>CamelCasing</comment> for the rest of the names.',
                 '',
-            )
+            ]
         );
 
         $client = ucfirst(
@@ -103,12 +105,12 @@ class GenerateProjectCommand extends GeneratorCommand
         $projectNormalized = Container::underscore($project);
 
         $this->output->writeln(
-            array(
+            [
                 '',
                 'Input the site name, and admin siteaccess name. Site name will be visible',
                 'as the title of the pages in eZ Publish, so you are free to input whatever you like here.',
                 '',
-            )
+            ]
         );
 
         $this->askForData(
@@ -118,14 +120,14 @@ class GenerateProjectCommand extends GeneratorCommand
             'validateNotEmpty'
         );
 
-        $siteAccessList = array();
+        $siteAccessList = [];
 
         // Try to parse the following format
         // eng:eng-GB|cro:cro-HR:eng-GB
         $siteAccessListString = $this->input->getOption('site-access-list-string');
         if (!empty($siteAccessListString)) {
             $siteAccessListStringArray = explode('|', $siteAccessListString);
-            $siteAccesses = array();
+            $siteAccesses = [];
             foreach ($siteAccessListStringArray as $siteAccessListStringArrayItem) {
                 if (empty($siteAccessListStringArrayItem)) {
                     throw new RuntimeException('Invalid site-access-list-string option provided');
@@ -137,18 +139,18 @@ class GenerateProjectCommand extends GeneratorCommand
                 }
 
                 foreach ($explodedSiteAccessItem as $index => $siteAccessOrLanguage) {
-                    $siteAccessLanguages = array();
+                    $siteAccessLanguages = [];
 
                     if (empty($siteAccessOrLanguage)) {
                         throw new RuntimeException('Invalid site-access-list-string option provided');
                     }
 
-                    if ($index == 0) {
+                    if ($index === 0) {
                         if ($siteAccessOrLanguage === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
                             throw new InvalidArgumentException('Regular siteaccess name cannot be equal to "' . Generator::LEGACY_ADMIN_SITEACCESS_NAME . '".');
                         }
 
-                        if (in_array($siteAccessOrLanguage, $siteAccesses)) {
+                        if (in_array($siteAccessOrLanguage, $siteAccesses, true)) {
                             throw new InvalidArgumentException('Duplicate siteaccess name found: "' . $siteAccessOrLanguage . '".');
                         }
 
@@ -157,7 +159,7 @@ class GenerateProjectCommand extends GeneratorCommand
                         continue;
                     }
 
-                    if (in_array($siteAccessOrLanguage, $siteAccessLanguages)) {
+                    if (in_array($siteAccessOrLanguage, $siteAccessLanguages, true)) {
                         throw new InvalidArgumentException('Duplicate language code found in ' . $explodedSiteAccessItem[0] . ' siteaccess: "' . $siteAccessOrLanguage . '".');
                     }
 
@@ -170,13 +172,13 @@ class GenerateProjectCommand extends GeneratorCommand
 
         if (empty($siteAccessList)) {
             $this->output->writeln(
-                array(
+                [
                     '',
                     'Input the name of every siteaccess you wish to create.',
                     'The first siteaccess you specify will become the default siteaccess.',
                     'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
                     '',
-                )
+                ]
             );
 
             do {
@@ -196,14 +198,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 }
 
                 if (!empty($siteAccess)) {
-                    if (in_array($siteAccess, array_keys($siteAccessList))) {
+                    if (in_array($siteAccess, array_keys($siteAccessList), true)) {
                         $this->output->writeln('<error> Siteaccess name already added </error>');
                         continue;
                     }
 
-                    $siteAccessList[$siteAccess] = array();
+                    $siteAccessList[$siteAccess] = [];
 
-                    $languageList = array();
+                    $languageList = [];
                     do {
                         $language = $this->questionHelper->ask(
                             $this->input,
@@ -221,7 +223,7 @@ class GenerateProjectCommand extends GeneratorCommand
                         }
 
                         if (!empty($language)) {
-                            if (in_array($language, $languageList)) {
+                            if (in_array($language, $languageList, true)) {
                                 $this->output->writeln('<error> Language code already added </error>');
                                 continue;
                             }
@@ -238,11 +240,11 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->input->setOption('site-access-list', $siteAccessList);
 
         $this->output->writeln(
-            array(
+            [
                 '',
                 'Input the bundle and theme details.',
                 '',
-            )
+            ]
         );
 
         $bundleNamespace = $this->askForData('bundle-namespace', 'Bundle namespace', $client . '\\Bundle\\' . $project . 'Bundle', 'validateBundleNamespace');
@@ -250,11 +252,11 @@ class GenerateProjectCommand extends GeneratorCommand
         $themeName = $this->askForData('theme-name', 'Theme name', $projectNormalized, 'validateLowerCaseName');
 
         $this->output->writeln(
-            array(
+            [
                 '',
                 'Input the legacy extension details.',
                 '',
-            )
+            ]
         );
 
         $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
@@ -263,11 +265,11 @@ class GenerateProjectCommand extends GeneratorCommand
 
         // Summary
         $this->output->writeln(
-            array(
+            [
                 'You are going to generate a <info>' . $bundleNamespace . '\\' . $bundleName . '</info> bundle using the <info>' . $themeName . '</info> theme',
                 'and <info>' . $extensionName . '</info> legacy extension',
                 '',
-            )
+            ]
         );
 
         if (
@@ -322,7 +324,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $configurationGenerator = new ConfigurationGenerator($this->getContainer());
         $configurationGenerator->generate($this->input, $this->output);
 
-        $errors = array();
+        $errors = [];
         $runner = $this->getRunner($errors);
 
         // Register the bundle in the AppKernel class
@@ -365,12 +367,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
         try {
             $processBuilder = new ProcessBuilder(
-                array(
+                [
                     'php',
                     $this->getConsolePath(),
                     'ngmore:symlink:project',
                     '--quiet',
-                )
+                ]
             );
 
             $process = $processBuilder->getProcess();
@@ -383,18 +385,18 @@ class GenerateProjectCommand extends GeneratorCommand
             );
 
             if (!$process->isSuccessful()) {
-                return array(
+                return [
                     '- Run the following command from your installation root to install Netgen More project symlinks:',
                     '',
                     '    <comment>php ' . $this->getConsolePath() . ' ngmore:symlink:project</comment>',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an error installing Netgen More project symlinks: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -410,12 +412,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
         try {
             $processBuilder = new ProcessBuilder(
-                array(
+                [
                     'php',
                     $this->getConsolePath(),
                     'ngmore:symlink:legacy',
                     '--quiet',
-                )
+                ]
             );
 
             $process = $processBuilder->getProcess();
@@ -428,18 +430,18 @@ class GenerateProjectCommand extends GeneratorCommand
             );
 
             if (!$process->isSuccessful()) {
-                return array(
+                return [
                     '- Run the following command from your installation root to install Netgen More legacy symlinks:',
                     '',
                     '    <comment>php ' . $this->getConsolePath() . ' ngmore:symlink:legacy</comment>',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an installing Netgen More legacy symlinks: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -459,11 +461,11 @@ class GenerateProjectCommand extends GeneratorCommand
             chdir($this->getContainer()->getParameter('ezpublish_legacy.root_dir'));
 
             $processBuilder = new ProcessBuilder(
-                array(
+                [
                     'php',
                     'bin/php/ezpgenerateautoloads.php',
                     '--quiet',
-                )
+                ]
             );
 
             $process = $processBuilder->getProcess();
@@ -478,20 +480,20 @@ class GenerateProjectCommand extends GeneratorCommand
             chdir($currentWorkingDirectory);
 
             if (!$process->isSuccessful()) {
-                return array(
+                return [
                     '- Run the following command from your ezpublish_legacy root to generate legacy autoloads:',
                     '',
                     '    <comment>php bin/php/ezpgenerateautoloads.php</comment>',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
             chdir($currentWorkingDirectory);
 
-            return array(
+            return [
                 'There was an error generating legacy autoloads: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -528,10 +530,10 @@ class GenerateProjectCommand extends GeneratorCommand
                 $fileSystem->remove($projectDir . '/.git');
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an error cleaning up: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -560,20 +562,20 @@ class GenerateProjectCommand extends GeneratorCommand
             $updated = file_put_contents($reflected->getFileName(), $fileContent);
 
             if (!$updated) {
-                return array(
+                return [
                     '- Edit <comment>' . $reflected->getFilename() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
                     '  method, replacing the existing NetgenMoreDemoBundle:',
                     '',
                     '    <comment>$bundles[] = new ' . $bundleFQN . '();</comment>',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an error enabling bundle inside the kernel: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -595,19 +597,19 @@ class GenerateProjectCommand extends GeneratorCommand
             $bundleName = $this->input->getOption('bundle-name');
             $updated = $routing->addResource($bundleName);
             if (!$updated) {
-                return array(
+                return [
                     '- Import the bundle\'s routing resource in the main routing file:',
                     '',
                     '    <comment>' . Container::underscore(substr($bundleName, 0, -6)) . ':</comment>',
                     '        <comment>resource: \"@' . $bundleName . '/Resources/config/routing.yml\"</comment>\n',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an error importing bundle routing resource: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 
@@ -623,14 +625,14 @@ class GenerateProjectCommand extends GeneratorCommand
 
         try {
             $processBuilder = new ProcessBuilder(
-                array(
+                [
                     'php',
                     $this->getConsolePath(),
                     'assets:install',
                     '--symlink',
                     '--relative',
                     '--quiet',
-                )
+                ]
             );
 
             $process = $processBuilder->getProcess();
@@ -643,18 +645,18 @@ class GenerateProjectCommand extends GeneratorCommand
             );
 
             if (!$process->isSuccessful()) {
-                return array(
+                return [
                     '- Run the following command from your installation root to install assets:',
                     '',
                     '    <comment>php ' . $this->getConsolePath() . ' assets:install --symlink --relative</comment>',
                     '',
-                );
+                ];
             }
         } catch (Exception $e) {
-            return array(
+            return [
                 'There was an error installing assets: ' . $e->getMessage(),
                 '',
-            );
+            ];
         }
     }
 

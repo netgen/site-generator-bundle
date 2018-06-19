@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
-use Symfony\Component\DependencyInjection\Container;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Container;
 
 class ProjectGenerator extends Generator
 {
@@ -28,10 +30,10 @@ class ProjectGenerator extends Generator
         // Renaming the bundle namespace
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>Netgen\Bundle\MoreDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>',
-            )
+            ]
         );
 
         $namespaceClientPart = explode('/', strtr($bundleNamespace, '\\', '/'));
@@ -58,10 +60,10 @@ class ProjectGenerator extends Generator
         // Renaming the bundle folder
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>src/Netgen/Bundle/MoreDemoBundle</comment> bundle folder into <comment>src/' . $bundleFolder . '</comment>',
-            )
+            ]
         );
 
         if (file_exists($this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js')) {
@@ -77,10 +79,10 @@ class ProjectGenerator extends Generator
         $bundleBaseName = substr($bundleName, 0, -6);
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>NetgenMoreDemo</comment> bundle name into <comment>' . $bundleBaseName . '</comment>',
-            )
+            ]
         );
 
         FileHelper::searchAndReplaceInFile(
@@ -99,10 +101,10 @@ class ProjectGenerator extends Generator
         $bundleExtensionName = $bundleBaseName . 'Extension';
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>NetgenMoreDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>',
-            )
+            ]
         );
 
         $fileSystem->rename(
@@ -121,10 +123,10 @@ class ProjectGenerator extends Generator
         $bundleAssetsPathPart = preg_replace('/bundle$/', '', strtolower($bundleName));
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>netgenmoredemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>',
-            )
+            ]
         );
 
         FileHelper::searchAndReplaceInFile(
@@ -138,10 +140,10 @@ class ProjectGenerator extends Generator
         $siteName = $input->getOption('site-name');
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>NG More</comment> site name into <comment>' . $siteName . '</comment>',
-            )
+            ]
         );
 
         FileHelper::searchAndReplaceInFile(
@@ -155,16 +157,16 @@ class ProjectGenerator extends Generator
         $themeName = $input->getOption('theme-name');
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>demo</comment> theme into <comment>' . $themeName . '</comment>',
-            )
+            ]
         );
 
-        $themeFolders = array(
+        $themeFolders = [
             $finalBundleLocation . '/Resources/views/themes/demo' => $finalBundleLocation . '/Resources/views/themes/' . $themeName,
             $finalBundleLocation . '/Resources/views/ngbm/themes/demo' => $finalBundleLocation . '/Resources/views/ngbm/themes/' . $themeName,
-        );
+        ];
 
         foreach ($themeFolders as $sourceThemeFolder => $destThemeFolder) {
             if ($fileSystem->exists($destThemeFolder)) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -68,7 +70,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
 
         $question = new Question($questionName, $defaultValue);
         if ($validator !== null) {
-            $question->setValidator(array('Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator));
+            $question->setValidator(['Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator]);
         }
 
         return $question;
@@ -105,10 +107,10 @@ abstract class GeneratorCommand extends ContainerAwareCommand
             $this->writeSection('You can now start using the generated code!');
         } else {
             $this->writeSection(
-                array(
+                [
                     'The command was not able to configure everything automatically.',
                     'You must do the following changes manually.',
-                ),
+                ],
                 'error'
             );
 
@@ -125,11 +127,11 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     protected function writeSection($text, $style = 'bg=blue;fg=white')
     {
         $this->output->writeln(
-            array(
+            [
                 '',
                 $this->getHelper('formatter')->formatBlock($text, $style, true),
                 '',
-            )
+            ]
         );
     }
 

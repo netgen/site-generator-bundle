@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class LegacyProjectGenerator extends Generator
 {
@@ -32,10 +34,10 @@ class LegacyProjectGenerator extends Generator
         $finalExtensionLocation = $extensionFolder . '/' . $extensionName;
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming the demo extension into <comment>' . $finalExtensionLocation . '</comment>',
-            )
+            ]
         );
 
         $fileSystem->rename($originalExtensionLocation, $finalExtensionLocation);
@@ -47,10 +49,10 @@ class LegacyProjectGenerator extends Generator
         $finalLegacyExtensionLocation = $legacyExtensionFolder . '/' . $extensionName;
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Symlinking the legacy extension into <comment>' . $finalLegacyExtensionLocation . '</comment>',
-            )
+            ]
         );
 
         if ($fileSystem->exists($finalLegacyExtensionLocation)) {
@@ -65,10 +67,10 @@ class LegacyProjectGenerator extends Generator
         // Search and replace "ez_netgen_ngmore_demo" with the extension name
 
         $output->writeln(
-            array(
+            [
                 '',
                 'Renaming <comment>ez_netgen_ngmore_demo</comment> extension name into <comment>' . $extensionName . '</comment>',
-            )
+            ]
         );
 
         FileHelper::searchAndReplaceInFile(

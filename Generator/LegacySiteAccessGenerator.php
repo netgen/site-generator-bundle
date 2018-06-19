@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
 
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputInterface;
 use DirectoryIterator;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class LegacySiteAccessGenerator extends Generator
 {
@@ -40,17 +42,17 @@ class LegacySiteAccessGenerator extends Generator
         }
 
         $siteAccessList = $input->getOption('site-access-list');
-        $validSiteAccesses = array();
+        $validSiteAccesses = [];
 
         // Cleanup the list of siteaccesses, remove those that already exist in ezpublish_legacy/settings/siteaccess folder
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
             if ($fileSystem->exists($legacyRootDir . '/settings/siteaccess/' . $siteAccessName)) {
                 $output->writeln(
-                    array(
+                    [
                         '',
                         'Siteaccess <comment>' . $siteAccessName . '</comment> already exists. Will not generate...',
-                    )
+                    ]
                 );
 
                 continue;
@@ -69,10 +71,10 @@ class LegacySiteAccessGenerator extends Generator
         if ($fileSystem->exists($legacyRootDir . '/settings/siteaccess/' . $adminSiteAccessName)) {
             $generateAdminSiteAccess = false;
             $output->writeln(
-                array(
+                [
                     '',
                     'Legacy admin siteaccess <comment>' . $adminSiteAccessName . '</comment> already exists. Will not generate...',
-                )
+                ]
             );
         }
 
@@ -85,10 +87,10 @@ class LegacySiteAccessGenerator extends Generator
         if ($fileSystem->exists($legacyRootDir . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME)) {
             $this->generateNgAdminUi = false;
             $output->writeln(
-                array(
+                [
                     '',
                     'Netgen Admin UI siteaccess already exists. Will not generate...',
-                )
+                ]
             );
         }
 
@@ -123,16 +125,16 @@ class LegacySiteAccessGenerator extends Generator
             $mainSiteAccess = $allSiteAccesses[0];
         }
 
-        $allLanguages = array();
+        $allLanguages = [];
         foreach ($validSiteAccesses as $validSiteAccessLanguages) {
             foreach ($validSiteAccessLanguages as $language) {
-                if (!in_array($language, $allLanguages)) {
+                if (!in_array($language, $allLanguages, true)) {
                     $allLanguages[] = $language;
                 }
             }
         }
 
-        $translationList = implode(';', array_values(array_diff($allLanguages, array($allLanguages[0]))));
+        $translationList = implode(';', array_values(array_diff($allLanguages, [$allLanguages[0]])));
 
         // Generating regular siteaccesses
 
@@ -171,13 +173,13 @@ class LegacySiteAccessGenerator extends Generator
             $this->renderFile(
                 'site.ini.append.php',
                 $finalExtensionLocation . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php',
-                array(
+                [
                     'siteName' => $siteName,
                     'relatedSiteAccessList' => $allSiteAccesses,
                     'siteAccessLocale' => $siteAccessLanguages[0],
                     'siteLanguageList' => $siteAccessLanguages,
                     'translationList' => $translationList,
-                )
+                ]
             );
 
             foreach ($availableEnvironments as $environment) {
@@ -212,19 +214,19 @@ class LegacySiteAccessGenerator extends Generator
                     $this->renderFile(
                         'site.ini.append.php',
                         $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $siteAccessName . '/site.ini.append.php',
-                        array(
+                        [
                             'siteDomain' => $siteDomain,
                             'siteAccessUriPart' => $siteAccessName !== $mainSiteAccess ? $siteAccessName : '',
-                        )
+                        ]
                     );
                 }
             }
 
             $output->writeln(
-                array(
+                [
                     '',
                     'Generated <comment>' . $siteAccessName . '</comment> siteaccess!',
-                )
+                ]
             );
         }
 
@@ -250,13 +252,13 @@ class LegacySiteAccessGenerator extends Generator
             $this->renderFile(
                 'site.ini.append.php',
                 $finalExtensionLocation . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php',
-                array(
+                [
                     'siteName' => $siteName,
                     'relatedSiteAccessList' => $allSiteAccesses,
                     'siteAccessLocale' => $allLanguages[0],
                     'siteLanguageList' => $allLanguages,
                     'translationList' => $translationList,
-                )
+                ]
             );
 
             foreach ($availableEnvironments as $environment) {
@@ -271,18 +273,18 @@ class LegacySiteAccessGenerator extends Generator
                     $this->renderFile(
                         'site.ini.append.php',
                         $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . self::NGADMINUI_SITEACCESS_NAME . '/site.ini.append.php',
-                        array(
+                        [
                             'siteDomain' => $siteDomain,
-                        )
+                        ]
                     );
                 }
             }
 
             $output->writeln(
-                array(
+                [
                     '',
                     'Generated <comment>Netgen Admin UI</comment> siteaccess!',
-                )
+                ]
             );
         }
 
@@ -317,13 +319,13 @@ class LegacySiteAccessGenerator extends Generator
             $this->renderFile(
                 'site.ini.append.php',
                 $finalExtensionLocation . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
-                array(
+                [
                     'siteName' => $siteName,
                     'relatedSiteAccessList' => $allSiteAccesses,
                     'siteAccessLocale' => $allLanguages[0],
                     'siteLanguageList' => $allLanguages,
                     'translationList' => $translationList,
-                )
+                ]
             );
 
             foreach ($availableEnvironments as $environment) {
@@ -351,18 +353,18 @@ class LegacySiteAccessGenerator extends Generator
                     $this->renderFile(
                         'site.ini.append.php',
                         $finalExtensionLocation . '/root_' . $environment . '/settings/siteaccess/' . $adminSiteAccessName . '/site.ini.append.php',
-                        array(
+                        [
                             'siteDomain' => $siteDomain,
-                        )
+                        ]
                     );
                 }
             }
 
             $output->writeln(
-                array(
+                [
                     '',
                     'Generated <comment>' . $adminSiteAccessName . '</comment> admin siteaccess!',
-                )
+                ]
             );
         }
 
@@ -377,10 +379,10 @@ class LegacySiteAccessGenerator extends Generator
         if ($fileSystem->exists($legacyRootDir . '/settings/override')) {
             $generateOverride = false;
             $output->writeln(
-                array(
+                [
                     '',
                     '<comment>settings/override</comment> folder already exists. Will not generate...',
-                )
+                ]
             );
         }
 
@@ -405,9 +407,9 @@ class LegacySiteAccessGenerator extends Generator
                 $this->renderFile(
                     'site.ini.append.php',
                     $finalExtensionLocation . '/root/settings/override/site.ini.append.php',
-                    array(
+                    [
                         'extensionName' => $extensionName,
-                    )
+                    ]
                 );
             } else {
                 foreach ($availableEnvironments as $environment) {
@@ -422,19 +424,19 @@ class LegacySiteAccessGenerator extends Generator
                         $this->renderFile(
                             'site.ini.append.php',
                             $finalExtensionLocation . '/root_' . $environment . '/settings/override/site.ini.append.php',
-                            array(
+                            [
                                 'extensionName' => $extensionName,
-                            )
+                            ]
                         );
                     }
                 }
             }
 
             $output->writeln(
-                array(
+                [
                     '',
                     'Generated <comment>settings/override</comment> folder!',
-                )
+                ]
             );
         }
 
