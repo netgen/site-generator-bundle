@@ -4,13 +4,13 @@
     "authors": [
         {
             "name": "Netgen",
-            "homepage": "http://www.netgenlabs.com"
+            "homepage": "https://www.netgenlabs.com"
         }
     ],
     "require": {
         "twig/twig": "^1.35|^2.4.4",
-        "symfony/framework-bundle": "^3.4|^4.0",
-        "symfony/console": "^3.4|^4.0"
+        "symfony/framework-bundle": "^3.4|^4.1",
+        "symfony/console": "^3.4|^4.1"
     },
     "autoload": {
         "psr-4": {
