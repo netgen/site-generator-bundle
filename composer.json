@@ -1,6 +1,7 @@
 {
-    "name": "netgen/more-generator-bundle",
-    "description": "This bundle generates a Netgen More project",
+    "name": "netgen/site-generator-bundle",
+    "description": "This bundle generates a Netgen Site project",
+    "license": "GPL-2.0-only",
     "authors": [
         {
             "name": "Netgen",
@@ -8,9 +9,9 @@
         }
     ],
     "require": {
-        "twig/twig": "^1.35|^2.4.4",
-        "symfony/framework-bundle": "^3.4|^4.1",
-        "symfony/console": "^3.4|^4.1"
+        "twig/twig": "^2.5",
+        "symfony/framework-bundle": "^3.4 || ^4.1",
+        "symfony/console": "^3.4 || ^4.1"
     },
     "autoload": {
         "psr-4": {
@@ -19,7 +20,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.1.x-dev"
+            "dev-master": "1.0.x-dev"
         }
     }
 }

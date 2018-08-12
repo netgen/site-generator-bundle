@@ -1,4 +1,4 @@
-NetgenMoreGeneratorBundle
-=========================
+Netgen Site Generator Bundle
+============================
 
-`NetgenMoreGeneratorBundle` is a Symfony2 bundle that provides an interactive and intuitive command for generating a Netgen More project.
+This bundle generates a client project from an existing Netgen Site project with an interactive and intuitive command.
