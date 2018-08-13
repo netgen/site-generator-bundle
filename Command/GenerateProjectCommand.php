@@ -369,7 +369,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 [
                     'php',
-                    $this->getConsolePath(),
+                    'bin/console',
                     'ngmore:symlink:project',
                     '--quiet',
                 ]
@@ -388,7 +388,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return [
                     '- Run the following command from your installation root to install Netgen More project symlinks:',
                     '',
-                    '    <comment>php ' . $this->getConsolePath() . ' ngmore:symlink:project</comment>',
+                    '    <comment>php bin/console ngmore:symlink:project</comment>',
                     '',
                 ];
             }
@@ -414,7 +414,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 [
                     'php',
-                    $this->getConsolePath(),
+                    'bin/console',
                     'ngmore:symlink:legacy',
                     '--quiet',
                 ]
@@ -433,7 +433,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return [
                     '- Run the following command from your installation root to install Netgen More legacy symlinks:',
                     '',
-                    '    <comment>php ' . $this->getConsolePath() . ' ngmore:symlink:legacy</comment>',
+                    '    <comment>php bin/console ngmore:symlink:legacy</comment>',
                     '',
                 ];
             }
@@ -627,7 +627,7 @@ class GenerateProjectCommand extends GeneratorCommand
             $processBuilder = new ProcessBuilder(
                 [
                     'php',
-                    $this->getConsolePath(),
+                    'bin/console',
                     'assets:install',
                     '--symlink',
                     '--relative',
@@ -648,7 +648,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 return [
                     '- Run the following command from your installation root to install assets:',
                     '',
-                    '    <comment>php ' . $this->getConsolePath() . ' assets:install --symlink --relative</comment>',
+                    '    <comment>php bin/console assets:install --symlink --relative</comment>',
                     '',
                 ];
             }
@@ -658,19 +658,5 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
-    }
-
-    /**
-     * Returns the file path of the Symfony console.
-     *
-     * @return string
-     */
-    protected function getConsolePath()
-    {
-        if (file_exists($this->getContainer()->getParameter('kernel.project_dir') . '/bin/console')) {
-            return 'bin/console';
-        }
-
-        return 'app/console';
     }
 }
