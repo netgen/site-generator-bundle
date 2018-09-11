@@ -44,13 +44,13 @@ class ProjectGenerator extends Generator
         }
 
         $fileSystem->rename(
-            $srcFolder . '/' . $namespaceClientPart . '/Bundle/MoreDemoBundle',
+            $srcFolder . '/' . $namespaceClientPart . '/Bundle/SiteDemoBundle',
             $finalBundleLocation
         );
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            'Netgen\Bundle\MoreDemoBundle',
+            'Netgen\Bundle\SiteDemoBundle',
             $bundleNamespace
         );
 
@@ -66,7 +66,7 @@ class ProjectGenerator extends Generator
         if (file_exists($this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js')) {
             FileHelper::searchAndReplaceInFile(
                 [$this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js'],
-                'Netgen/Bundle/MoreDemoBundle',
+                'Netgen/Bundle/SiteDemoBundle',
                 $bundleFolder
             );
         }
@@ -84,12 +84,12 @@ class ProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            'NetgenMoreDemo',
+            'NetgenSiteDemo',
             $bundleBaseName
         );
 
         $fileSystem->rename(
-            $finalBundleLocation . '/NetgenMoreDemoBundle.php',
+            $finalBundleLocation . '/NetgenSiteDemoBundle.php',
             $finalBundleLocation . '/' . $bundleName . '.php'
         );
 
@@ -105,13 +105,13 @@ class ProjectGenerator extends Generator
         );
 
         $fileSystem->rename(
-            $finalBundleLocation . '/DependencyInjection/NetgenMoreDemoExtension.php',
+            $finalBundleLocation . '/DependencyInjection/NetgenSiteDemoExtension.php',
             $finalBundleLocation . '/DependencyInjection/' . $bundleExtensionName . '.php'
         );
 
         FileHelper::searchAndReplaceInFile(
             [$finalBundleLocation . '/DependencyInjection/Configuration.php'],
-            'netgen_more_demo',
+            'netgen_site_demo',
             Container::underscore($bundleBaseName)
         );
 
@@ -128,7 +128,7 @@ class ProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            '/netgenmoredemo/',
+            '/netgensitedemo/',
             '/' . $bundleAssetsPathPart . '/'
         );
 
@@ -145,7 +145,7 @@ class ProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            'NG More',
+            'Netgen Site',
             $siteName
         );
 

@@ -489,8 +489,8 @@ class GenerateProjectCommand extends GeneratorCommand
 
         try {
             $fileSystem = $this->getContainer()->get('filesystem');
-            $fileSystem->remove($projectDir . '/web/bundles/netgenmoredemo');
-            $fileSystem->remove($legacyDir . '/extension/ez_netgen_ngmore_demo');
+            $fileSystem->remove($projectDir . '/web/bundles/netgensitedemo');
+            $fileSystem->remove($legacyDir . '/extension/ngsite_demo');
 
             if (
                 $this->questionHelper->ask(
@@ -529,7 +529,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
             $fileContent = file_get_contents($reflected->getFileName());
             $fileContent = str_replace(
-                '$bundles[] = new Netgen\Bundle\MoreDemoBundle\NetgenMoreDemoBundle();',
+                '$bundles[] = new Netgen\Bundle\SiteDemoBundle\NetgenSiteDemoBundle();',
                 '$bundles[] = new ' . $bundleFQN . '();',
                 $fileContent
             );

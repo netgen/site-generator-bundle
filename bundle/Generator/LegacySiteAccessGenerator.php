@@ -30,7 +30,7 @@ class LegacySiteAccessGenerator extends Generator
         $finalExtensionLocation = $extensionFolder . '/' . $extensionName;
         $legacyRootDir = $this->container->getParameter('ezpublish_legacy.root_dir');
 
-        $siteDomain = $this->container->getParameter('ngmore.default.site_domain');
+        $siteDomain = $this->container->getParameter('ngsite.default.site_domain');
 
         // Generating siteaccesses
 

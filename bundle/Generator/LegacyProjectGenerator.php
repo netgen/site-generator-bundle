@@ -27,7 +27,7 @@ class LegacyProjectGenerator extends Generator
 
         $extensionFolder = $finalBundleLocation . '/ezpublish_legacy';
         $extensionName = $input->getOption('extension-name');
-        $originalExtensionLocation = $extensionFolder . '/ez_netgen_ngmore_demo';
+        $originalExtensionLocation = $extensionFolder . '/ngsite_demo';
         $finalExtensionLocation = $extensionFolder . '/' . $extensionName;
 
         $output->writeln(
@@ -72,7 +72,7 @@ class LegacyProjectGenerator extends Generator
 
         FileHelper::searchAndReplaceInFile(
             FileHelper::findFilesInDirectory($finalBundleLocation),
-            'ez_netgen_ngmore_demo',
+            'ngsite_demo',
             $extensionName
         );
     }
