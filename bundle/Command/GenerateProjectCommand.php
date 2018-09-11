@@ -342,7 +342,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 [
                     'php',
                     'bin/console',
-                    'ngmore:symlink:project',
+                    'ngsite:symlink:project',
                     '--quiet',
                 ],
                 null,
