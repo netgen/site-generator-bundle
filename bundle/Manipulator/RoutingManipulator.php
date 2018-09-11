@@ -2,24 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Manipulator;
+namespace Netgen\Bundle\SiteGeneratorBundle\Manipulator;
 
 use RuntimeException;
 use Symfony\Component\DependencyInjection\Container;
 
-class RoutingManipulator extends Manipulator
+class RoutingManipulator
 {
     /**
+     * The YAML routing file path.
+     *
      * @var string
      */
     private $file;
 
-    /**
-     * Constructor.
-     *
-     * @param string $file The YAML routing file path
-     */
-    public function __construct($file)
+    public function __construct(string $file)
     {
         $this->file = $file;
     }
@@ -27,15 +24,9 @@ class RoutingManipulator extends Manipulator
     /**
      * Adds a routing resource at the top of the existing ones.
      *
-     * @param string $bundle
-     * @param string $prefix
-     * @param string $path
-     *
      * @throws \RuntimeException If bundle is already imported
-     *
-     * @return bool true if it worked, false otherwise
      */
-    public function addResource($bundle, $prefix = '/', $path = 'routing')
+    public function addResource(string $bundle, string $prefix = '/', string $path = 'routing'): bool
     {
         $current = '';
         if (file_exists($this->file)) {
@@ -53,10 +44,6 @@ class RoutingManipulator extends Manipulator
         $code .= sprintf("    resource: \"@%s/Resources/config/%s.yml\"\n", $bundle, $path);
         $code = $current . $code;
 
-        if (file_put_contents($this->file, $code) === false) {
-            return false;
-        }
-
-        return true;
+        return !(file_put_contents($this->file, $code) === false);
     }
 }

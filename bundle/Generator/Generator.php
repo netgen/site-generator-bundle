@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
+namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
@@ -14,55 +14,35 @@ abstract class Generator
     public const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
 
     /**
-     * @var array
+     * @var string
      */
-    protected $skeletonDirs;
-
-    /**
-     * @var bool
-     */
-    protected $generateNgAdminUi;
+    protected $skeletonDir;
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface
      */
     protected $container;
 
-    /**
-     * Constructor.
-     *
-     * @param \Symfony\Component\DependencyInjection\ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->generateNgAdminUi = true;
     }
 
     /**
-     * Sets an array of directories to look for templates.
-     *
-     * The directories must be sorted from the most specific to the least specific directory
-     *
-     * @param array $skeletonDirs An array of skeleton dirs
+     * Sets the directory to look for templates.
      */
-    public function setSkeletonDirs($skeletonDirs)
+    public function setSkeletonDir(string $skeletonDir): void
     {
-        $this->skeletonDirs = is_array($skeletonDirs) ? $skeletonDirs : [$skeletonDirs];
+        $this->skeletonDir = $skeletonDir;
     }
 
     /**
      * Renders the template.
-     *
-     * @param string $template
-     * @param array $parameters
-     *
-     * @return string
      */
-    protected function render($template, $parameters)
+    protected function render(string $template, array $parameters): string
     {
         $twig = new Environment(
-            new FilesystemLoader($this->skeletonDirs),
+            new FilesystemLoader([$this->skeletonDir]),
             [
                 'debug' => true,
                 'cache' => false,
@@ -76,14 +56,8 @@ abstract class Generator
 
     /**
      * Renders the template to a file.
-     *
-     * @param string $template
-     * @param string $target
-     * @param array $parameters
-     *
-     * @return int
      */
-    protected function renderFile($template, $target, $parameters)
+    protected function renderFile(string $template, string $target, array $parameters)
     {
         if (!is_dir(dirname($target))) {
             mkdir(dirname($target), 0777, true);

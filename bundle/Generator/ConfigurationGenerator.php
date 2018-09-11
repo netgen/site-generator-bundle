@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
+namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,11 +12,8 @@ class ConfigurationGenerator extends Generator
 {
     /**
      * Generates the main configuration.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function generate(InputInterface $input, OutputInterface $output)
+    public function generate(InputInterface $input, OutputInterface $output): void
     {
         $settings = [];
 
@@ -101,7 +98,7 @@ class ConfigurationGenerator extends Generator
             Yaml::dump($settings, 7)
         );
 
-        $this->generateServerConfig($settings, $siteAccessNames);
+        $this->generateServerConfig();
 
         $output->writeln(
             [
@@ -113,11 +110,8 @@ class ConfigurationGenerator extends Generator
 
     /**
      * Generates settings that are specific to server.
-     *
-     * @param array $baseSettings
-     * @param array $siteAccessNames
      */
-    protected function generateServerConfig(array $baseSettings, array $siteAccessNames)
+    protected function generateServerConfig(): void
     {
         $settings = [];
 

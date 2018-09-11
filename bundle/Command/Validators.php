@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Command;
+namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use InvalidArgumentException;
 
@@ -11,13 +11,9 @@ class Validators
     /**
      * Validates camel case name.
      *
-     * @param string $name
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateCamelCaseName($name)
+    public static function validateCamelCaseName(string $name): string
     {
         if (!preg_match('/^[A-Z][a-zA-Z0-9_]*$/', $name)) {
             throw new InvalidArgumentException('The name is not valid.');
@@ -35,13 +31,9 @@ class Validators
     /**
      * Validates lower case name.
      *
-     * @param string $name
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateLowerCaseName($name)
+    public static function validateLowerCaseName(string $name): string
     {
         if (!preg_match('/^[a-z][a-z0-9_]*$/', $name)) {
             throw new InvalidArgumentException('The name is not valid.');
@@ -59,13 +51,9 @@ class Validators
     /**
      * Validates siteaccess name.
      *
-     * @param string $siteaccess
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateSiteAccessName($siteaccess)
+    public static function validateSiteAccessName(string $siteaccess = null): string
     {
         // We allow empty siteaccess name in order to quit asking for more
         if (empty($siteaccess)) {
@@ -84,13 +72,9 @@ class Validators
     /**
      * Validates siteaccess name.
      *
-     * @param string $siteaccess
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateAdminSiteAccessName($siteaccess)
+    public static function validateAdminSiteAccessName(string $siteaccess): string
     {
         if (!preg_match('/^[a-z][a-z0-9_]*$/', $siteaccess)) {
             throw new InvalidArgumentException('Admin siteaccess name is not valid.');
@@ -104,13 +88,9 @@ class Validators
     /**
      * Validates language code.
      *
-     * @param string $languageCode
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateLanguageCode($languageCode)
+    public static function validateLanguageCode(string $languageCode = null): string
     {
         // We allow empty languageCode in order to quit asking for more
         if (empty($languageCode)) {
@@ -127,13 +107,9 @@ class Validators
     /**
      * Validates if value is not empty.
      *
-     * @param string $value
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateNotEmpty($value)
+    public static function validateNotEmpty(string $value): string
     {
         if (empty($value)) {
             throw new InvalidArgumentException('Value cannot be empty.');
@@ -145,13 +121,9 @@ class Validators
     /**
      * Validates bundle namespace.
      *
-     * @param string $namespace
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateBundleNamespace($namespace)
+    public static function validateBundleNamespace(string $namespace): string
     {
         if (!preg_match('/Bundle$/', $namespace)) {
             throw new InvalidArgumentException('The namespace must end with "Bundle".');
@@ -175,13 +147,9 @@ class Validators
     /**
      * Validates bundle name.
      *
-     * @param string $bundle
-     *
      * @throws \InvalidArgumentException If validation did not pass
-     *
-     * @return string
      */
-    public static function validateBundleName($bundle)
+    public static function validateBundleName(string $bundle): string
     {
         if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $bundle)) {
             throw new InvalidArgumentException('The bundle name contains invalid characters.');
@@ -195,26 +163,21 @@ class Validators
     }
 
     /**
-     * Validates if value is one of PHP's reserved keywords.
-     *
-     * @param string $value
+     * Validates if value is one of PHP reserved keywords.
      *
      * @throws \InvalidArgumentException If validation did not pass
      */
-    public static function validateReservedKeywords($value)
+    public static function validateReservedKeywords(string $value): void
     {
-        $reserved = self::getReservedWords();
-        if (in_array(strtolower($value), $reserved, true)) {
+        if (in_array(strtolower($value), self::getReservedWords(), true)) {
             throw new InvalidArgumentException(sprintf('The value cannot contain PHP reserved words ("%s").', $value));
         }
     }
 
     /**
-     * Returns the list of PHP's reserved keywords.
-     *
-     * @return array
+     * Returns the list of PHP reserved keywords.
      */
-    public static function getReservedWords()
+    public static function getReservedWords(): array
     {
         return [
             'abstract',

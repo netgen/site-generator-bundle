@@ -1,2 +1,2 @@
 parameters:
-    ngmore_generator.available_environments: [ dev, prod ]
+    netgen_site_generator.available_environments: [dev, prod]

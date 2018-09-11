@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Command;
+namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use Exception;
 use InvalidArgumentException;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\ConfigurationGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\Generator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacyProjectGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\LegacySiteAccessGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Generator\ProjectGenerator;
-use Netgen\Bundle\MoreGeneratorBundle\Manipulator\RoutingManipulator;
+use Netgen\Bundle\SiteGeneratorBundle\Generator\ConfigurationGenerator;
+use Netgen\Bundle\SiteGeneratorBundle\Generator\Generator;
+use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacyProjectGenerator;
+use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacySiteAccessGenerator;
+use Netgen\Bundle\SiteGeneratorBundle\Generator\ProjectGenerator;
+use Netgen\Bundle\SiteGeneratorBundle\Manipulator\RoutingManipulator;
 use ReflectionObject;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,10 +22,7 @@ use Symfony\Component\Process\ProcessBuilder;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
-    /**
-     * Configures the command.
-     */
-    protected function configure()
+    protected function configure(): void
     {
         $this->setDefinition(
             [
@@ -40,25 +37,17 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption('extension-name', '', InputOption::VALUE_REQUIRED, 'Extension name'),
             ]
         );
-        $this->setDescription('Generates Netgen More project');
-        $this->setName('ngmore:generate:project');
+        $this->setDescription('Generates Netgen Site project');
+        $this->setName('ngsite:generate:project');
     }
 
-    /**
-     * Runs the command interactively.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return int
-     */
-    protected function interact(InputInterface $input, OutputInterface $output)
+    protected function interact(InputInterface $input, OutputInterface $output): void
     {
         $this->input = $input;
         $this->output = $output;
         $this->questionHelper = $this->getHelper('question');
 
-        $this->writeSection('Welcome to the Netgen More project generator');
+        $this->writeSection(['Welcome to the Netgen Site project generator']);
 
         while (!$this->doInteract()) {
             // We will always ask for siteaccesses
@@ -67,12 +56,7 @@ class GenerateProjectCommand extends GeneratorCommand
         }
     }
 
-    /**
-     * Collects all the project data interactively.
-     *
-     * @return bool
-     */
-    protected function doInteract()
+    protected function doInteract(): bool
     {
         $this->output->writeln(
             [
@@ -198,7 +182,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 }
 
                 if (!empty($siteAccess)) {
-                    if (in_array($siteAccess, array_keys($siteAccessList), true)) {
+                    if (array_key_exists($siteAccess, $siteAccessList)) {
                         $this->output->writeln('<error> Siteaccess name already added </error>');
                         continue;
                     }
@@ -261,7 +245,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
 
-        $this->writeSection('Summary before generation');
+        $this->writeSection(['Summary before generation']);
 
         // Summary
         $this->output->writeln(
@@ -290,15 +274,7 @@ class GenerateProjectCommand extends GeneratorCommand
         return true;
     }
 
-    /**
-     * Runs the command.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
-     *
-     * @return int
-     */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
     {
         if (!$input->isInteractive()) {
             $output->writeln('<error>This command only supports interactive execution</error>');
@@ -306,13 +282,13 @@ class GenerateProjectCommand extends GeneratorCommand
             return 1;
         }
 
-        $this->writeSection('Project generation');
+        $this->writeSection(['Project generation']);
 
-        // Generate Netgen More project
+        // Generate Netgen Site project
         $projectGenerator = new ProjectGenerator($this->getContainer());
         $projectGenerator->generate($this->input, $this->output);
 
-        // Generate Netgen More legacy project
+        // Generate Netgen Site legacy project
         $legacyProjectGenerator = new LegacyProjectGenerator($this->getContainer());
         $legacyProjectGenerator->generate($this->input, $this->output);
 
@@ -336,10 +312,10 @@ class GenerateProjectCommand extends GeneratorCommand
         // Set up routing
         $runner($this->updateRouting());
 
-        // Install Netgen More project symlinks
+        // Install Netgen Site project symlinks
         $runner($this->installProjectSymlinks());
 
-        // Install Netgen More legacy symlinks
+        // Install Netgen Site legacy symlinks
         $runner($this->installLegacySymlinks());
 
         // Generate legacy autoloads
@@ -348,22 +324,18 @@ class GenerateProjectCommand extends GeneratorCommand
         // Various cleanups
         $runner($this->cleanup());
 
-        $errorCount = count($errors);
-
         $this->writeGeneratorSummary($errors);
 
         return 0;
     }
 
     /**
-     * Installs Netgen More project symlinks.
-     *
-     * @return array
+     * Installs Netgen Site project symlinks.
      */
-    protected function installProjectSymlinks()
+    protected function installProjectSymlinks(): array
     {
         $this->output->writeln('');
-        $this->output->write('Installing Netgen More project symlinks... ');
+        $this->output->write('Installing Netgen Site project symlinks... ');
 
         try {
             $processBuilder = new ProcessBuilder(
@@ -386,36 +358,36 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if (!$process->isSuccessful()) {
                 return [
-                    '- Run the following command from your installation root to install Netgen More project symlinks:',
+                    '- Run the following command from your installation root to install Netgen Site project symlinks:',
                     '',
-                    '    <comment>php bin/console ngmore:symlink:project</comment>',
+                    '    <comment>php bin/console ngsite:symlink:project</comment>',
                     '',
                 ];
             }
         } catch (Exception $e) {
             return [
-                'There was an error installing Netgen More project symlinks: ' . $e->getMessage(),
+                'There was an error installing Netgen Site project symlinks: ' . $e->getMessage(),
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
-     * Installs Netgen More legacy symlinks.
-     *
-     * @return array
+     * Installs Netgen Site legacy symlinks.
      */
-    protected function installLegacySymlinks()
+    protected function installLegacySymlinks(): array
     {
         $this->output->writeln('');
-        $this->output->write('Installing Netgen More legacy symlinks... ');
+        $this->output->write('Installing Netgen Site legacy symlinks... ');
 
         try {
             $processBuilder = new ProcessBuilder(
                 [
                     'php',
                     'bin/console',
-                    'ngmore:symlink:legacy',
+                    'ngsite:symlink:legacy',
                     '--quiet',
                 ]
             );
@@ -431,26 +403,26 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if (!$process->isSuccessful()) {
                 return [
-                    '- Run the following command from your installation root to install Netgen More legacy symlinks:',
+                    '- Run the following command from your installation root to install Netgen Site legacy symlinks:',
                     '',
-                    '    <comment>php bin/console ngmore:symlink:legacy</comment>',
+                    '    <comment>php bin/console ngsite:symlink:legacy</comment>',
                     '',
                 ];
             }
         } catch (Exception $e) {
             return [
-                'There was an installing Netgen More legacy symlinks: ' . $e->getMessage(),
+                'There was an installing Netgen Site legacy symlinks: ' . $e->getMessage(),
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
      * Generates legacy autoloads.
-     *
-     * @return array
      */
-    protected function generateLegacyAutoloads()
+    protected function generateLegacyAutoloads(): array
     {
         $this->output->writeln('');
         $this->output->write('Generating legacy autoloads... ');
@@ -495,14 +467,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
      * Cleans up various leftover files.
-     *
-     * @return array
      */
-    protected function cleanup()
+    protected function cleanup(): array
     {
         $this->output->writeln('');
         $this->output->write('Cleaning up... ');
@@ -535,14 +507,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
      * Adds the bundle to the kernel file.
-     *
-     * @return array
      */
-    protected function updateKernel()
+    protected function updateKernel(): array
     {
         $this->output->writeln('');
         $this->output->write('Enabling the bundle inside the kernel... ');
@@ -563,9 +535,9 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if (!$updated) {
                 return [
-                    '- Edit <comment>' . $reflected->getFilename() . '</comment>',
+                    '- Edit <comment>' . $reflected->getFileName() . '</comment>',
                     '  and add the following bundle at the end of <comment>' . $reflected->getName() . '::registerBundles()</comment>',
-                    '  method, replacing the existing NetgenMoreDemoBundle:',
+                    '  method, replacing the existing NetgenSiteDemoBundle:',
                     '',
                     '    <comment>$bundles[] = new ' . $bundleFQN . '();</comment>',
                     '',
@@ -577,14 +549,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
      * Updates the routing file.
-     *
-     * @return array
      */
-    protected function updateRouting()
+    protected function updateRouting(): array
     {
         $this->output->writeln('');
         $this->output->write('Importing the bundle routing resource... ');
@@ -611,14 +583,14 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
+
+        return [];
     }
 
     /**
      * Installs Symfony assets as relative symlinks.
-     *
-     * @return array
      */
-    protected function installAssets()
+    protected function installAssets(): array
     {
         $this->output->writeln('');
         $this->output->write('Installing assets using the <comment>symlink</comment> option... ');
@@ -658,5 +630,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 '',
             ];
         }
+
+        return [];
     }
 }

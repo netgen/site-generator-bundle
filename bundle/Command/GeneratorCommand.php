@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Command;
+namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
@@ -27,15 +27,8 @@ abstract class GeneratorCommand extends ContainerAwareCommand
 
     /**
      * Asks a question that fills provided option.
-     *
-     * @param string $optionIdentifier
-     * @param string $optionName
-     * @param string $defaultValue
-     * @param string $validator
-     *
-     * @return string
      */
-    protected function askForData($optionIdentifier, $optionName, $defaultValue, $validator = null)
+    protected function askForData(string $optionIdentifier, string $optionName, string $defaultValue, string $validator = null): string
     {
         $optionValue = $this->input->getOption($optionIdentifier);
         $optionValue = !empty($optionValue) ? $optionValue :
@@ -55,14 +48,8 @@ abstract class GeneratorCommand extends ContainerAwareCommand
 
     /**
      * Instantiates and returns a question.
-     *
-     * @param string $questionName
-     * @param string $defaultValue
-     * @param string $validator
-     *
-     * @return \Symfony\Component\Console\Question\Question
      */
-    protected function getQuestion($questionName, $defaultValue = null, $validator = null)
+    protected function getQuestion(string $questionName, string $defaultValue = null, string $validator = null): Question
     {
         $questionName = $defaultValue
             ? '<info>' . $questionName . '</info> [<comment>' . $defaultValue . '</comment>]: '
@@ -70,7 +57,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
 
         $question = new Question($questionName, $defaultValue);
         if ($validator !== null) {
-            $question->setValidator(['Netgen\Bundle\MoreGeneratorBundle\Command\Validators', $validator]);
+            $question->setValidator([Validators::class, $validator]);
         }
 
         return $question;
@@ -78,13 +65,8 @@ abstract class GeneratorCommand extends ContainerAwareCommand
 
     /**
      * Instantiates and returns the confirmation question.
-     *
-     * @param string $questionName
-     * @param bool $defaultValue
-     *
-     * @return \Symfony\Component\Console\Question\ConfirmationQuestion
      */
-    protected function getConfirmationQuestion($questionName, $defaultValue = false)
+    protected function getConfirmationQuestion(string $questionName, bool $defaultValue = false): ConfirmationQuestion
     {
         return new ConfirmationQuestion(
             sprintf(
@@ -101,35 +83,34 @@ abstract class GeneratorCommand extends ContainerAwareCommand
      *
      * @param array $errors
      */
-    protected function writeGeneratorSummary($errors)
+    protected function writeGeneratorSummary(array $errors): void
     {
-        if (!$errors) {
-            $this->writeSection('You can now start using the generated code!');
-        } else {
-            $this->writeSection(
-                [
-                    'The command was not able to configure everything automatically.',
-                    'You must do the following changes manually.',
-                ],
-                'error'
-            );
+        if (empty($errors)) {
+            $this->writeSection(['You can now start using the generated code!']);
 
-            $this->output->writeln($errors);
+            return;
         }
+
+        $this->writeSection(
+            [
+                'The command was not able to configure everything automatically.',
+                'You must do the following changes manually.',
+            ],
+            'error'
+        );
+
+        $this->output->writeln($errors);
     }
 
     /**
      * Writes a section of text to the output.
-     *
-     * @param string $text
-     * @param string $style
      */
-    protected function writeSection($text, $style = 'bg=blue;fg=white')
+    protected function writeSection(array $messages, string $style = 'bg=blue;fg=white'): void
     {
         $this->output->writeln(
             [
                 '',
-                $this->getHelper('formatter')->formatBlock($text, $style, true),
+                $this->getHelper('formatter')->formatBlock($messages, $style, true),
                 '',
             ]
         );
@@ -142,18 +123,15 @@ abstract class GeneratorCommand extends ContainerAwareCommand
      *
      * @return callable
      */
-    protected function getRunner(&$errors)
+    protected function getRunner(array &$errors): callable
     {
-        $output = $this->output;
-        $runner = function ($err) use ($output, &$errors) {
+        return function (array $err) use (&$errors) {
             if (!empty($err)) {
-                $output->writeln('<fg=red>FAILED</>');
+                $this->output->writeln('<fg=red>FAILED</>');
                 $errors = array_merge($errors, $err);
             } else {
-                $output->writeln('<info>OK</info>');
+                $this->output->writeln('<info>OK</info>');
             }
         };
-
-        return $runner;
     }
 }

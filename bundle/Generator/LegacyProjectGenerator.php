@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
+namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
-use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
+use Netgen\Bundle\SiteGeneratorBundle\Helper\FileHelper;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,11 +13,8 @@ class LegacyProjectGenerator extends Generator
 {
     /**
      * Generates the project.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function generate(InputInterface $input, OutputInterface $output)
+    public function generate(InputInterface $input, OutputInterface $output): void
     {
         $fileSystem = $this->container->get('filesystem');
 
@@ -64,12 +61,12 @@ class LegacyProjectGenerator extends Generator
             $finalLegacyExtensionLocation
         );
 
-        // Search and replace "ez_netgen_ngmore_demo" with the extension name
+        // Search and replace "ngsite_demo" with the extension name
 
         $output->writeln(
             [
                 '',
-                'Renaming <comment>ez_netgen_ngmore_demo</comment> extension name into <comment>' . $extensionName . '</comment>',
+                'Renaming <comment>ngsite_demo</comment> extension name into <comment>' . $extensionName . '</comment>',
             ]
         );
 

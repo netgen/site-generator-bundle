@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Netgen\Bundle\MoreGeneratorBundle\Generator;
+namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
-use Netgen\Bundle\MoreGeneratorBundle\Helper\FileHelper;
+use Netgen\Bundle\SiteGeneratorBundle\Helper\FileHelper;
 use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,11 +14,8 @@ class ProjectGenerator extends Generator
 {
     /**
      * Generates the project.
-     *
-     * @param \Symfony\Component\Console\Input\InputInterface $input
-     * @param \Symfony\Component\Console\Output\OutputInterface $output
      */
-    public function generate(InputInterface $input, OutputInterface $output)
+    public function generate(InputInterface $input, OutputInterface $output): void
     {
         $fileSystem = $this->container->get('filesystem');
         $srcFolder = $this->container->getParameter('kernel.project_dir') . '/src';
@@ -32,7 +29,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>Netgen\Bundle\MoreDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>',
+                'Renaming <comment>Netgen\Bundle\SiteDemoBundle</comment> bundle namespace into <comment>' . $bundleNamespace . '</comment>',
             ]
         );
 
@@ -62,13 +59,13 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>src/Netgen/Bundle/MoreDemoBundle</comment> bundle folder into <comment>src/' . $bundleFolder . '</comment>',
+                'Renaming <comment>src/Netgen/Bundle/SiteDemoBundle</comment> bundle folder into <comment>src/' . $bundleFolder . '</comment>',
             ]
         );
 
         if (file_exists($this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js')) {
             FileHelper::searchAndReplaceInFile(
-                $this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js',
+                [$this->container->getParameter('kernel.project_dir') . '/webpack.config.default.js'],
                 'Netgen/Bundle/MoreDemoBundle',
                 $bundleFolder
             );
@@ -81,7 +78,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>NetgenMoreDemo</comment> bundle name into <comment>' . $bundleBaseName . '</comment>',
+                'Renaming <comment>NetgenSiteDemo</comment> bundle name into <comment>' . $bundleBaseName . '</comment>',
             ]
         );
 
@@ -103,7 +100,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>NetgenMoreDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>',
+                'Renaming <comment>NetgenSiteDemoExtension</comment> DI extension into <comment>' . $bundleExtensionName . '</comment>',
             ]
         );
 
@@ -113,7 +110,7 @@ class ProjectGenerator extends Generator
         );
 
         FileHelper::searchAndReplaceInFile(
-            $finalBundleLocation . '/DependencyInjection/Configuration.php',
+            [$finalBundleLocation . '/DependencyInjection/Configuration.php'],
             'netgen_more_demo',
             Container::underscore($bundleBaseName)
         );
@@ -125,7 +122,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>netgenmoredemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>',
+                'Renaming <comment>netgensitedemo</comment> asset path into <comment>' . $bundleAssetsPathPart . '</comment>',
             ]
         );
 
@@ -142,7 +139,7 @@ class ProjectGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Renaming <comment>NG More</comment> site name into <comment>' . $siteName . '</comment>',
+                'Renaming <comment>Netgen Site</comment> site name into <comment>' . $siteName . '</comment>',
             ]
         );
 
