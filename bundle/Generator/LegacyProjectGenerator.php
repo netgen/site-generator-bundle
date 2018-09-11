@@ -23,7 +23,7 @@ class LegacyProjectGenerator extends Generator
         $bundleFolder = $this->container->getParameter('kernel.project_dir') . '/src';
         $bundleNamespace = $input->getOption('bundle-namespace');
 
-        $finalBundleLocation = $bundleFolder . '/' . strtr($bundleNamespace, '\\', '/');
+        $finalBundleLocation = $bundleFolder . '/' . str_replace('\\', '/', $bundleNamespace);
 
         $extensionFolder = $finalBundleLocation . '/ezpublish_legacy';
         $extensionName = $input->getOption('extension-name');

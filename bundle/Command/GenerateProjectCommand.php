@@ -18,7 +18,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Process\Process;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
@@ -243,7 +243,7 @@ class GenerateProjectCommand extends GeneratorCommand
             ]
         );
 
-        $extensionName = $this->askForData('extension-name', 'Extension name', 'ez_' . $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
+        $extensionName = $this->askForData('extension-name', 'Extension name', $clientNormalized . '_' . $projectNormalized, 'validateLowerCaseName');
 
         $this->writeSection(['Summary before generation']);
 
@@ -338,18 +338,19 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->write('Installing Netgen Site project symlinks... ');
 
         try {
-            $processBuilder = new ProcessBuilder(
+            $process = new Process(
                 [
                     'php',
                     'bin/console',
                     'ngmore:symlink:project',
                     '--quiet',
-                ]
+                ],
+                null,
+                null,
+                null,
+                3600
             );
 
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout(3600);
             $process->run(
                 function ($type, $buffer) {
                     echo $buffer;
@@ -383,18 +384,19 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->write('Installing Netgen Site legacy symlinks... ');
 
         try {
-            $processBuilder = new ProcessBuilder(
+            $process = new Process(
                 [
                     'php',
                     'bin/console',
                     'ngsite:symlink:legacy',
                     '--quiet',
-                ]
+                ],
+                null,
+                null,
+                null,
+                3600
             );
 
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout(3600);
             $process->run(
                 function ($type, $buffer) {
                     echo $buffer;
@@ -432,17 +434,18 @@ class GenerateProjectCommand extends GeneratorCommand
         try {
             chdir($this->getContainer()->getParameter('ezpublish_legacy.root_dir'));
 
-            $processBuilder = new ProcessBuilder(
+            $process = new Process(
                 [
                     'php',
                     'bin/php/ezpgenerateautoloads.php',
                     '--quiet',
-                ]
+                ],
+                null,
+                null,
+                null,
+                3600
             );
 
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout(3600);
             $process->run(
                 function ($type, $buffer) {
                     echo $buffer;
@@ -596,7 +599,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->write('Installing assets using the <comment>symlink</comment> option... ');
 
         try {
-            $processBuilder = new ProcessBuilder(
+            $process = new Process(
                 [
                     'php',
                     'bin/console',
@@ -604,12 +607,13 @@ class GenerateProjectCommand extends GeneratorCommand
                     '--symlink',
                     '--relative',
                     '--quiet',
-                ]
+                ],
+                null,
+                null,
+                null,
+                3600
             );
 
-            $process = $processBuilder->getProcess();
-
-            $process->setTimeout(3600);
             $process->run(
                 function ($type, $buffer) {
                     echo $buffer;

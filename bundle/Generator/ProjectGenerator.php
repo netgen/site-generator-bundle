@@ -20,7 +20,7 @@ class ProjectGenerator extends Generator
         $fileSystem = $this->container->get('filesystem');
         $srcFolder = $this->container->getParameter('kernel.project_dir') . '/src';
         $bundleNamespace = $input->getOption('bundle-namespace');
-        $bundleFolder = strtr($bundleNamespace, '\\', '/');
+        $bundleFolder = str_replace('\\', '/', $bundleNamespace);
         $bundleName = $input->getOption('bundle-name');
         $finalBundleLocation = $srcFolder . '/' . $bundleFolder;
 
@@ -33,7 +33,7 @@ class ProjectGenerator extends Generator
             ]
         );
 
-        $namespaceClientPart = explode('/', strtr($bundleNamespace, '\\', '/'));
+        $namespaceClientPart = explode('/', str_replace('\\', '/', $bundleNamespace));
         $namespaceClientPart = $namespaceClientPart[0];
 
         if (strtolower($namespaceClientPart) !== 'netgen') {
