@@ -9,46 +9,6 @@ use InvalidArgumentException;
 class Validators
 {
     /**
-     * Validates camel case name.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateCamelCaseName(string $name): string
-    {
-        if (!preg_match('/^[A-Z][a-zA-Z0-9_]*$/', $name)) {
-            throw new InvalidArgumentException('The name is not valid.');
-        }
-
-        if (preg_match('/bundle$/i', $name)) {
-            throw new InvalidArgumentException('The name cannot end with "Bundle".');
-        }
-
-        self::validateReservedKeywords($name);
-
-        return $name;
-    }
-
-    /**
-     * Validates lower case name.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateLowerCaseName(string $name): string
-    {
-        if (!preg_match('/^[a-z][a-z0-9_]*$/', $name)) {
-            throw new InvalidArgumentException('The name is not valid.');
-        }
-
-        if (preg_match('/bundle$/i', $name)) {
-            throw new InvalidArgumentException('The name cannot end with "Bundle".');
-        }
-
-        self::validateReservedKeywords($name);
-
-        return $name;
-    }
-
-    /**
      * Validates siteaccess name.
      *
      * @throws \InvalidArgumentException If validation did not pass
@@ -62,22 +22,6 @@ class Validators
 
         if (!preg_match('/^[a-z][a-z0-9_]*$/', $siteaccess)) {
             throw new InvalidArgumentException('Siteaccess name is not valid.');
-        }
-
-        self::validateReservedKeywords($siteaccess);
-
-        return $siteaccess;
-    }
-
-    /**
-     * Validates siteaccess name.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateAdminSiteAccessName(string $siteaccess): string
-    {
-        if (!preg_match('/^[a-z][a-z0-9_]*$/', $siteaccess)) {
-            throw new InvalidArgumentException('Admin siteaccess name is not valid.');
         }
 
         self::validateReservedKeywords($siteaccess);
@@ -102,64 +46,6 @@ class Validators
         }
 
         return $languageCode;
-    }
-
-    /**
-     * Validates if value is not empty.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateNotEmpty(string $value): string
-    {
-        if (empty($value)) {
-            throw new InvalidArgumentException('Value cannot be empty.');
-        }
-
-        return $value;
-    }
-
-    /**
-     * Validates bundle namespace.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateBundleNamespace(string $namespace): string
-    {
-        if (!preg_match('/Bundle$/', $namespace)) {
-            throw new InvalidArgumentException('The namespace must end with "Bundle".');
-        }
-
-        $namespace = str_replace('/', '\\', $namespace);
-        if (!preg_match('/^(?:[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*\\\?)+$/', $namespace)) {
-            throw new InvalidArgumentException('The namespace contains invalid characters.');
-        }
-
-        self::validateReservedKeywords($namespace);
-
-        $explodedNamespace = explode('\\', $namespace);
-        if (count($explodedNamespace) !== 3 || $explodedNamespace[1] !== 'Bundle') {
-            throw new InvalidArgumentException('The namespace must be in format <Client>\Bundle\<Project>.');
-        }
-
-        return $namespace;
-    }
-
-    /**
-     * Validates bundle name.
-     *
-     * @throws \InvalidArgumentException If validation did not pass
-     */
-    public static function validateBundleName(string $bundle): string
-    {
-        if (!preg_match('/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $bundle)) {
-            throw new InvalidArgumentException('The bundle name contains invalid characters.');
-        }
-
-        if (!preg_match('/Bundle$/', $bundle)) {
-            throw new InvalidArgumentException('The bundle name must end with Bundle.');
-        }
-
-        return $bundle;
     }
 
     /**

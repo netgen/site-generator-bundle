@@ -21,7 +21,7 @@ class ConfigurationGenerator extends Generator
 
         $settings['imports'] = [
             ['resource' => 'ezplatform_system.yml'],
-            ['resource' => '@' . $input->getOption('bundle-name') . '/Resources/config/ezplatform.yml'],
+            ['resource' => '@AppBundle/Resources/config/ezplatform.yml'],
         ];
 
         // List of siteaccesses and groups
@@ -54,19 +54,17 @@ class ConfigurationGenerator extends Generator
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
-        $themeName = $input->getOption('theme-name');
+        $settings['netgen_block_manager']['design_list']['app'] = ['app'];
+        $settings['netgen_block_manager']['system']['frontend_group']['design'] = 'app';
 
-        $settings['netgen_block_manager']['design_list'][$themeName] = [$themeName];
-        $settings['netgen_block_manager']['system']['frontend_group']['design'] = $themeName;
-
-        $settings['ezdesign']['design_list'][$themeName] = [$themeName, 'common'];
+        $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = [
             self::NGADMINUI_SITEACCESS_NAME,
             'common',
         ];
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
-            $settings['ezpublish']['system'][$siteAccessName]['design'] = $themeName;
+            $settings['ezpublish']['system'][$siteAccessName]['design'] = 'app';
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ezpublish']['system'][$siteAccessName]['session'] = [
                 'name' => 'eZSESSID',

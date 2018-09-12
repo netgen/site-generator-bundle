@@ -26,27 +26,6 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     protected $questionHelper;
 
     /**
-     * Asks a question that fills provided option.
-     */
-    protected function askForData(string $optionIdentifier, string $optionName, string $defaultValue, string $validator = null): string
-    {
-        $optionValue = $this->input->getOption($optionIdentifier);
-        $optionValue = !empty($optionValue) ? $optionValue :
-            $defaultValue;
-
-        $question = $this->getQuestion($optionName, $optionValue, $validator);
-        $optionValue = $this->questionHelper->ask(
-            $this->input,
-            $this->output,
-            $question
-        );
-
-        $this->input->setOption($optionIdentifier, $optionValue);
-
-        return $optionValue;
-    }
-
-    /**
      * Instantiates and returns a question.
      */
     protected function getQuestion(string $questionName, string $defaultValue = null, string $validator = null): Question
@@ -79,30 +58,6 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     }
 
     /**
-     * Writes generator summary.
-     *
-     * @param array $errors
-     */
-    protected function writeGeneratorSummary(array $errors): void
-    {
-        if (empty($errors)) {
-            $this->writeSection(['You can now start using the generated code!']);
-
-            return;
-        }
-
-        $this->writeSection(
-            [
-                'The command was not able to configure everything automatically.',
-                'You must do the following changes manually.',
-            ],
-            'error'
-        );
-
-        $this->output->writeln($errors);
-    }
-
-    /**
      * Writes a section of text to the output.
      */
     protected function writeSection(array $messages, string $style = 'bg=blue;fg=white'): void
@@ -114,24 +69,5 @@ abstract class GeneratorCommand extends ContainerAwareCommand
                 '',
             ]
         );
-    }
-
-    /**
-     * Returns the runner.
-     *
-     * @param array $errors
-     *
-     * @return callable
-     */
-    protected function getRunner(array &$errors): callable
-    {
-        return function (array $err) use (&$errors) {
-            if (!empty($err)) {
-                $this->output->writeln('<fg=red>FAILED</>');
-                $errors = array_merge($errors, $err);
-            } else {
-                $this->output->writeln('<info>OK</info>');
-            }
-        };
     }
 }
