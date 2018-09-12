@@ -1,2 +1,0 @@
-parameters:
-    netgen_site_generator.available_environments: [dev, prod]
