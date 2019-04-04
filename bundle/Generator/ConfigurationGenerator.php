@@ -32,7 +32,8 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
         $settings['ezpublish']['siteaccess']['list'] = array_merge(
-            $siteAccessNames, $adminSiteAccessNames
+            $siteAccessNames,
+            $adminSiteAccessNames
         );
 
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;

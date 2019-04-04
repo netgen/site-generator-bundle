@@ -65,12 +65,14 @@ class GenerateProjectCommand extends GeneratorCommand
 
             if ($siteAccess === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
                 $this->output->writeln('<error> Siteaccess name cannot be equal to "' . Generator::LEGACY_ADMIN_SITEACCESS_NAME . '". </error>');
+
                 continue;
             }
 
             if (!empty($siteAccess)) {
                 if (array_key_exists($siteAccess, $siteAccessList)) {
                     $this->output->writeln('<error> Siteaccess name already added </error>');
+
                     continue;
                 }
 
@@ -96,6 +98,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     if (!empty($language)) {
                         if (in_array($language, $languageList, true)) {
                             $this->output->writeln('<error> Language code already added </error>');
+
                             continue;
                         }
 

@@ -55,7 +55,7 @@ class Validators
      */
     public static function validateReservedKeywords(string $value): void
     {
-        if (in_array(strtolower($value), self::getReservedWords(), true)) {
+        if (in_array(mb_strtolower($value), self::getReservedWords(), true)) {
             throw new InvalidArgumentException(sprintf('The value cannot contain PHP reserved words ("%s").', $value));
         }
     }
