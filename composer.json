@@ -13,6 +13,10 @@
         "symfony/framework-bundle": "^3.4 || ^4.2",
         "symfony/console": "^3.4 || ^4.2"
     },
+    "conflict": {
+        "netgen/block-manager": "*",
+        "netgen/layouts-core": "<1.0"
+    },
     "autoload": {
         "psr-4": {
             "Netgen\\Bundle\\SiteGeneratorBundle\\": "bundle/"

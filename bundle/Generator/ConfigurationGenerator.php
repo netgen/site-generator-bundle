@@ -48,8 +48,8 @@ class ConfigurationGenerator extends Generator
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
-        $settings['netgen_block_manager']['design_list']['app'] = ['app'];
-        $settings['netgen_block_manager']['system']['frontend_group']['design'] = 'app';
+        $settings['netgen_layouts']['design_list']['app'] = ['app'];
+        $settings['netgen_layouts']['system']['frontend_group']['design'] = 'app';
 
         $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = [
