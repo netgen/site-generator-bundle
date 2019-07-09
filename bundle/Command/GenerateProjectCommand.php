@@ -11,9 +11,30 @@ use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacySiteAccessGenerator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
+    /**
+     * @var \Symfony\Component\DependencyInjection\ContainerInterface
+     */
+    protected $container;
+
+    /**
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    protected $fileSystem;
+
+    public function __construct(ContainerInterface $container, Filesystem $fileSystem)
+    {
+        $this->container = $container;
+        $this->fileSystem = $fileSystem;
+
+        // Parent constructor call is mandatory for commands registered as services
+        parent::__construct();
+    }
+
     protected function configure(): void
     {
         $this->setDefinition(
@@ -21,8 +42,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
             ]
         );
+
         $this->setDescription('Generates a new Netgen Site client project');
-        $this->setName('ngsite:generate:project');
     }
 
     protected function interact(InputInterface $input, OutputInterface $output): void
@@ -143,11 +164,11 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->writeSection(['Project generation']);
 
         // Generate legacy siteaccesses
-        $legacySiteAccessGenerator = new LegacySiteAccessGenerator($this->getContainer());
+        $legacySiteAccessGenerator = new LegacySiteAccessGenerator($this->container, $this->fileSystem);
         $legacySiteAccessGenerator->generate($this->input, $this->output);
 
         // Generate configuration
-        $configurationGenerator = new ConfigurationGenerator($this->getContainer());
+        $configurationGenerator = new ConfigurationGenerator($this->container, $this->fileSystem);
         $configurationGenerator->generate($this->input, $this->output);
 
         // Various cleanups
@@ -168,13 +189,11 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->output->writeln('');
         $this->output->writeln('');
 
-        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+        $projectDir = $this->container->getParameter('kernel.project_dir');
 
         try {
-            $fileSystem = $this->getContainer()->get('filesystem');
-
             if (
-                $fileSystem->exists($projectDir . '/.git') &&
+                $this->fileSystem->exists($projectDir . '/.git') &&
                 $this->questionHelper->ask(
                     $this->input,
                     $this->output,
@@ -184,7 +203,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     )
                 )
             ) {
-                $fileSystem->remove($projectDir . '/.git');
+                $this->fileSystem->remove($projectDir . '/.git');
             }
         } catch (Exception $e) {
             // Do nothing

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -24,9 +25,15 @@ abstract class Generator
      */
     protected $container;
 
-    public function __construct(ContainerInterface $container)
+    /**
+     * @var \Symfony\Component\Filesystem\Filesystem
+     */
+    protected $fileSystem;
+
+    public function __construct(ContainerInterface $container, Filesystem $fileSystem)
     {
         $this->container = $container;
+        $this->fileSystem = $fileSystem;
     }
 
     /**

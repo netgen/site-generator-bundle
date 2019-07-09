@@ -27,11 +27,9 @@ class LegacySiteAccessGenerator extends Generator
         $allLanguages = array_values(array_unique(array_merge(...array_values($siteAccessList))));
         $translationList = implode(';', array_values(array_diff($allLanguages, [$allLanguages[0]])));
 
-        $fileSystem = $this->container->get('filesystem');
-
         // Generate Netgen Admin UI siteaccess
 
-        if ($fileSystem->exists($legacyExtensionDir . '/settings/_skeleton_ngadminui')) {
+        if ($this->fileSystem->exists($legacyExtensionDir . '/settings/_skeleton_ngadminui')) {
             $this->setSkeletonDir($legacyExtensionDir . '/settings/_skeleton_ngadminui');
 
             $this->renderFile(
@@ -52,12 +50,12 @@ class LegacySiteAccessGenerator extends Generator
                 ]
             );
 
-            $fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_ngadminui');
+            $this->fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_ngadminui');
         }
 
         // Generating legacy admin siteaccess
 
-        if ($fileSystem->exists($legacyExtensionDir . '/settings/_skeleton_legacy_admin')) {
+        if ($this->fileSystem->exists($legacyExtensionDir . '/settings/_skeleton_legacy_admin')) {
             $this->setSkeletonDir($legacyExtensionDir . '/settings/_skeleton_legacy_admin');
 
             $this->renderFile(
@@ -78,7 +76,7 @@ class LegacySiteAccessGenerator extends Generator
                 ]
             );
 
-            $fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_legacy_admin');
+            $this->fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_legacy_admin');
         }
     }
 }

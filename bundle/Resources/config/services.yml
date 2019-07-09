@@ -1,0 +1,8 @@
+services:
+    netgen_site_generator.command.generate_project:
+        class: Netgen\Bundle\SiteGeneratorBundle\Command\GenerateProjectCommand
+        arguments:
+            - "@service_container"
+            - "@filesystem"
+        tags:
+            - { name: console.command, command: 'ngsite:generate:project' }

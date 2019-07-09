@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-abstract class GeneratorCommand extends ContainerAwareCommand
+abstract class GeneratorCommand extends Command
 {
     /**
      * @var \Symfony\Component\Console\Input\InputInterface
