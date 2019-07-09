@@ -41,7 +41,7 @@ class Validators
             return '';
         }
 
-        if (!preg_match('/^[a-z][a-z][a-z]-[A-Z][A-Z]$/', $languageCode)) {
+        if (!preg_match('/^[a-z]{3}-[A-Z]{2}$/', $languageCode)) {
             throw new InvalidArgumentException('Language code name is not valid.');
         }
 
