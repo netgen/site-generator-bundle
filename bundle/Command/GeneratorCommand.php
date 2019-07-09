@@ -28,7 +28,7 @@ abstract class GeneratorCommand extends Command
     /**
      * Instantiates and returns a question.
      */
-    protected function getQuestion(string $questionName, string $defaultValue = null, string $validator = null): Question
+    protected function getQuestion(string $questionName, ?string $defaultValue = null, ?string $validator = null): Question
     {
         $questionName = $defaultValue
             ? '<info>' . $questionName . '</info> [<comment>' . $defaultValue . '</comment>]: '

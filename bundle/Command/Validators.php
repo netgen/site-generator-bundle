@@ -13,7 +13,7 @@ class Validators
      *
      * @throws \InvalidArgumentException If validation did not pass
      */
-    public static function validateSiteAccessName(string $siteaccess = null): string
+    public static function validateSiteAccessName(?string $siteaccess = null): string
     {
         // We allow empty siteaccess name in order to quit asking for more
         if (empty($siteaccess)) {
@@ -34,7 +34,7 @@ class Validators
      *
      * @throws \InvalidArgumentException If validation did not pass
      */
-    public static function validateLanguageCode(string $languageCode = null): string
+    public static function validateLanguageCode(?string $languageCode = null): string
     {
         // We allow empty languageCode in order to quit asking for more
         if (empty($languageCode)) {
