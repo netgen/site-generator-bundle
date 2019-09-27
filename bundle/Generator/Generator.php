@@ -12,8 +12,6 @@ use Twig\Loader\FilesystemLoader;
 abstract class Generator
 {
     public const EZPLATFORM_ADMIN_SITEACCESS_NAME = 'admin';
-    public const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
-    public const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
 
     /**
      * @var string

@@ -23,9 +23,7 @@ class ConfigurationGenerator extends Generator
         $siteAccessNames = array_keys($siteAccessList);
 
         $adminSiteAccessNames = [
-            self::NGADMINUI_SITEACCESS_NAME,
             self::EZPLATFORM_ADMIN_SITEACCESS_NAME,
-            self::LEGACY_ADMIN_SITEACCESS_NAME,
         ];
 
         $adminSiteAccessLanguages = array_values(array_unique(array_merge(...array_values($siteAccessList))));
@@ -37,7 +35,6 @@ class ConfigurationGenerator extends Generator
         );
 
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['groups']['ngadmin_group'] = [self::NGADMINUI_SITEACCESS_NAME, self::LEGACY_ADMIN_SITEACCESS_NAME];
         $settings['ezpublish']['siteaccess']['groups']['admin_group'] = [self::EZPLATFORM_ADMIN_SITEACCESS_NAME];
 
         // List of siteaccess languages
@@ -52,10 +49,6 @@ class ConfigurationGenerator extends Generator
         $settings['netgen_layouts']['system']['frontend_group']['design'] = 'app';
 
         $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
-        $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = [
-            self::NGADMINUI_SITEACCESS_NAME,
-            'common',
-        ];
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
             $settings['ezpublish']['system'][$siteAccessName]['design'] = 'app';
@@ -66,20 +59,10 @@ class ConfigurationGenerator extends Generator
         }
 
         foreach ($adminSiteAccessNames as $adminSiteAccessName) {
-            if ($adminSiteAccessName === self::NGADMINUI_SITEACCESS_NAME) {
-                $settings['ezpublish']['system'][$adminSiteAccessName]['design'] = $adminSiteAccessName;
-            }
-
-            if ($adminSiteAccessName === self::LEGACY_ADMIN_SITEACCESS_NAME) {
-                $settings['ez_publish_legacy']['system'][$adminSiteAccessName]['legacy_mode'] = true;
-            }
-
             $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-            if ($adminSiteAccessName !== self::LEGACY_ADMIN_SITEACCESS_NAME) {
-                $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = [
-                    'name' => 'eZSESSID',
-                ];
-            }
+            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = [
+                'name' => 'eZSESSID',
+            ];
         }
 
         file_put_contents(

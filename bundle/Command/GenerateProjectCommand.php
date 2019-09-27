@@ -6,8 +6,6 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use Exception;
 use Netgen\Bundle\SiteGeneratorBundle\Generator\ConfigurationGenerator;
-use Netgen\Bundle\SiteGeneratorBundle\Generator\Generator;
-use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacySiteAccessGenerator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -84,12 +82,6 @@ class GenerateProjectCommand extends GeneratorCommand
                 )
             );
 
-            if ($siteAccess === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
-                $this->output->writeln('<error> Siteaccess name cannot be equal to "' . Generator::LEGACY_ADMIN_SITEACCESS_NAME . '". </error>');
-
-                continue;
-            }
-
             if (!empty($siteAccess)) {
                 if (array_key_exists($siteAccess, $siteAccessList)) {
                     $this->output->writeln('<error> Siteaccess name already added </error>');
@@ -162,10 +154,6 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         $this->writeSection(['Project generation']);
-
-        // Generate legacy siteaccesses
-        $legacySiteAccessGenerator = new LegacySiteAccessGenerator($this->container, $this->fileSystem);
-        $legacySiteAccessGenerator->generate($this->input, $this->output);
 
         // Generate configuration
         $configurationGenerator = new ConfigurationGenerator($this->container, $this->fileSystem);
