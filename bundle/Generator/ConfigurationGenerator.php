@@ -66,7 +66,7 @@ class ConfigurationGenerator extends Generator
         }
 
         file_put_contents(
-            $this->container->getParameter('kernel.project_dir') . '/' . $this->container->getParameter('kernel.name') . '/config/ezplatform_siteaccess.yml',
+            $this->container->getParameter('kernel.project_dir') . '/config/app/packages/ezplatform_siteaccess.yaml',
             Yaml::dump($settings, 7)
         );
 
@@ -75,7 +75,7 @@ class ConfigurationGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Generated <comment>ezplatform_siteaccess.yml</comment> configuration file!',
+                'Generated <comment>ezplatform_siteaccess.yaml</comment> configuration file!',
             ]
         );
     }
@@ -93,11 +93,11 @@ class ConfigurationGenerator extends Generator
 
         // Config specific files
 
-        $kernelDir = $this->container->getParameter('kernel.project_dir') . '/' . $this->container->getParameter('kernel.name');
+        $kernelDir = $this->container->getParameter('kernel.project_dir');
         $serverEnv = $this->container->getParameter('server_environment');
 
         file_put_contents(
-            $kernelDir . '/config/server/' . $serverEnv . '/ezplatform_siteaccess.yml',
+            $kernelDir . '/config/app/server/' . $serverEnv . '/ezplatform_siteaccess.yaml',
             Yaml::dump($settings, 7)
         );
 
@@ -106,13 +106,13 @@ class ConfigurationGenerator extends Generator
         $rootSettings = [
             'imports' => [
                 [
-                    'resource' => $serverEnv . '/ezplatform_siteaccess.yml',
+                    'resource' => $serverEnv . '/ezplatform_siteaccess.yaml',
                 ],
             ],
         ];
 
         file_put_contents(
-            $kernelDir . '/config/server/' . $serverEnv . '.yml',
+            $kernelDir . '/config/app/server/' . $serverEnv . '.yaml',
             Yaml::dump($rootSettings, 7)
         );
     }
