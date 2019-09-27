@@ -9,13 +9,9 @@
         }
     ],
     "require": {
-        "twig/twig": "^2.8.1",
+        "twig/twig": "^2.11.3",
         "symfony/framework-bundle": "^4.3",
         "symfony/console": "^4.3"
-    },
-    "conflict": {
-        "netgen/block-manager": "*",
-        "netgen/layouts-core": "<1.0"
     },
     "autoload": {
         "psr-4": {
