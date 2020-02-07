@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
+use CaptainHook\App\Config;
 use Exception;
 use Netgen\Bundle\SiteGeneratorBundle\Generator\ConfigurationGenerator;
 use Netgen\Bundle\SiteGeneratorBundle\Generator\Generator;
@@ -153,6 +154,8 @@ class GenerateProjectCommand extends GeneratorCommand
         // Various cleanups
         $this->cleanup();
 
+        $this->activateGitHooks();
+
         $this->writeSection(['You can now start using the site!']);
 
         return 0;
@@ -188,6 +191,42 @@ class GenerateProjectCommand extends GeneratorCommand
             }
         } catch (Exception $e) {
             // Do nothing
+        }
+    }
+
+    private function activateGitHooks(): void
+    {
+        if (!class_exists(Config::class)) {
+            return;
+        }
+
+        /** @var \Symfony\Component\Filesystem\Filesystem $fileSystem */
+        $fileSystem = $this->getContainer()->get('filesystem');
+        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+        $captainHookFiles = [
+            $projectDir . '/captainhook_disabled.json',
+            $projectDir . '/captainhook_enabled.json',
+        ];
+
+        if (!$fileSystem->exists($captainHookFiles)) {
+            return;
+        }
+
+        if ($this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            $this->getConfirmationQuestion(
+                    'Do you want to use git hooks suitable for project development?',
+                    false
+                )
+        )
+        ) {
+            $fileSystem->symlink(
+                'captainhook_enabled.json',
+                $projectDir . '/captainhook.json'
+            );
+
+            return;
         }
     }
 }
