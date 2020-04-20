@@ -28,21 +28,21 @@ class ConfigurationGenerator extends Generator
 
         $adminSiteAccessLanguages = array_values(array_unique(array_merge(...array_values($siteAccessList))));
 
-        $settings['ezpublish']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
-        $settings['ezpublish']['siteaccess']['list'] = array_merge(
+        $settings['ezplatform']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
+        $settings['ezplatform']['siteaccess']['list'] = array_merge(
             $siteAccessNames,
             $adminSiteAccessNames
         );
 
-        $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['groups']['admin_group'] = [self::EZPLATFORM_ADMIN_SITEACCESS_NAME];
+        $settings['ezplatform']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
+        $settings['ezplatform']['siteaccess']['groups']['admin_group'] = [self::EZPLATFORM_ADMIN_SITEACCESS_NAME];
 
         // List of siteaccess languages
 
-        $settings['ezpublish']['system'] = [];
+        $settings['ezplatform']['system'] = [];
 
         if (count($siteAccessNames) > 1) {
-            $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
+            $settings['ezplatform']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
         $settings['netgen_layouts']['design_list']['app'] = ['app'];
@@ -51,16 +51,16 @@ class ConfigurationGenerator extends Generator
         $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
-            $settings['ezpublish']['system'][$siteAccessName]['design'] = 'app';
-            $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
-            $settings['ezpublish']['system'][$siteAccessName]['session'] = [
+            $settings['ezplatform']['system'][$siteAccessName]['design'] = 'app';
+            $settings['ezplatform']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
+            $settings['ezplatform']['system'][$siteAccessName]['session'] = [
                 'name' => 'eZSESSID',
             ];
         }
 
         foreach ($adminSiteAccessNames as $adminSiteAccessName) {
-            $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = [
+            $settings['ezplatform']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+            $settings['ezplatform']['system'][$adminSiteAccessName]['session'] = [
                 'name' => 'eZSESSID',
             ];
         }
@@ -89,7 +89,7 @@ class ConfigurationGenerator extends Generator
 
         // Siteaccess match settings
 
-        $settings['ezpublish']['siteaccess']['match']['URIElement'] = '1';
+        $settings['ezplatform']['siteaccess']['match']['URIElement'] = '1';
 
         // Config specific files
 
