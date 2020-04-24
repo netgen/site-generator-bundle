@@ -8,6 +8,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
+use function dirname;
+use function file_put_contents;
+use function is_dir;
+use function mkdir;
 
 abstract class Generator
 {

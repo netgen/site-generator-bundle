@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use InvalidArgumentException;
+use function in_array;
+use function mb_strtolower;
+use function preg_match;
+use function sprintf;
 
 class Validators
 {

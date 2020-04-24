@@ -7,6 +7,7 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use function sprintf;
 
 abstract class GeneratorCommand extends Command
 {

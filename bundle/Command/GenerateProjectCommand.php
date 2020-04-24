@@ -11,6 +11,8 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use function array_key_exists;
+use function in_array;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
