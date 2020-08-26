@@ -207,12 +207,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $fileSystem = $this->getContainer()->get('filesystem');
         $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
 
-        $captainHookFiles = [
-            $projectDir . '/captainhook_disabled.json',
-            $projectDir . '/captainhook_enabled.json',
-        ];
-
-        if (!$fileSystem->exists($captainHookFiles)) {
+        if (!$fileSystem->exists($projectDir . '/captainhook_enabled.json')) {
             return;
         }
 
