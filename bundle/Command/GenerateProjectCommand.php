@@ -13,6 +13,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function array_key_exists;
+use function class_exists;
 use function in_array;
 
 class GenerateProjectCommand extends GeneratorCommand
@@ -205,6 +206,7 @@ class GenerateProjectCommand extends GeneratorCommand
         /** @var \Symfony\Component\Filesystem\Filesystem $fileSystem */
         $fileSystem = $this->getContainer()->get('filesystem');
         $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+
         $captainHookFiles = [
             $projectDir . '/captainhook_disabled.json',
             $projectDir . '/captainhook_enabled.json',
@@ -214,21 +216,20 @@ class GenerateProjectCommand extends GeneratorCommand
             return;
         }
 
-        if ($this->questionHelper->ask(
-            $this->input,
-            $this->output,
-            $this->getConfirmationQuestion(
+        if (
+            $this->questionHelper->ask(
+                $this->input,
+                $this->output,
+                $this->getConfirmationQuestion(
                     'Do you want to use git hooks suitable for project development?',
                     false
                 )
-        )
+            )
         ) {
             $fileSystem->symlink(
                 'captainhook_enabled.json',
                 $projectDir . '/captainhook.json'
             );
-
-            return;
         }
     }
 }
