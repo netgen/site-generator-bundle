@@ -11,6 +11,8 @@ use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacySiteAccessGenerator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_key_exists;
+use function in_array;
 
 class GenerateProjectCommand extends GeneratorCommand
 {

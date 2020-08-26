@@ -7,6 +7,12 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function array_values;
+use function count;
+use function file_put_contents;
 
 class ConfigurationGenerator extends Generator
 {

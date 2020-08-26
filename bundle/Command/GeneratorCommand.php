@@ -7,6 +7,7 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use function sprintf;
 
 abstract class GeneratorCommand extends ContainerAwareCommand
 {
@@ -28,7 +29,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
     /**
      * Instantiates and returns a question.
      */
-    protected function getQuestion(string $questionName, string $defaultValue = null, string $validator = null): Question
+    protected function getQuestion(string $questionName, ?string $defaultValue = null, ?string $validator = null): Question
     {
         $questionName = $defaultValue
             ? '<info>' . $questionName . '</info> [<comment>' . $defaultValue . '</comment>]: '

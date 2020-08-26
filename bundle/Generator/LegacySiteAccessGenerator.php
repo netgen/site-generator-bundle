@@ -6,6 +6,12 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use function array_diff;
+use function array_keys;
+use function array_merge;
+use function array_unique;
+use function array_values;
+use function implode;
 
 class LegacySiteAccessGenerator extends Generator
 {
