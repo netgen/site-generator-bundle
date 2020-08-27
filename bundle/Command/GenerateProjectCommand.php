@@ -207,7 +207,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $fileSystem = $this->getContainer()->get('filesystem');
         $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
 
-        if (!$fileSystem->exists($projectDir . '/captainhook_enabled.json')) {
+        if (!$fileSystem->exists($projectDir . '/captainhook.template.json')) {
             return;
         }
 
@@ -222,7 +222,7 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         ) {
             $fileSystem->symlink(
-                'captainhook_enabled.json',
+                'captainhook.template.json',
                 $projectDir . '/captainhook.json'
             );
         }
