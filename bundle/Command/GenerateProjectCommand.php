@@ -12,6 +12,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Process\Process;
 use function array_key_exists;
 use function class_exists;
 use function in_array;
@@ -192,12 +193,13 @@ class GenerateProjectCommand extends GeneratorCommand
                     $this->input,
                     $this->output,
                     $this->getConfirmationQuestion(
-                        'Do you want to delete the <comment>.git</comment> folder?',
+                        'Do you want to reset the <comment>.git</comment> folder?',
                         true
                     )
                 )
             ) {
                 $this->fileSystem->remove($projectDir . '/.git');
+                $this->runProcess(['git', 'init']);
             }
         } catch (Exception $e) {
             // Do nothing
@@ -212,11 +214,13 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $projectDir = $this->container->getParameter('kernel.project_dir');
 
-        if (!$this->fileSystem->exists($projectDir . '/captainhook_enabled.json')) {
+
+        if (!$this->fileSystem->exists($projectDir . '/captainhook.template.json')) {
             return;
         }
 
         if (
+            $fileSystem->exists($projectDir . '/.git') &&
             $this->questionHelper->ask(
                 $this->input,
                 $this->output,
@@ -227,9 +231,32 @@ class GenerateProjectCommand extends GeneratorCommand
             )
         ) {
             $this->fileSystem->symlink(
-                'captainhook_enabled.json',
+                'captainhook.template.json',
                 $projectDir . '/captainhook.json'
             );
+
+            $this->output->writeln('');
+
+            $this->runProcess(
+                [
+                    'php',
+                    'bin/captainhook',
+                    'install',
+                    '--force',
+                    $this->output->isDecorated() ? '--ansi' : '--no-ansi',
+                ]
+            );
         }
+    }
+
+    private function runProcess(array $arguments): void
+    {
+        $process = new Process($arguments);
+
+        $process->run(
+            function ($type, $line) {
+                $this->output->write($line, false);
+            }
+        );
     }
 }
