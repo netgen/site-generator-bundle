@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "php": "^7.4",
         "twig/twig": "^3.0",
         "symfony/framework-bundle": "^5.0",
         "symfony/console": "^5.0"

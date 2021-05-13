@@ -5,26 +5,20 @@ declare(strict_types=1);
 namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use function sprintf;
 
 abstract class GeneratorCommand extends Command
 {
-    /**
-     * @var \Symfony\Component\Console\Input\InputInterface
-     */
-    protected $input;
+    protected InputInterface $input;
 
-    /**
-     * @var \Symfony\Component\Console\Output\OutputInterface
-     */
-    protected $output;
+    protected OutputInterface $output;
 
-    /**
-     * @var \Symfony\Component\Console\Helper\QuestionHelper
-     */
-    protected $questionHelper;
+    protected QuestionHelper $questionHelper;
 
     /**
      * Instantiates and returns a question.
@@ -52,9 +46,9 @@ abstract class GeneratorCommand extends Command
             sprintf(
                 '<info>%s</info> [<comment>%s</comment>]? ',
                 $questionName,
-                $defaultValue ? 'yes' : 'no'
+                $defaultValue ? 'yes' : 'no',
             ),
-            $defaultValue
+            $defaultValue,
         );
     }
 
@@ -68,7 +62,7 @@ abstract class GeneratorCommand extends Command
                 '',
                 $this->getHelper('formatter')->formatBlock($messages, $style, true),
                 '',
-            ]
+            ],
         );
     }
 }

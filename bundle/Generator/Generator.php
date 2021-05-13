@@ -17,20 +17,11 @@ abstract class Generator
 {
     public const EZPLATFORM_ADMIN_SITEACCESS_NAME = 'admin';
 
-    /**
-     * @var string
-     */
-    protected $skeletonDir;
+    protected string $skeletonDir;
 
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
-     */
-    protected $fileSystem;
+    protected Filesystem $fileSystem;
 
     public function __construct(ContainerInterface $container, Filesystem $fileSystem)
     {
@@ -58,7 +49,7 @@ abstract class Generator
                 'cache' => false,
                 'strict_variables' => true,
                 'autoescape' => false,
-            ]
+            ],
         );
 
         return $twig->render($template, $parameters);

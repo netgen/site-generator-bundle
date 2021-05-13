@@ -19,15 +19,9 @@ use function in_array;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
-    /**
-     * @var \Symfony\Component\Filesystem\Filesystem
-     */
-    protected $fileSystem;
+    protected Filesystem $fileSystem;
 
     public function __construct(ContainerInterface $container, Filesystem $fileSystem)
     {
@@ -43,7 +37,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->setDefinition(
             [
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
-            ]
+            ],
         );
 
         $this->setDescription('Generates a new Netgen Site client project');
@@ -73,7 +67,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 'The first siteaccess you specify will become the default siteaccess.',
                 'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
                 '',
-            ]
+            ],
         );
 
         do {
@@ -83,8 +77,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 $this->getQuestion(
                     'Siteaccess name (use empty value to finish)',
                     '',
-                    'validateSiteAccessName'
-                )
+                    'validateSiteAccessName',
+                ),
             );
 
             if (!empty($siteAccess)) {
@@ -104,8 +98,8 @@ class GenerateProjectCommand extends GeneratorCommand
                         $this->getQuestion(
                             'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)',
                             '',
-                            'validateLanguageCode'
-                        )
+                            'validateLanguageCode',
+                        ),
                     );
 
                     if ($language === 'eng-EU') {
@@ -138,8 +132,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 $this->output,
                 $this->getConfirmationQuestion(
                     'Do you confirm project generation (answering <comment>no</comment> will restart the process)',
-                    true
-                )
+                    true,
+                ),
             )
         ) {
             $this->output->writeln('');
@@ -188,14 +182,14 @@ class GenerateProjectCommand extends GeneratorCommand
 
         try {
             if (
-                $this->fileSystem->exists($projectDir . '/.git') &&
-                $this->questionHelper->ask(
+                $this->fileSystem->exists($projectDir . '/.git')
+                && $this->questionHelper->ask(
                     $this->input,
                     $this->output,
                     $this->getConfirmationQuestion(
                         'Do you want to reset the <comment>.git</comment> folder?',
-                        true
-                    )
+                        true,
+                    ),
                 )
             ) {
                 $this->fileSystem->remove($projectDir . '/.git');
@@ -214,25 +208,24 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $projectDir = $this->container->getParameter('kernel.project_dir');
 
-
         if (!$this->fileSystem->exists($projectDir . '/captainhook.template.json')) {
             return;
         }
 
         if (
-            $fileSystem->exists($projectDir . '/.git') &&
-            $this->questionHelper->ask(
+            $fileSystem->exists($projectDir . '/.git')
+            && $this->questionHelper->ask(
                 $this->input,
                 $this->output,
                 $this->getConfirmationQuestion(
                     'Do you want to use git hooks suitable for project development?',
-                    false
-                )
+                    false,
+                ),
             )
         ) {
             $this->fileSystem->symlink(
                 'captainhook.template.json',
-                $projectDir . '/captainhook.json'
+                $projectDir . '/captainhook.json',
             );
 
             $this->output->writeln('');
@@ -244,7 +237,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     'install',
                     '--force',
                     $this->output->isDecorated() ? '--ansi' : '--no-ansi',
-                ]
+                ],
             );
         }
     }
@@ -256,7 +249,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $process->run(
             function ($type, $line) {
                 $this->output->write($line, false);
-            }
+            },
         );
     }
 }

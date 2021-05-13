@@ -37,7 +37,7 @@ class ConfigurationGenerator extends Generator
         $settings['ezpublish']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
         $settings['ezpublish']['siteaccess']['list'] = array_merge(
             $siteAccessNames,
-            $adminSiteAccessNames
+            $adminSiteAccessNames,
         );
 
         $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
@@ -73,7 +73,7 @@ class ConfigurationGenerator extends Generator
 
         file_put_contents(
             $this->container->getParameter('kernel.project_dir') . '/config/app/packages/ezplatform_siteaccess.yaml',
-            Yaml::dump($settings, 7)
+            Yaml::dump($settings, 7),
         );
 
         $this->generateServerConfig();
@@ -82,7 +82,7 @@ class ConfigurationGenerator extends Generator
             [
                 '',
                 'Generated <comment>ezplatform_siteaccess.yaml</comment> configuration file!',
-            ]
+            ],
         );
     }
 
@@ -104,7 +104,7 @@ class ConfigurationGenerator extends Generator
 
         file_put_contents(
             $kernelDir . '/config/app/server/' . $serverEnv . '/ezplatform_siteaccess.yaml',
-            Yaml::dump($settings, 7)
+            Yaml::dump($settings, 7),
         );
 
         // Root settings file
@@ -119,7 +119,7 @@ class ConfigurationGenerator extends Generator
 
         file_put_contents(
             $kernelDir . '/config/app/server/' . $serverEnv . '.yaml',
-            Yaml::dump($rootSettings, 7)
+            Yaml::dump($rootSettings, 7),
         );
     }
 }
