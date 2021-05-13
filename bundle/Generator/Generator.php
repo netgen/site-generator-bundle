@@ -18,15 +18,9 @@ abstract class Generator
     public const NGADMINUI_SITEACCESS_NAME = 'ngadminui';
     public const LEGACY_ADMIN_SITEACCESS_NAME = 'legacy_admin';
 
-    /**
-     * @var string
-     */
-    protected $skeletonDir;
+    protected string $skeletonDir;
 
-    /**
-     * @var \Symfony\Component\DependencyInjection\ContainerInterface
-     */
-    protected $container;
+    protected ContainerInterface $container;
 
     public function __construct(ContainerInterface $container)
     {
