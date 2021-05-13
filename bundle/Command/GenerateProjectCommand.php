@@ -24,7 +24,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->setDefinition(
             [
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
-            ]
+            ],
         );
         $this->setDescription('Generates a new Netgen Site client project');
         $this->setName('ngsite:generate:project');
@@ -54,7 +54,7 @@ class GenerateProjectCommand extends GeneratorCommand
                 'The first siteaccess you specify will become the default siteaccess.',
                 'The names must contain <comment>lowercase letters, underscores or numbers</comment>.',
                 '',
-            ]
+            ],
         );
 
         do {
@@ -64,8 +64,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 $this->getQuestion(
                     'Siteaccess name (use empty value to finish)',
                     '',
-                    'validateSiteAccessName'
-                )
+                    'validateSiteAccessName',
+                ),
             );
 
             if ($siteAccess === Generator::LEGACY_ADMIN_SITEACCESS_NAME) {
@@ -91,8 +91,8 @@ class GenerateProjectCommand extends GeneratorCommand
                         $this->getQuestion(
                             'Language code for <comment>' . $siteAccess . '</comment> siteaccess (use empty value to finish)',
                             '',
-                            'validateLanguageCode'
-                        )
+                            'validateLanguageCode',
+                        ),
                     );
 
                     if ($language === 'eng-EU') {
@@ -125,8 +125,8 @@ class GenerateProjectCommand extends GeneratorCommand
                 $this->output,
                 $this->getConfirmationQuestion(
                     'Do you confirm project generation (answering <comment>no</comment> will restart the process)',
-                    true
-                )
+                    true,
+                ),
             )
         ) {
             $this->output->writeln('');
@@ -181,14 +181,14 @@ class GenerateProjectCommand extends GeneratorCommand
             $fileSystem = $this->getContainer()->get('filesystem');
 
             if (
-                $fileSystem->exists($projectDir . '/.git') &&
-                $this->questionHelper->ask(
+                $fileSystem->exists($projectDir . '/.git')
+                && $this->questionHelper->ask(
                     $this->input,
                     $this->output,
                     $this->getConfirmationQuestion(
                         'Do you want to reset the <comment>.git</comment> folder?',
-                        true
-                    )
+                        true,
+                    ),
                 )
             ) {
                 $fileSystem->remove($projectDir . '/.git');
@@ -214,19 +214,19 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         if (
-            $fileSystem->exists($projectDir . '/.git') &&
-            $this->questionHelper->ask(
+            $fileSystem->exists($projectDir . '/.git')
+            && $this->questionHelper->ask(
                 $this->input,
                 $this->output,
                 $this->getConfirmationQuestion(
                     'Do you want to use git hooks suitable for project development?',
-                    false
-                )
+                    false,
+                ),
             )
         ) {
             $fileSystem->symlink(
                 'captainhook.template.json',
-                $projectDir . '/captainhook.json'
+                $projectDir . '/captainhook.json',
             );
 
             $this->output->writeln('');
@@ -238,7 +238,7 @@ class GenerateProjectCommand extends GeneratorCommand
                     'install',
                     '--force',
                     $this->output->isDecorated() ? '--ansi' : '--no-ansi',
-                ]
+                ],
             );
         }
     }
@@ -250,7 +250,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $process->run(
             function ($type, $line) {
                 $this->output->write($line, false);
-            }
+            },
         );
     }
 }

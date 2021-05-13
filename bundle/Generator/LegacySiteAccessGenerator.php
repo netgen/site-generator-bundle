@@ -48,14 +48,14 @@ class LegacySiteAccessGenerator extends Generator
                     'siteAccessLocale' => $allLanguages[0],
                     'siteLanguageList' => $allLanguages,
                     'translationList' => $translationList,
-                ]
+                ],
             );
 
             $output->writeln(
                 [
                     '',
                     'Generated <comment>Netgen Admin UI</comment> siteaccess!',
-                ]
+                ],
             );
 
             $fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_ngadminui');
@@ -74,14 +74,14 @@ class LegacySiteAccessGenerator extends Generator
                     'siteAccessLocale' => $allLanguages[0],
                     'siteLanguageList' => $allLanguages,
                     'translationList' => $translationList,
-                ]
+                ],
             );
 
             $output->writeln(
                 [
                     '',
                     'Generated <comment>legacy</comment> admin siteaccess!',
-                ]
+                ],
             );
 
             $fileSystem->remove($legacyExtensionDir . '/settings/_skeleton_legacy_admin');

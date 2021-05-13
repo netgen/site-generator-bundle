@@ -53,7 +53,7 @@ abstract class Generator
                 'cache' => false,
                 'strict_variables' => true,
                 'autoescape' => false,
-            ]
+            ],
         );
 
         return $twig->render($template, $parameters);

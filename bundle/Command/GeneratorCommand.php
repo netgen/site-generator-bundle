@@ -52,9 +52,9 @@ abstract class GeneratorCommand extends ContainerAwareCommand
             sprintf(
                 '<info>%s</info> [<comment>%s</comment>]? ',
                 $questionName,
-                $defaultValue ? 'yes' : 'no'
+                $defaultValue ? 'yes' : 'no',
             ),
-            $defaultValue
+            $defaultValue,
         );
     }
 
@@ -68,7 +68,7 @@ abstract class GeneratorCommand extends ContainerAwareCommand
                 '',
                 $this->getHelper('formatter')->formatBlock($messages, $style, true),
                 '',
-            ]
+            ],
         );
     }
 }
