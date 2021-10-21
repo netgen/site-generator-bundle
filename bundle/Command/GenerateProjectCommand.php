@@ -198,7 +198,8 @@ class GenerateProjectCommand extends GeneratorCommand
             }
 
             if (
-                $this->questionHelper->ask(
+                !$fileSystem->exists($projectDir . '/.git')
+                && $this->questionHelper->ask(
                     $this->input,
                     $this->output,
                     $this->getConfirmationQuestion(
