@@ -193,6 +193,20 @@ class GenerateProjectCommand extends GeneratorCommand
             ) {
                 $fileSystem->remove($projectDir . '/.git');
                 $this->runProcess(['git', 'init']);
+
+                return;
+            }
+
+            if (
+                !$fileSystem->exists($projectDir . '/.git')
+                && $this->questionHelper->ask(
+                    $this->input,
+                    $this->output,
+                    $this->getConfirmationQuestion(
+                        'Do you want to initialize <comment>.git</comment> folder?',
+                        true,
+                    ))){
+                $this->runProcess(['git', 'init']);
             }
         } catch (Exception $e) {
             // Do nothing
