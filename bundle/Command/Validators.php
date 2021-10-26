@@ -52,6 +52,19 @@ class Validators
         return $languageCode;
     }
 
+    public static function validateDesignType(?string $designType = null): string
+    {
+        if (empty($designType)) {
+            return '';
+        }
+
+        if (!in_array($designType, ['remote', 'local'])) {
+            throw new InvalidArgumentException("Design type is not valid (choose one of: 'local', 'remote').");
+        }
+
+        return $designType;
+    }
+
     /**
      * Validates if value is one of PHP reserved keywords.
      *
