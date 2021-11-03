@@ -12,6 +12,7 @@ use Netgen\Bundle\SiteGeneratorBundle\Generator\LegacySiteAccessGenerator;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 use function array_key_exists;
 use function class_exists;
@@ -245,9 +246,12 @@ class GenerateProjectCommand extends GeneratorCommand
 
             $this->output->writeln('');
 
+            $phpBinaryFinder = new PhpExecutableFinder();
+            $phpBinaryPath = $phpBinaryFinder->find();
+
             $this->runProcess(
                 [
-                    'php',
+                    $phpBinaryPath,
                     'bin/captainhook',
                     'install',
                     '--force',
