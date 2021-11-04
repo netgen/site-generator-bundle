@@ -55,7 +55,7 @@ class Validators
     public static function validateDesignType(?string $designType = null): string
     {
         if (empty($designType)) {
-            return '';
+            return 'local';
         }
 
         if (!in_array($designType, ['remote', 'local'])) {
