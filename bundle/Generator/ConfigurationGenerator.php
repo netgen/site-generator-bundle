@@ -20,12 +20,6 @@ class ConfigurationGenerator extends Generator
     public const LOCAL_DESIGN = 'local';
     public const REMOTE_DESIGN = 'remote';
 
-    public function __construct(ContainerInterface $container)
-    {
-        parent::__construct($container);
-    }
-
-
     /**
      * Generates the main configuration.
      */
