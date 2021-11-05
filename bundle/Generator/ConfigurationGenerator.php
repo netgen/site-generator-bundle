@@ -60,14 +60,14 @@ class ConfigurationGenerator extends Generator
 
         $settings['ezpublish']['system']['frontend_group']['content']['tree_root']['location_id'] = '%ngsite.default.locations.tree_root.id%';
 
-        $designType = $input->getOption('site-design') === self::LOCAL_DESIGN ? 'app' : 'remote';
+        $designType = $input->getOption('site-design') === self::LOCAL_DESIGN ? 'app' : 'remote-media';
 
         $settings['netgen_layouts']['design_list']['app'] = ['app'];
-        $settings['netgen_layouts']['design_list']['remote'] = ['remote', 'app'];
+        $settings['netgen_layouts']['design_list']['remote-media'] = ['remote-media', 'app'];
         $settings['netgen_layouts']['system']['frontend_group']['design'] = $designType;
 
         $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
-        $settings['ezdesign']['design_list']['remote'] = ['remote', 'app', 'common'];
+        $settings['ezdesign']['design_list']['remote-media'] = ['remote-media', 'app', 'common'];
 
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = [
             self::NGADMINUI_SITEACCESS_NAME,
