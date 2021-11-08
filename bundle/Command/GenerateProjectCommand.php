@@ -25,6 +25,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->setDefinition(
             [
                 new InputOption('site-access-list', '', InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Siteaccess list'),
+                new InputOption('site-design', '', InputOption::VALUE_OPTIONAL, 'Default site design'),
             ],
         );
         $this->setDescription('Generates a new Netgen Site client project');
@@ -117,6 +118,18 @@ class GenerateProjectCommand extends GeneratorCommand
         } while (!empty($siteAccess) || empty($siteAccessList));
 
         $this->input->setOption('site-access-list', $siteAccessList);
+
+        $designType = $this->questionHelper->ask(
+            $this->input,
+            $this->output,
+            $this->getQuestion(
+                'Which design do you wish to use [remote/local]',
+                'local',
+                'validateDesignType',
+            ),
+        );
+
+        $this->input->setOption('site-design', $designType);
 
         $this->writeSection(['Confirm project generation']);
 

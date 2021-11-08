@@ -6,6 +6,7 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 use function array_keys;
 use function array_merge;
@@ -16,6 +17,9 @@ use function file_put_contents;
 
 class ConfigurationGenerator extends Generator
 {
+    public const LOCAL_DESIGN = 'local';
+    public const REMOTE_DESIGN = 'remote';
+
     /**
      * Generates the main configuration.
      */
@@ -54,17 +58,24 @@ class ConfigurationGenerator extends Generator
             $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
+        $settings['ezpublish']['system']['frontend_group']['content']['tree_root']['location_id'] = '%ngsite.default.locations.tree_root.id%';
+
+        $designType = $input->getOption('site-design') === self::LOCAL_DESIGN ? 'app' : 'remote_media';
+
         $settings['netgen_layouts']['design_list']['app'] = ['app'];
-        $settings['netgen_layouts']['system']['frontend_group']['design'] = 'app';
+        $settings['netgen_layouts']['design_list']['remote_media'] = ['remote_media', 'app'];
+        $settings['netgen_layouts']['system']['frontend_group']['design'] = $designType;
 
         $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
+        $settings['ezdesign']['design_list']['remote_media'] = ['remote_media', 'app', 'common'];
+
         $settings['ezdesign']['design_list'][self::NGADMINUI_SITEACCESS_NAME] = [
             self::NGADMINUI_SITEACCESS_NAME,
             'common',
         ];
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
-            $settings['ezpublish']['system'][$siteAccessName]['design'] = 'app';
+            $settings['ezpublish']['system'][$siteAccessName]['design'] = $designType;
             $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ezpublish']['system'][$siteAccessName]['session'] = [
                 'name' => 'eZSESSID',
@@ -101,6 +112,10 @@ class ConfigurationGenerator extends Generator
                 'Generated <comment>ezplatform_siteaccess.yml</comment> configuration file!',
             ],
         );
+
+        if ($designType === self::REMOTE_DESIGN) {
+            $this->generateRemoteMediaConfig();
+        }
     }
 
     /**
@@ -137,6 +152,20 @@ class ConfigurationGenerator extends Generator
         file_put_contents(
             $kernelDir . '/config/server/' . $serverEnv . '.yml',
             Yaml::dump($rootSettings, 7),
+        );
+    }
+
+    private function generateRemoteMediaConfig(): void
+    {
+        $remoteMediaSettings = [];
+
+        $remoteMediaSettings['netgen_remote_media']['account_name'] = 'INSERT_DATA_HERE';
+        $remoteMediaSettings['netgen_remote_media']['account_key'] = 'INSERT_DATA_HERE';
+        $remoteMediaSettings['netgen_remote_media']['account_secret'] = 'INSERT_DATA_HERE';
+
+        file_put_contents(
+            $this->container->getParameter('kernel.project_dir') . '/' . $this->container->getParameter('kernel.name') . '/config/remote_media.yml',
+            Yaml::dump($remoteMediaSettings),
         );
     }
 }
