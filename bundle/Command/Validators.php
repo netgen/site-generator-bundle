@@ -58,7 +58,7 @@ class Validators
             return 'local';
         }
 
-        if (!in_array($designType, ['remote', 'local'])) {
+        if (!in_array($designType, ['remote', 'local'], true)) {
             throw new InvalidArgumentException("Design type is not valid (choose one of: 'local', 'remote').");
         }
 

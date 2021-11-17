@@ -219,7 +219,8 @@ class GenerateProjectCommand extends GeneratorCommand
                     $this->getConfirmationQuestion(
                         'Do you want to initialize <comment>.git</comment> folder?',
                         true,
-                    ))){
+                    ),
+                )) {
                 $this->runProcess(['git', 'init']);
             }
         } catch (Exception $e) {
