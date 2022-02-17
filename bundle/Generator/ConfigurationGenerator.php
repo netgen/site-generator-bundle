@@ -29,50 +29,50 @@ class ConfigurationGenerator extends Generator
         $siteAccessNames = array_keys($siteAccessList);
 
         $adminSiteAccessNames = [
-            self::EZPLATFORM_ADMIN_SITEACCESS_NAME,
+            self::IBEXA_ADMIN_SITEACCESS_NAME,
         ];
 
         $adminSiteAccessLanguages = array_values(array_unique(array_merge(...array_values($siteAccessList))));
 
-        $settings['ezpublish']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
-        $settings['ezpublish']['siteaccess']['list'] = array_merge(
+        $settings['ibexa']['siteaccess']['default_siteaccess'] = $siteAccessNames[0];
+        $settings['ibexa']['siteaccess']['list'] = array_merge(
             $siteAccessNames,
             $adminSiteAccessNames,
         );
 
-        $settings['ezpublish']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
-        $settings['ezpublish']['siteaccess']['groups']['admin_group'] = [self::EZPLATFORM_ADMIN_SITEACCESS_NAME];
+        $settings['ibexa']['siteaccess']['groups']['frontend_group'] = $siteAccessNames;
+        $settings['ibexa']['siteaccess']['groups']['admin_group'] = [self::IBEXA_ADMIN_SITEACCESS_NAME];
 
         // List of siteaccess languages
 
-        $settings['ezpublish']['system'] = [];
+        $settings['ibexa']['system'] = [];
 
         if (count($siteAccessNames) > 1) {
-            $settings['ezpublish']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
+            $settings['ibexa']['system']['frontend_group']['translation_siteaccesses'] = $siteAccessNames;
         }
 
         $settings['netgen_layouts']['design_list']['app'] = ['app'];
         $settings['netgen_layouts']['system']['frontend_group']['design'] = 'app';
 
-        $settings['ezdesign']['design_list']['app'] = ['app', 'common'];
+        $settings['ibexa_design_engine']['design_list']['app'] = ['app', 'common'];
 
         foreach ($siteAccessList as $siteAccessName => $siteAccessLanguages) {
-            $settings['ezpublish']['system'][$siteAccessName]['design'] = 'app';
-            $settings['ezpublish']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
-            $settings['ezpublish']['system'][$siteAccessName]['session'] = [
+            $settings['ibexa']['system'][$siteAccessName]['design'] = 'app';
+            $settings['ibexa']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
+            $settings['ibexa']['system'][$siteAccessName]['session'] = [
                 'name' => 'eZSESSID',
             ];
         }
 
         foreach ($adminSiteAccessNames as $adminSiteAccessName) {
-            $settings['ezpublish']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
-            $settings['ezpublish']['system'][$adminSiteAccessName]['session'] = [
+            $settings['ibexa']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
+            $settings['ibexa']['system'][$adminSiteAccessName]['session'] = [
                 'name' => 'eZSESSID',
             ];
         }
 
         file_put_contents(
-            $this->container->getParameter('kernel.project_dir') . '/config/app/packages/ezplatform_siteaccess.yaml',
+            $this->container->getParameter('kernel.project_dir') . '/config/app/packages/ibexa_siteaccess.yaml',
             Yaml::dump($settings, 7),
         );
 
@@ -81,7 +81,7 @@ class ConfigurationGenerator extends Generator
         $output->writeln(
             [
                 '',
-                'Generated <comment>ezplatform_siteaccess.yaml</comment> configuration file!',
+                'Generated <comment>ibexa_siteaccess.yaml</comment> configuration file!',
             ],
         );
     }
@@ -95,7 +95,7 @@ class ConfigurationGenerator extends Generator
 
         // Siteaccess match settings
 
-        $settings['ezpublish']['siteaccess']['match']['URIElement'] = '1';
+        $settings['ibexa']['siteaccess']['match']['URIElement'] = '1';
 
         // Config specific files
 
@@ -103,7 +103,7 @@ class ConfigurationGenerator extends Generator
         $serverEnv = $this->container->getParameter('server_environment');
 
         file_put_contents(
-            $kernelDir . '/config/app/server/' . $serverEnv . '/ezplatform_siteaccess.yaml',
+            $kernelDir . '/config/app/server/' . $serverEnv . '/ibexa_siteaccess.yaml',
             Yaml::dump($settings, 7),
         );
 
@@ -112,7 +112,7 @@ class ConfigurationGenerator extends Generator
         $rootSettings = [
             'imports' => [
                 [
-                    'resource' => $serverEnv . '/ezplatform_siteaccess.yaml',
+                    'resource' => $serverEnv . '/ibexa_siteaccess.yaml',
                 ],
             ],
         ];

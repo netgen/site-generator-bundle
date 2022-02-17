@@ -15,7 +15,7 @@ use function mkdir;
 
 abstract class Generator
 {
-    public const EZPLATFORM_ADMIN_SITEACCESS_NAME = 'admin';
+    public const IBEXA_ADMIN_SITEACCESS_NAME = 'admin';
 
     protected string $skeletonDir;
 
