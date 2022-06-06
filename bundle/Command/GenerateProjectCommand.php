@@ -16,7 +16,13 @@ use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
 use function array_key_exists;
 use function class_exists;
+use function file_get_contents;
+use function file_put_contents;
 use function in_array;
+use function preg_replace;
+use function sprintf;
+use const PHP_MAJOR_VERSION;
+use const PHP_MINOR_VERSION;
 
 class GenerateProjectCommand extends GeneratorCommand
 {
@@ -172,6 +178,7 @@ class GenerateProjectCommand extends GeneratorCommand
         // Various cleanups
         $this->cleanup();
 
+        $this->setPhpVersion();
         $this->activateGitHooks();
 
         $this->writeSection(['You can now start using the site!']);
@@ -226,6 +233,24 @@ class GenerateProjectCommand extends GeneratorCommand
         } catch (Exception $e) {
             // Do nothing
         }
+    }
+
+    private function setPhpVersion(): void
+    {
+        /** @var \Symfony\Component\Filesystem\Filesystem $fileSystem */
+        $fileSystem = $this->getContainer()->get('filesystem');
+        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+
+        if (!$fileSystem->exists($projectDir . '/composer.json')) {
+            return;
+        }
+
+        $phpVersion = sprintf('~%d.%d.0', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
+
+        $composerJsonFile = file_get_contents($projectDir . '/composer.json');
+        $composerJsonFile = preg_replace('/"php": "[~^](\d\.)*\d",/i', '"php": "' . $phpVersion . '",', $composerJsonFile);
+
+        file_put_contents($projectDir . '/composer.json', $composerJsonFile);
     }
 
     private function activateGitHooks(): void
