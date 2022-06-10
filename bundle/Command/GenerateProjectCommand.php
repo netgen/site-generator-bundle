@@ -43,7 +43,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->input = $input;
         $this->output = $output;
         $this->questionHelper = $this->getHelper('question');
-
+$this->setPhpVersion();return;
         $this->writeSection(['Welcome to the Netgen Site client project generator']);
 
         while (!$this->doInteract()) {
@@ -248,7 +248,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $phpVersion = sprintf('~%d.%d.0', PHP_MAJOR_VERSION, PHP_MINOR_VERSION);
 
         $composerJsonFile = file_get_contents($projectDir . '/composer.json');
-        $composerJsonFile = preg_replace('/"php": "[~^](\d\.)*\d",/i', '"php": "' . $phpVersion . '",', $composerJsonFile);
+        $composerJsonFile = preg_replace('/"php": "([~^]|>=)(\d\.)*\d(\s*\|\|?\s*(\d\.)*\d)*",/i', '"php": "' . $phpVersion . '",', $composerJsonFile);
 
         file_put_contents($projectDir . '/composer.json', $composerJsonFile);
     }
