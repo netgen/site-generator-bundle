@@ -43,7 +43,7 @@ class GenerateProjectCommand extends GeneratorCommand
         $this->input = $input;
         $this->output = $output;
         $this->questionHelper = $this->getHelper('question');
-$this->setPhpVersion();return;
+
         $this->writeSection(['Welcome to the Netgen Site client project generator']);
 
         while (!$this->doInteract()) {
