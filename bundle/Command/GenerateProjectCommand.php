@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\PhpExecutableFinder;
 use Symfony\Component\Process\Process;
+
 use function array_key_exists;
 use function class_exists;
 use function file_get_contents;
@@ -21,6 +22,7 @@ use function file_put_contents;
 use function in_array;
 use function preg_replace;
 use function sprintf;
+
 use const PHP_MAJOR_VERSION;
 use const PHP_MINOR_VERSION;
 
