@@ -6,6 +6,6 @@ namespace Netgen\Bundle\SiteGeneratorBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class NetgenSiteGeneratorBundle extends Bundle
+final class NetgenSiteGeneratorBundle extends Bundle
 {
 }

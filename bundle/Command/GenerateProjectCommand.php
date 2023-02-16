@@ -7,9 +7,13 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Command;
 use CaptainHook\App\Config;
 use Exception;
 use Netgen\Bundle\SiteGeneratorBundle\Generator\ConfigurationGenerator;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\PhpExecutableFinder;
@@ -26,17 +30,16 @@ use function sprintf;
 use const PHP_MAJOR_VERSION;
 use const PHP_MINOR_VERSION;
 
-class GenerateProjectCommand extends GeneratorCommand
+final class GenerateProjectCommand extends Command
 {
-    protected ContainerInterface $container;
+    private InputInterface $input;
 
-    protected Filesystem $fileSystem;
+    private OutputInterface $output;
 
-    public function __construct(ContainerInterface $container, Filesystem $fileSystem)
+    private QuestionHelper $questionHelper;
+
+    public function __construct(private ContainerInterface $container, private Filesystem $fileSystem)
     {
-        $this->container = $container;
-        $this->fileSystem = $fileSystem;
-
         // Parent constructor call is mandatory for commands registered as services
         parent::__construct();
     }
@@ -66,7 +69,32 @@ class GenerateProjectCommand extends GeneratorCommand
         }
     }
 
-    protected function doInteract(): bool
+    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    {
+        if (!$input->isInteractive()) {
+            $output->writeln('<error>This command only supports interactive execution</error>');
+
+            return 1;
+        }
+
+        $this->writeSection(['Project generation']);
+
+        // Generate configuration
+        $configurationGenerator = new ConfigurationGenerator($this->container);
+        $configurationGenerator->generate($this->input, $this->output);
+
+        // Various cleanups
+        $this->cleanup();
+
+        $this->setPhpVersion();
+        $this->activateGitHooks();
+
+        $this->writeSection(['You can now start using the site!']);
+
+        return 0;
+    }
+
+    private function doInteract(): bool
     {
         $siteAccessList = [];
 
@@ -153,35 +181,56 @@ class GenerateProjectCommand extends GeneratorCommand
         return true;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): ?int
+    /**
+     * Instantiates and returns a question.
+     */
+    private function getQuestion(string $questionName, ?string $defaultValue = null, ?string $validator = null): Question
     {
-        if (!$input->isInteractive()) {
-            $output->writeln('<error>This command only supports interactive execution</error>');
+        $questionName = $defaultValue
+            ? '<info>' . $questionName . '</info> [<comment>' . $defaultValue . '</comment>]: '
+            : '<info>' . $questionName . '</info>: ';
 
-            return 1;
+        $question = new Question($questionName, $defaultValue);
+        if ($validator !== null) {
+            $question->setValidator([Validators::class, $validator]);
         }
 
-        $this->writeSection(['Project generation']);
+        return $question;
+    }
 
-        // Generate configuration
-        $configurationGenerator = new ConfigurationGenerator($this->container, $this->fileSystem);
-        $configurationGenerator->generate($this->input, $this->output);
+    /**
+     * Instantiates and returns the confirmation question.
+     */
+    private function getConfirmationQuestion(string $questionName, bool $defaultValue = false): ConfirmationQuestion
+    {
+        return new ConfirmationQuestion(
+            sprintf(
+                '<info>%s</info> [<comment>%s</comment>]? ',
+                $questionName,
+                $defaultValue ? 'yes' : 'no',
+            ),
+            $defaultValue,
+        );
+    }
 
-        // Various cleanups
-        $this->cleanup();
-
-        $this->setPhpVersion();
-        $this->activateGitHooks();
-
-        $this->writeSection(['You can now start using the site!']);
-
-        return 0;
+    /**
+     * Writes a section of text to the output.
+     */
+    private function writeSection(array $messages, string $style = 'bg=blue;fg=white'): void
+    {
+        $this->output->writeln(
+            [
+                '',
+                $this->getHelper('formatter')->formatBlock($messages, $style, true),
+                '',
+            ],
+        );
     }
 
     /**
      * Cleans up various leftover files.
      */
-    protected function cleanup(): void
+    private function cleanup(): void
     {
         $this->output->writeln('');
         $this->output->write('Cleaning up... ');
@@ -209,7 +258,7 @@ class GenerateProjectCommand extends GeneratorCommand
             }
 
             if (
-                !$fileSystem->exists($projectDir . '/.git')
+                !$this->fileSystem->exists($projectDir . '/.git')
                 && $this->questionHelper->ask(
                     $this->input,
                     $this->output,
@@ -220,18 +269,16 @@ class GenerateProjectCommand extends GeneratorCommand
                 )) {
                 $this->runProcess(['git', 'init']);
             }
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Do nothing
         }
     }
 
     private function setPhpVersion(): void
     {
-        /** @var \Symfony\Component\Filesystem\Filesystem $fileSystem */
-        $fileSystem = $this->getContainer()->get('filesystem');
-        $projectDir = $this->getContainer()->getParameter('kernel.project_dir');
+        $projectDir = $this->container->getParameter('kernel.project_dir');
 
-        if (!$fileSystem->exists($projectDir . '/composer.json')) {
+        if (!$this->fileSystem->exists($projectDir . '/composer.json')) {
             return;
         }
 
@@ -256,13 +303,12 @@ class GenerateProjectCommand extends GeneratorCommand
         }
 
         if (
-            $fileSystem->exists($projectDir . '/.git')
+            $this->fileSystem->exists($projectDir . '/.git')
             && $this->questionHelper->ask(
                 $this->input,
                 $this->output,
                 $this->getConfirmationQuestion(
                     'Do you want to use git hooks suitable for project development?',
-                    false,
                 ),
             )
         ) {
@@ -294,7 +340,7 @@ class GenerateProjectCommand extends GeneratorCommand
 
         $process->run(
             function ($type, $line) {
-                $this->output->write($line, false);
+                $this->output->write($line);
             },
         );
     }

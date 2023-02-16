@@ -6,6 +6,7 @@ namespace Netgen\Bundle\SiteGeneratorBundle\Generator;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Yaml\Yaml;
 
 use function array_keys;
@@ -15,8 +16,14 @@ use function array_values;
 use function count;
 use function file_put_contents;
 
-class ConfigurationGenerator extends Generator
+final class ConfigurationGenerator
 {
+    private const IBEXA_ADMIN_SITEACCESS_NAME = 'admin';
+
+    public function __construct(private ContainerInterface $container)
+    {
+    }
+
     /**
      * Generates the main configuration.
      */
@@ -90,7 +97,7 @@ class ConfigurationGenerator extends Generator
     /**
      * Generates settings that are specific to server.
      */
-    protected function generateServerConfig(): void
+    private function generateServerConfig(): void
     {
         $settings = [];
 

@@ -11,7 +11,7 @@ use function mb_strtolower;
 use function preg_match;
 use function sprintf;
 
-class Validators
+final class Validators
 {
     /**
      * Validates siteaccess name.
