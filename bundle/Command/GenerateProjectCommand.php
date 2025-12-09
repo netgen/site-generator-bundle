@@ -38,8 +38,10 @@ final class GenerateProjectCommand extends Command
 
     private QuestionHelper $questionHelper;
 
-    public function __construct(private ContainerInterface $container, private Filesystem $fileSystem)
-    {
+    public function __construct(
+        private ContainerInterface $container,
+        private Filesystem $fileSystem,
+    ) {
         // Parent constructor call is mandatory for commands registered as services
         parent::__construct();
     }
@@ -74,7 +76,7 @@ final class GenerateProjectCommand extends Command
         if (!$input->isInteractive()) {
             $output->writeln('<error>This command only supports interactive execution</error>');
 
-            return 1;
+            return Command::FAILURE;
         }
 
         $this->writeSection(['Project generation']);
@@ -91,7 +93,7 @@ final class GenerateProjectCommand extends Command
 
         $this->writeSection(['You can now start using the site!']);
 
-        return 0;
+        return Command::SUCCESS;
     }
 
     private function doInteract(): bool
@@ -216,12 +218,12 @@ final class GenerateProjectCommand extends Command
     /**
      * Writes a section of text to the output.
      */
-    private function writeSection(array $messages, string $style = 'bg=blue;fg=white'): void
+    private function writeSection(array $messages): void
     {
         $this->output->writeln(
             [
                 '',
-                $this->getHelper('formatter')->formatBlock($messages, $style, true),
+                $this->getHelper('formatter')->formatBlock($messages, 'bg=blue;fg=white', true),
                 '',
             ],
         );

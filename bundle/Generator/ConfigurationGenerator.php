@@ -18,11 +18,11 @@ use function file_put_contents;
 
 final class ConfigurationGenerator
 {
-    private const IBEXA_ADMIN_SITEACCESS_NAME = 'admin';
+    private const string IBEXA_ADMIN_SITEACCESS_NAME = 'adminui';
 
-    public function __construct(private ContainerInterface $container)
-    {
-    }
+    public function __construct(
+        private ContainerInterface $container,
+    ) {}
 
     /**
      * Generates the main configuration.
@@ -68,14 +68,14 @@ final class ConfigurationGenerator
             $settings['ibexa']['system'][$siteAccessName]['design'] = 'app';
             $settings['ibexa']['system'][$siteAccessName]['languages'] = $siteAccessLanguages;
             $settings['ibexa']['system'][$siteAccessName]['session'] = [
-                'name' => 'eZSESSID',
+                'name' => 'IBX_SESSION_ID',
             ];
         }
 
         foreach ($adminSiteAccessNames as $adminSiteAccessName) {
             $settings['ibexa']['system'][$adminSiteAccessName]['languages'] = $adminSiteAccessLanguages;
             $settings['ibexa']['system'][$adminSiteAccessName]['session'] = [
-                'name' => 'eZSESSID',
+                'name' => 'IBX_SESSION_ID',
             ];
         }
 
